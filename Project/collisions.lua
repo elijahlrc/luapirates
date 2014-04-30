@@ -1,4 +1,3 @@
---#############ELIJAHS START FROM SCRATCH COLLISIONS#############
 function instantiate_colisions ()
 	Collider = HC(100,on_collision)
 	--need to instantiate obj for both player ship and land
@@ -17,7 +16,7 @@ function on_collision(dt, shape_1, shape_2, dx, dy)
 	the obj coliding handel there own colisions. Thats why
 	they must have a "handle_colisions" method
 	------------------
-	]]
+	--]]
 
 	shape_1.handle_collisions(dt,shape_2,dx,dy)
 end

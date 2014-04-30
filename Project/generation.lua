@@ -74,7 +74,7 @@ function interpolate(a,b,c,d,delta_x,delta_y) -- takes 4 points and a delta x an
 end
 
 function smooth(factor,point_list)
-	for i=1,factor do
+	for k=1,factor do
 		for i=2,resolution-1 do
 			for j=2,resolution-1 do
 				local tile_1 = point_list[i+1][j+1]

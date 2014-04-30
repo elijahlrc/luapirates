@@ -16,9 +16,10 @@ function love.load()
 	require "keyboard"
 	require "generation"
 	require "sprites"
-	require "weather"
+	Weather = require "weather"
 	baseClass = require "baseclass"
 	HC = require "HardonCollider"
+	require "collisions"
 	PLAYER = Player(START_X,START_Y,SPRITES.ship,START_ROTATION,PLAYER_SPEED,
 		PLAYER_TURN_SPEED,PLAYER_DRAG,PLAYER_VELOCITY,MAX_PLAYER_VELOCITY)
 	PLAYER_CAMERA = Player(START_X,START_Y,SPRITES.ship,START_ROTATION,

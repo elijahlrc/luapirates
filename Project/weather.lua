@@ -1,4 +1,4 @@
-function Weather(speed,light,direction)
+local function Weather(speed,light,direction)
 
 	local self = {}
 	self.speed = speed
@@ -36,3 +36,4 @@ function Weather(speed,light,direction)
 	return self
 
 end
+return Weather

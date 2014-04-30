@@ -1,4 +1,7 @@
 function Keyboard(queue,direction,rotation)
+	--[[
+	I need a docstring too
+	--]]
 	local self = {}
 
 	self.queue = queue

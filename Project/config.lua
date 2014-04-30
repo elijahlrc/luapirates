@@ -1,3 +1,9 @@
+
+--[[
+Give me a docstring marcell!!!!!!!
+--]]
+
+
 -- Screen Config
 _, _, flags = love.window.getMode()
 WINDOW_WIDTH, WINDOW_HEIGHT = love.window.getDesktopDimensions(flags.display)
