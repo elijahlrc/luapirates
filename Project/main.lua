@@ -18,8 +18,8 @@ function love.load()
 	require "sprites"
 	Weather = require "weather"
 	baseClass = require "baseclass"
-	HC = require "HardonCollider"
 	require "collisions"
+	instantiate_colisions()
 	PLAYER = Player(START_X,START_Y,SPRITES.ship,START_ROTATION,PLAYER_SPEED,
 		PLAYER_TURN_SPEED,PLAYER_DRAG,PLAYER_VELOCITY,MAX_PLAYER_VELOCITY)
 	PLAYER_CAMERA = Player(START_X,START_Y,SPRITES.ship,START_ROTATION,
@@ -30,6 +30,9 @@ function love.load()
 	--TERRAIN_MAP = generate_map()
 	TERRAIN_MAP = love.image.newImageData("/map/map.png")
 	STATIC_OBJECTS = {}
+
+	--Colision detection: (from collisions)
+	
 end
 function love.keypressed(key)
 	KEYBOARD_STATE.add_key(key)
@@ -47,6 +50,7 @@ function love.update(dt)
 	PLAYER_CAMERA.update(dt)
 	TILE_BATCH,STATIC_OBJECTS = update_terrain(TILE_BATCH)
 	WEATHER.update_light(dt)
+	update_collisions(dt)
 end
 
 function love.draw()
@@ -58,11 +62,12 @@ function love.draw()
 		love.graphics.draw(STATIC_OBJECTS[i][1],STATIC_OBJECTS[i][2]+math.floor(-PLAYER_CAMERA.x)+math.floor(WINDOW_WIDTH/2),STATIC_OBJECTS[i][3]+math.floor(-PLAYER_CAMERA.y)+math.floor(WINDOW_HEIGHT/2))
 	end
 	love.graphics.draw(PLAYER.sprite,PLAYER.x-PLAYER_CAMERA.x+math.floor(WINDOW_WIDTH/2),PLAYER.y-PLAYER_CAMERA.y+math.floor(WINDOW_HEIGHT/2),PLAYER.rotation,1,1,PLAYER.sprite:getWidth()/2,PLAYER.sprite:getHeight()/2)
-
+	PLAYER.shape:draw("fill")
 	WEATHER.draw_weather()
 
 	local x,y = PLAYER.get_tile_location()
 	love.graphics.print(tostring(x)..","..tostring(y), 10, 0)
+	love.graphics.print("ship at"..tostring(PLAYER.shape:center()), 10, 50)
 	love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 10, 15)
 	love.graphics.print('Memory actually used (in kB): ' .. collectgarbage('count'), 10,30)
 end

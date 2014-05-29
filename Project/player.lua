@@ -1,5 +1,3 @@
-require "collisions"
-
 function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 	--[[
 	Player class 
@@ -26,6 +24,10 @@ function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 	self.drag = drag
 	self.velocity = velocity
 	self.max_velocity = max_velocity
+
+	--collider
+	self.shape = Collider:addRectangle(self.x+2,self.y+2,SHIP_OFFSET_X-4,SHIP_OFFSET_Y-4)
+	self.shape.owner = self --shape containes referance to owner, all interactive shapes must do this
 
 	function self.get_position()
 		return self.x,self.y
@@ -55,6 +57,7 @@ function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 		--]]
 		self.before_move_x = self.x
 		self.before_move_y = self.y
+
 		self.before_move_velocity = self.velocity
 
 		if KEYBOARD_STATE.get_direction() == "forward" then
@@ -79,14 +82,15 @@ function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 			end
 
 		end
-
-		self.velocity = self.velocity - self.velocity*drag
+		self.velocity = self.velocity - self.velocity*self.drag
 		if math.abs(self.velocity) > self.max_velocity then
-			self.velocity = before_move_velocity
+			self.velocity = self.before_move_velocity
 		end
-
+		
 		self.x = self.x + math.cos(self.rotation)*(self.velocity*dt)
 		self.y = self.y + math.sin(self.rotation)*(self.velocity*dt)
+		self.shape:moveTo(self.x,self.y)
+		self.shape:setRotation(self.rotation)
 	end
 
 	function self.handle_collisions(dt,othershape,dx,dy)
@@ -94,9 +98,11 @@ function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 		if othershape is a obj which should damage ship (wepons, etc)
 		the code for that should prob go here. Aditionaly docking in ports
 		picking up loot, etc might go here.
-		]]
-		self.x = self.x-dx --curently all colisions result in playerhsip 
-		self.y = self.y-dy --returning to the position it was before colision
+		--]]
+		self.x = self.x+dx --curently all colisions result in playerhsip 
+		self.y = self.y+dy --returning to the position it was before colision
+		self.velocity = 0
+		--print("COLLISION!!!!",  "x,y =", self.x, self.y, "dx, dy =", dx,dy)
 	end
 
 
