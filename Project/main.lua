@@ -86,4 +86,5 @@ function love.draw()
 	love.graphics.print("ship at"..tostring(PLAYER.shape:center()), 10, 50)
 	love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 10, 15)
 	love.graphics.print('Memory actually used (in kB): ' .. collectgarbage('count'), 10,30)
+	love.graphics.print("PLAYER HP "..math.ceil(PLAYER.hp),10,60,0,3,3)
 end

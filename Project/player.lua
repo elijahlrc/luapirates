@@ -26,6 +26,7 @@ function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 	self.velocity = velocity
 	self.max_velocity = max_velocity
 	self.reload = 0
+	self.hp = 100
 	--collider
 	self.shape = Collider:addRectangle(self.x+2,self.y+2,SHIP_OFFSET_X-4,SHIP_OFFSET_Y-4)
 	self.shape.owner = self --shape containes referance to owner, all interactive shapes must do this
@@ -66,7 +67,7 @@ function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 	function self.fire(dt)
 		if self.reload <= 0 and KEYBOARD_STATE.get_fireing() then
 			self.reload = 1
-			table.insert(DYNAMIC_OBJECTS, cannonball_projectile(200+self.velocity,self.x,self.y,self.rotation,100,true))
+			table.insert(DYNAMIC_OBJECTS, cannonball_projectile(300+self.velocity,self.x,self.y,self.rotation,100,true))
 		end
 	end
 	function self.move(dt)
@@ -119,6 +120,11 @@ function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 		--]]
 		self.x = self.x+dx --curently all colisions result in playerhsip 
 		self.y = self.y+dy --returning to the position it was before colision
+		if self.velocity>50 then 
+			self.hp = self.hp - math.abs(self.velocity)*.1
+		elseif self.velocity>20 then
+			self.hp = self.hp - math.abs(self.velocity)*.03
+		end
 		self.velocity = 0
 	end
 
