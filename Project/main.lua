@@ -47,9 +47,13 @@ function love.update(dt)
 	--[[
 	update game logic once/frame
 	]]
-	for i = 1, #DYNAMIC_OBJECTS do
+	for i = #DYNAMIC_OBJECTS, 1,-1 do
 		DYNAMIC_OBJECTS[i].update(dt)
+		if DYNAMIC_OBJECTS[i].dead then
+			table.remove(DYNAMIC_OBJECTS,i)
+		end
 	end
+
 	PLAYER.update(dt)
 	--PLAYER_CAMERA.update(dt)
 	TILE_BATCH,STATIC_OBJECTS = update_terrain(TILE_BATCH)

@@ -66,7 +66,7 @@ function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 	function self.fire(dt)
 		if self.reload <= 0 and KEYBOARD_STATE.get_fireing() then
 			self.reload = 1
-			table.insert(DYNAMIC_OBJECTS, cannonball_projectile(10,self.x,self.y,self.rotation,100,true))
+			table.insert(DYNAMIC_OBJECTS, cannonball_projectile(200+self.velocity,self.x,self.y,self.rotation,100,true))
 		end
 	end
 	function self.move(dt)
