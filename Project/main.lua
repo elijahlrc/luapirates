@@ -17,20 +17,21 @@ function love.load()
 	require "generation"
 	require "sprites"
 	Weather = require "weather"
-	baseClass = require "baseclass"
+	require "baseclass"
+	require "cannons"
 	require "collisions"
 	instantiate_colisions()
 	PLAYER = Player(START_X,START_Y,SPRITES.ship,START_ROTATION,PLAYER_SPEED,
 		PLAYER_TURN_SPEED,PLAYER_DRAG,PLAYER_VELOCITY,MAX_PLAYER_VELOCITY)
-	PLAYER_CAMERA = Player(START_X,START_Y,SPRITES.ship,START_ROTATION,
-		PLAYER_SPEED,PLAYER_TURN_SPEED,PLAYER_DRAG,PLAYER_VELOCITY,
-		MAX_PLAYER_VELOCITY)
+	--PLAYER_CAMERA = Player(START_X,START_Y,SPRITES.ship,START_ROTATION,
+	--	PLAYER_SPEED,PLAYER_TURN_SPEED,PLAYER_DRAG,PLAYER_VELOCITY,
+	--	MAX_PLAYER_VELOCITY)
 	KEYBOARD_STATE = Keyboard({})
 	WEATHER = Weather(WEATHER_SPEED,STARTING_LIGHT,WEATHER_DIRECTION)
 	--TERRAIN_MAP = generate_map()
 	TERRAIN_MAP = love.image.newImageData("/map/map.png")
 	STATIC_OBJECTS = {}
-
+	DYNAMIC_OBJECTS = {}
 	--Colision detection: (from collisions)
 	
 end
@@ -46,8 +47,11 @@ function love.update(dt)
 	--[[
 	update game logic once/frame
 	]]
+	for i = 1, #DYNAMIC_OBJECTS do
+		DYNAMIC_OBJECTS[i].update(dt)
+	end
 	PLAYER.update(dt)
-	PLAYER_CAMERA.update(dt)
+	--PLAYER_CAMERA.update(dt)
 	TILE_BATCH,STATIC_OBJECTS = update_terrain(TILE_BATCH)
 	WEATHER.update_light(dt)
 	update_collisions(dt)
@@ -57,11 +61,11 @@ function love.draw()
 	--[[
 	do graphics procesing and drawing
 	]]
-	love.graphics.draw(TILE_BATCH,math.floor(-PLAYER_CAMERA.x)+math.floor(WINDOW_WIDTH/2),math.floor(-PLAYER_CAMERA.y)+math.floor(WINDOW_HEIGHT/2))
+	love.graphics.draw(TILE_BATCH,math.floor(-PLAYER.x)+math.floor(WINDOW_WIDTH/2),math.floor(-PLAYER.y)+math.floor(WINDOW_HEIGHT/2))
 	for i=1,#STATIC_OBJECTS do
-		love.graphics.draw(STATIC_OBJECTS[i][1],STATIC_OBJECTS[i][2]+math.floor(-PLAYER_CAMERA.x)+math.floor(WINDOW_WIDTH/2),STATIC_OBJECTS[i][3]+math.floor(-PLAYER_CAMERA.y)+math.floor(WINDOW_HEIGHT/2))
+		love.graphics.draw(STATIC_OBJECTS[i][1],STATIC_OBJECTS[i][2]+math.floor(-PLAYER.x)+math.floor(WINDOW_WIDTH/2),STATIC_OBJECTS[i][3]+math.floor(-PLAYER.y)+math.floor(WINDOW_HEIGHT/2))
 	end
-	love.graphics.draw(PLAYER.sprite,PLAYER.x-PLAYER_CAMERA.x+math.floor(WINDOW_WIDTH/2),PLAYER.y-PLAYER_CAMERA.y+math.floor(WINDOW_HEIGHT/2),PLAYER.rotation,1,1,PLAYER.sprite:getWidth()/2,PLAYER.sprite:getHeight()/2)
+	love.graphics.draw(PLAYER.sprite,PLAYER.x-PLAYER.x+math.floor(WINDOW_WIDTH/2),PLAYER.y-PLAYER.y+math.floor(WINDOW_HEIGHT/2),PLAYER.rotation,1,1,PLAYER.sprite:getWidth()/2,PLAYER.sprite:getHeight()/2)
 	PLAYER.shape:draw("fill")
 	WEATHER.draw_weather()
 

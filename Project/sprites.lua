@@ -2,7 +2,7 @@ SPRITES = {}
 
 SPRITES.ship = love.graphics.newImage("/sprites/ship.png")
 SPRITES.tiles = love.graphics.newImage("/sprites/tiles.png")
-
+SPRITES.canonball = love.graphics.newImage("/sprites/canonball.png")
 local tiles_width = SPRITES.tiles:getWidth()
 local tiles_height = SPRITES.tiles:getHeight()
 

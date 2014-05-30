@@ -13,8 +13,9 @@ function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 	--private feilds are defined as
 	--'local foo = bar'
 
-	local self = baseClass
+	local self = baseClass()
 	--local self = {}
+	self.name = "PlaYA"
 	self.x = x
 	self.y = y
 	self.sprite = sprite
@@ -24,11 +25,19 @@ function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 	self.drag = drag
 	self.velocity = velocity
 	self.max_velocity = max_velocity
-
+	self.reload = 0
 	--collider
 	self.shape = Collider:addRectangle(self.x+2,self.y+2,SHIP_OFFSET_X-4,SHIP_OFFSET_Y-4)
 	self.shape.owner = self --shape containes referance to owner, all interactive shapes must do this
+	self.shape.name = "PlaYA_shape"
+	--player group is the group of objs that should not colide with player
+	--things like the players own cannonballs
+	--etc
+	--None that AOE attacks the player uses tha SHOULD hit the player
+	--should not be in "player" group.
+	Collider:addToGroup("player",self.shape)
 
+	print("player shape created")
 	function self.get_position()
 		return self.x,self.y
 	end
@@ -49,8 +58,17 @@ function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 
 	function self.update(dt)
 		self.move(dt)
+		self.fire(dt)
+		if self.reload>0 then
+			self.reload = self.reload - dt
+		end
 	end
-
+	function self.fire(dt)
+		if self.reload <= 0 then
+			self.reload = 1
+			table.insert(STATIC_OBJECTS, cannonball_projectile(10,10,self.x,self.y,100,true))
+		end
+	end
 	function self.move(dt)
 		--[[
 		Hey, Marcel! I need a docstring! (and documentation)
@@ -102,7 +120,6 @@ function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 		self.x = self.x+dx --curently all colisions result in playerhsip 
 		self.y = self.y+dy --returning to the position it was before colision
 		self.velocity = 0
-		--print("COLLISION!!!!",  "x,y =", self.x, self.y, "dx, dy =", dx,dy)
 	end
 
 

@@ -7,7 +7,7 @@ function Keyboard(queue,direction,rotation)
 	self.queue = queue
 	self.direction = direction
 	self.rotation = rotation
-
+	
 	function self.remove_key(key)
 		for i=1,#self.queue do
 			if self.queue[i] == key then
@@ -43,7 +43,15 @@ function Keyboard(queue,direction,rotation)
 		end
 		return self.rotation
 	end
-
+	function self.get_fireing()
+		for i=#self.queue,1,-1 do
+			if self.queue[i] == 'f' then
+				return true
+			end
+		end
+		return false
+	end
+	
 	function self.get_queue()
 		return self.queue
 	end
