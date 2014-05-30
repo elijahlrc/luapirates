@@ -44,12 +44,25 @@ function Keyboard(queue,direction,rotation)
 		return self.rotation
 	end
 	function self.get_fireing()
+		local left
+		local right
 		for i=#self.queue,1,-1 do
-			if self.queue[i] == 'f' then
-				return true
+			if self.queue[i] == 'q' then
+				left = true
+			elseif self.queue[i] == 'e' then
+				right = true
 			end
 		end
-		return false
+		if left and right then
+			return 'both'
+		elseif left then
+			return 'left'
+		elseif right then
+			return 'right'
+		else
+			return false
+		end
+
 	end
 	
 	function self.get_queue()

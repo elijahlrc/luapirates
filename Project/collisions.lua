@@ -1,5 +1,6 @@
 local function build_terrain_aray(collider_table)
 	local x,y = PLAYER.get_tile_location()
+	local coppy_table = {}
 	for i=-4,TILES_ACROSS+4 do
 		for j=-4,TILES_DOWN+4 do
 			local pixel_x,pixel_y = (i+x-(TILES_ACROSS/2)),(j+y-(TILES_DOWN/2))
@@ -12,15 +13,16 @@ local function build_terrain_aray(collider_table)
 			if height>122 then
 				local pos =  pixel_x.."_"..pixel_y
 				if  not collider_table[pos] then
-					collider_table[pos] = Collider:addRectangle(pixel_x*TILE_SIZE,pixel_y*TILE_SIZE, TILE_SIZE,TILE_SIZE)
-					collider_table[pos].name = "terrain_collider"
-					Collider:setPassive(collider_table[pos]) --sets terain rects as passive. Do not create colision callbacks
-					
+					coppy_table[pos] = Collider:addRectangle(pixel_x*TILE_SIZE,pixel_y*TILE_SIZE, TILE_SIZE,TILE_SIZE)
+					coppy_table[pos].name = "terrain_collider"
+					Collider:setPassive(coppy_table[pos]) --sets terain rects as passive. Do not create colision callbacks
+				else
+					coppy_table[pos] = collider_table[pos]
 				end
 			end
 		end
 	end
-	return collider_table
+	return coppy_table
 end
 function instantiate_colisions ()
 	HC = require "HardonCollider"
@@ -51,6 +53,5 @@ function on_collision(dt, shape_1, shape_2, dx, dy)
 	they must have a "handle_colisions" method
 	------------------
 	--]]
-	print(shape_2.name)
 	shape_1.owner.handle_collisions(dt,shape_2,dx,dy)
 end

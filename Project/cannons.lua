@@ -8,11 +8,12 @@ function projectile_base_class(sprite,name,rotation,velocity,x_pos,y_pos,lifespa
 	self.name = name
 	self.lifespan = lifespan
 	function self.update(dt)
+		self.check = self.check-dt
 		self.x = self.x + self.velocity*dt*math.cos(self.rotation)
 		self.y = self.y + self.velocity*dt*math.sin(self.rotation)
 		self.lifespan = self.lifespan - dt
 		if self.lifespan <= 0 then
-			self = nil
+			self.dead = true
 		end
 	end
 	return self
@@ -31,11 +32,13 @@ function cannonball_projectile(velocity,x_pos,y_pos,rotation,lifespan,player_fir
 		self.lifespan = self.lifespan - dt
 		self.shape:moveTo(self.x,self.y)
 		if self.lifespan <= 0 then
+			Collider:remove(self.shape)
 			self.dead = true
 		end
 
 	end
 	function self.handle_collisions(dt,othershape,dx,dy)
+		Collider:remove(self.shape)
 		self.dead = true
 	end
 	return self

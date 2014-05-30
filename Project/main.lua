@@ -11,6 +11,7 @@ function love.load()
 	HC: 		 colider
 	other code is just instansiation
 	]]
+	require "utilities"
 	require "config"
 	require "player"
 	require "keyboard"
@@ -18,6 +19,7 @@ function love.load()
 	require "sprites"
 	Weather = require "weather"
 	require "baseclass"
+	require "shipClass"
 	require "cannons"
 	require "collisions"
 	instantiate_colisions()
