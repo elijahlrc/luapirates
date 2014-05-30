@@ -59,13 +59,21 @@ end
 
 function love.draw()
 	--[[
+	define draw functions 
 	do graphics procesing and drawing
 	]]
-	love.graphics.draw(TILE_BATCH,math.floor(-PLAYER.x)+math.floor(WINDOW_WIDTH/2),math.floor(-PLAYER.y)+math.floor(WINDOW_HEIGHT/2))
+	local xOffset = math.floor(-PLAYER.x)+math.floor(WINDOW_WIDTH/2)
+	local yOffset = math.floor(-PLAYER.y)+math.floor(WINDOW_HEIGHT/2)
+	love.graphics.draw(TILE_BATCH,xOffset,yOffset)
 	for i=1,#STATIC_OBJECTS do
-		love.graphics.draw(STATIC_OBJECTS[i][1],STATIC_OBJECTS[i][2]+math.floor(-PLAYER.x)+math.floor(WINDOW_WIDTH/2),STATIC_OBJECTS[i][3]+math.floor(-PLAYER.y)+math.floor(WINDOW_HEIGHT/2))
+		local obj = STATIC_OBJECTS[i]
+		love.graphics.draw(obj[1],obj[2]+xOffset,obj[3]+yOffset)
 	end
-	love.graphics.draw(PLAYER.sprite,PLAYER.x-PLAYER.x+math.floor(WINDOW_WIDTH/2),PLAYER.y-PLAYER.y+math.floor(WINDOW_HEIGHT/2),PLAYER.rotation,1,1,PLAYER.sprite:getWidth()/2,PLAYER.sprite:getHeight()/2)
+	for i = 1, #DYNAMIC_OBJECTS do
+		local obj = DYNAMIC_OBJECTS[i]
+		love.graphics.draw(obj.sprite,obj.x+xOffset,obj.y+yOffset,obj.rotation,1,1,obj.sprite:getWidth()/2,obj.sprite:getWidth()/2)
+	end
+	love.graphics.draw(PLAYER.sprite,math.floor(WINDOW_WIDTH/2),math.floor(WINDOW_HEIGHT/2),PLAYER.rotation,1,1,PLAYER.sprite:getWidth()/2,PLAYER.sprite:getHeight()/2)
 	PLAYER.shape:draw("fill")
 	WEATHER.draw_weather()
 
