@@ -12,8 +12,16 @@ TILES = {}
 
 TILES.dirt = love.graphics.newQuad(TILE_SIZE*0,  TILE_SIZE*0, TILE_SIZE, TILE_SIZE, tiles_height, tiles_width)
 TILES.grass = love.graphics.newQuad(TILE_SIZE*1,  TILE_SIZE*0, TILE_SIZE, TILE_SIZE, tiles_height, tiles_width)
-TILES.sand = love.graphics.newQuad(TILE_SIZE*0,  TILE_SIZE*1+1, TILE_SIZE, TILE_SIZE, tiles_height, tiles_width)
-TILES.water = love.graphics.newQuad(TILE_SIZE*1,  TILE_SIZE*1+1, TILE_SIZE, TILE_SIZE, tiles_height, tiles_width)
+TILES.sand = love.graphics.newQuad(TILE_SIZE*0,  TILE_SIZE*1, TILE_SIZE, TILE_SIZE, tiles_height, tiles_width)
+TILES.deep_water = love.graphics.newQuad(TILE_SIZE*1,  TILE_SIZE*1, TILE_SIZE, TILE_SIZE, tiles_height, tiles_width)
+TILES.sand_grass = love.graphics.newQuad(TILE_SIZE*2,  TILE_SIZE*0, TILE_SIZE, TILE_SIZE, tiles_height, tiles_width)
+TILES.grass_dirt = love.graphics.newQuad(TILE_SIZE*2,  TILE_SIZE*1, TILE_SIZE, TILE_SIZE, tiles_height, tiles_width)
+TILES.shallow_water = love.graphics.newQuad(TILE_SIZE*0,  TILE_SIZE*2, TILE_SIZE, TILE_SIZE, tiles_height, tiles_width)
+TILES.dark_water = love.graphics.newQuad(TILE_SIZE*1,  TILE_SIZE*2, TILE_SIZE, TILE_SIZE, tiles_height, tiles_width)
+TILES.medium_water = love.graphics.newQuad(TILE_SIZE*2,  TILE_SIZE*2, TILE_SIZE, TILE_SIZE, tiles_height, tiles_width)
+
+
+
 
 OBJECTS = {}
 
@@ -62,11 +70,22 @@ end
 function get_tile_sprite(value)
     if value > 127 then
         return TILES.dirt
+    elseif value>125 then
+    	return TILES.grass_dirt
     elseif value > 124 then
         return TILES.grass
+    elseif value> 123 then
+    	return TILES.sand_grass
     elseif value > 122 then
         return TILES.sand
+    elseif value>121 then
+    	return TILES.shallow_water
+    elseif value>120 then
+    	return TILES.medium_water
+    elseif value>118 then
+    	return TILES.deep_water
     else
-        return TILES.water
+        return TILES.dark_water
     end
 end
+

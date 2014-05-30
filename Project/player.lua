@@ -82,7 +82,7 @@ function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 		if KEYBOARD_STATE.get_direction() == "forward" then
 			self.velocity = self.velocity+self.speed
 		elseif KEYBOARD_STATE.get_direction() == "backward" then
-			self.velocity = self.velocity-self.speed
+			self.velocity = self.velocity-self.speed*.3
 		end
 
 		if KEYBOARD_STATE.get_direction() ~= nil then
@@ -94,10 +94,10 @@ function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 		else
 			if KEYBOARD_STATE.get_rotation() == "clockwise" then
 				self.rotation = self.rotation + (self.turn_speed*dt)/RADIANS
-				self.velocity = self.velocity+self.speed
+				self.velocity = self.velocity+self.speed*.3
 			elseif KEYBOARD_STATE.get_rotation() == "counterclockwise" then
 				self.rotation = self.rotation - (self.turn_speed*dt)/RADIANS
-				self.velocity = self.velocity+self.speed
+				self.velocity = self.velocity+self.speed*.3
 			end
 
 		end
@@ -120,9 +120,9 @@ function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 		--]]
 		self.x = self.x+dx --curently all colisions result in playerhsip 
 		self.y = self.y+dy --returning to the position it was before colision
-		if self.velocity>50 then 
+		if  math.abs(self.velocity)>50 then 
 			self.hp = self.hp - math.abs(self.velocity)*.1
-		elseif self.velocity>20 then
+		elseif  math.abs(self.velocity)>20 then
 			self.hp = self.hp - math.abs(self.velocity)*.03
 		end
 		self.velocity = 0
