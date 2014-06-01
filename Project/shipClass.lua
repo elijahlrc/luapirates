@@ -8,7 +8,7 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,max_velocity,velocity,ro
 		self.velocity = velocity or 0
 		self.max_velocity = max_velocity
 		self.max_health = max_health or 100
-		self.name = "baseHipClass"
+		self.name = "baseSHipClass"
 		self.hp = self.max_health
 		self.x = x
 		self.y = y
@@ -16,8 +16,7 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,max_velocity,velocity,ro
 		self.speed = speed
 		self.turn_speed = turn_speed
 		self.drag = drag
-		self.reload = 0
-		self.reloadRate = .2
+		self.cannons = basic_guns(self)
 		if shape then
 			self.shape = shape
 			if not self.shape.name then
@@ -55,15 +54,11 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,max_velocity,velocity,ro
 
 	function self.update(dt)
 		self.move(dt)
-		--self.fire(dt)
-		if self.reload>0 then
-			self.reload = self.reload - dt
-		end
+		self.fire_guns(dt)
 	end
-	function self.fire(dt)
-		if self.reload <= 0 then
-			self.reload = self.reloadRate
-			table.insert(DYNAMIC_OBJECTS, cannonball_projectile(300+self.velocity,self.x,self.y,self.rotation,100,true))
+	function self.fire_guns(dt)
+		for _,gun in pairs(self.cannons.guns) do
+			gun.fire(dt)
 		end
 	end
 	function self.handle_collisions(dt,othershape,dx,dy)

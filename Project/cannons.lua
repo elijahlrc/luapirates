@@ -43,3 +43,13 @@ function cannonball_projectile(velocity,x_pos,y_pos,rotation,lifespan,player_fir
 	end
 	return self
 end
+
+function player_cannonball(x,y,lifespan,player_fired,random_v,random_r)
+	function ball(speed,dir)
+		local rand_v = math.random()*random_v-(random_v/2)
+		local rand_r = math.random()*random_r-(random_r/2)
+		self = cannonball_projectile(speed+rand_v,x,y,dir+rand_r,lifespan,player_fired)
+		return self
+	end
+	return ball
+end

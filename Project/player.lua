@@ -5,9 +5,6 @@ function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 	self.shape.owner = self --shape containes referance to owner, all interactive shapes must do this
 	Collider:addToGroup("player",self.shape)
 	self.shape.name = "playershape"
-	self.reloadRate = PLAYER_RELOAD_RATE
-	self.reloadLeft = self.reloadRate
-	self.reloadRight = self.reloadRate
 	function self.move(dt)
 		--[[
 		Hey, Marcel! I need a docstring! (and documentation)
@@ -49,18 +46,7 @@ function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 		self.shape:moveTo(self.x,self.y)
 		self.shape:setRotation(self.rotation)
 	end
-	function self.update(dt)
-		self.move(dt)
-		self.fire(dt)
-		if self.reloadRight>0 then
-			self.reloadRight = self.reloadRight - dt
-		end
-		if self.reloadLeft>0 then
-			self.reloadLeft = self.reloadLeft - dt
-
-		end
-	end
-	function self.fire(dt)
+	--[[function self.fire(dt)
 		local fire = KEYBOARD_STATE.get_fireing()
 		if fire then
 			if fire == 'both' then
@@ -84,6 +70,6 @@ function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 					self.reloadLeft = self.reloadRate
 			end
 		end
-	end
+	end--]]
 	return self
 end
