@@ -20,7 +20,7 @@ function love.load()
 	Weather = require "weather"
 	require "baseclass"
 	require "shipClass"
-	require "cannons"
+	require "projectiles"
 	require "collisions"
 	require "gunClass"
 	instantiate_colisions()
