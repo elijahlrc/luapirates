@@ -26,17 +26,24 @@ function love.load()
 	instantiate_colisions()
 	PLAYER = Player(START_X,START_Y,SPRITES.ship,START_ROTATION,PLAYER_SPEED,
 	PLAYER_TURN_SPEED,PLAYER_DRAG,PLAYER_VELOCITY,MAX_PLAYER_VELOCITY)
-	--PLAYER_CAMERA = Player(START_X,START_Y,SPRITES.ship,START_ROTATION,
-	--	PLAYER_SPEED,PLAYER_TURN_SPEED,PLAYER_DRAG,PLAYER_VELOCITY,
-	--	MAX_PLAYER_VELOCITY)
+
 	KEYBOARD_STATE = Keyboard({})
 	WEATHER = Weather(WEATHER_SPEED,STARTING_LIGHT,WEATHER_DIRECTION)
 	--TERRAIN_MAP = generate_map()
 	TERRAIN_MAP = love.image.newImageData("/map/map.png")
 	STATIC_OBJECTS = {}
 	DYNAMIC_OBJECTS = {}
-	--Colision detection: (from collisions)
 	
+--temp code below -------------------------------------------------------------------------------------
+	enemy_ship = baseShipClass(START_X+300,START_Y+300,SPRITES.ship2,PLAYER_SPEED,
+		PLAYER_TURN_SPEED,PLAYER_DRAG,MAX_PLAYER_VELOCITY,PLAYER_VELOCITY,0,100)
+	enemy_ship.shape = Collider:addRectangle(enemy_ship.x+2,enemy_ship.y+2,SHIP_OFFSET_X-4,SHIP_OFFSET_Y-4)
+	enemy_ship.shape.owner = enemy_ship --shape containes referance to owner, all interactive shapes must do this
+	Collider:addToGroup("enemy_ship",enemy_ship.shape)
+	enemy_ship.shape.name = "enemy_ship"
+	enemy_ship.cannons = basic_guns(enemy_ship,"enemy_ship")
+	table.insert(DYNAMIC_OBJECTS,enemy_ship)
+--temp code above ------------------------------------------------------------------------------------------------
 end
 function love.keypressed(key)
 	KEYBOARD_STATE.add_key(key)

@@ -5,6 +5,8 @@ function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 	self.shape.owner = self --shape containes referance to owner, all interactive shapes must do this
 	Collider:addToGroup("player",self.shape)
 	self.shape.name = "playershape"
+	self.cannons = basic_guns(self,"player")
+	self.name = "PLAYER"
 	function self.move(dt)
 		--[[
 		Hey, Marcel! I need a docstring! (and documentation)

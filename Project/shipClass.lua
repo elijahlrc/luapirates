@@ -51,7 +51,8 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,max_velocity,velocity,ro
 		local tile_y = math.floor(self.y/TILE_SIZE)
 		return tile_x,tile_y
 	end
-
+	function self.move(dt)
+	end
 	function self.update(dt)
 		self.move(dt)
 		self.fire_guns(dt)
@@ -67,14 +68,19 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,max_velocity,velocity,ro
 		the code for that should prob go here. Aditionaly docking in ports
 		picking up loot, etc might go here.
 		--]]
-		self.x = self.x+dx --curently all colisions result in ship
-		self.y = self.y+dy --returning to the position it was before colision
-		if  math.abs(self.velocity)>100 then 
-			self.hp = self.hp - math.abs(self.velocity)*.05
-		elseif  math.abs(self.velocity)>20 then
-			self.hp = self.hp - math.abs(self.velocity)*.02
+		if othershape.name == "terrain_collider" then
+			self.x = self.x+dx --curently all colisions result in ship
+			self.y = self.y+dy --returning to the position it was before colision
+			if  math.abs(self.velocity)>100 then 
+				self.hp = self.hp - math.abs(self.velocity)*.05
+			elseif  math.abs(self.velocity)>20 then
+				self.hp = self.hp - math.abs(self.velocity)*.02
+			end
+			self.velocity = 0
+		elseif othershape.name == "projectile" then
+			self.hp = self.hp-5
 		end
-		self.velocity = 0
 	end
 	return self
 end
+
