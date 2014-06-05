@@ -1,4 +1,8 @@
 function cannonClass(name,speed,gun_rot,lifetime,reload_time,owner,x_offset,y_offset,sprite,random_rot,random_vel,group,proj_size)
+	--[[instances of this class represent guns on the ship
+	guns act by inserting particles with certan params into the 
+	DYNAMIC OBJECTs table when certan conditions are met, ie reload time and fire pressed
+	--]]
 	local self = baseClass()
 	self.x = x_offset or 0 --these set to 0 if not passed into function, neet trick eh?
 	self.y = y_offset or 0-- like using foo(x,y=3) to make y default to 3 in python
@@ -16,7 +20,7 @@ function cannonClass(name,speed,gun_rot,lifetime,reload_time,owner,x_offset,y_of
 	self.proj_size = proj_size
 	function self.fire(dt,fireing)
 		self.reload = self.reload - dt
-		local fireing = KEYBOARD_STATE.get_fireing()
+		--local fireing = KEYBOARD_STATE.get_fireing()
 		local go = (fireing == self.name) or (fireing == 'both')
 		if self.reload <= 0 and go then
 			self.reload = self.reload_time
@@ -26,7 +30,7 @@ function cannonClass(name,speed,gun_rot,lifetime,reload_time,owner,x_offset,y_of
 			local y_off = math.sin(owner.rotation)*self.y+math.sin(owner.rotation)*self.x
 			local vec = add_vectors(self.speed,owner.rotation+self.rotation,
 									self.owner.velocity,self.owner.rotation)--these vec lines add player velocity and gun velocity
-			table.insert(DYNAMIC_OBJECTS,
+			table.insert(PROJECTILES,
 				colliding_projectile(self.lifetime,
 									self.sprite,
 									self.group,
@@ -46,19 +50,31 @@ function basic_guns(owner,group)
 	--[[
 	doesnt even need to be an obj, just has to have a .guns table whith
 	guns/somthing with a fire method in it
+	Player and Ship . gun tables should be set equal to this table/class
 	--]]
 	local self = {}
 	self.guns = {}
-	local speed = 300
+	local speed = 400
 	local left = -math.pi/2
 	local right = math.pi/2
-	local reload_time = .2
+	local reload_time = .4
 	local lifetime = 3
 	local sprite = SPRITES.canonball
 	local random_rot = .05
-	local random_vel = 10
+	local random_vel = 30
 	local group = group
 	local proj_size = 7
+	--[[
+	the folowing could also be  done with a gun generator, ie
+
+	"function gen(params)
+		function make_gun()
+			return cannonClass(params)
+		end
+		return make_gun
+	end"
+	this would be cleaner/better and should be implimented
+	]]
 	self.guns = {cannonClass("left",speed,left,lifetime,reload_time,owner,-10,0,sprite,random_rot,random_vel,group,proj_size),
 		cannonClass("left",speed,left,lifetime,reload_time,owner,0,0,sprite,random_rot,random_vel,group,proj_size),
 		cannonClass("left",speed,left,lifetime,reload_time,owner,10,0,sprite,random_rot,random_vel,group,proj_size),
@@ -70,6 +86,7 @@ function basic_guns(owner,group)
 		cannonClass("left",speed,left,lifetime,reload_time,owner,20,0,sprite,random_rot,random_vel,group,proj_size),
 		cannonClass("right",speed,right,lifetime,reload_time,owner,-20,0,sprite,random_rot,random_vel,group,proj_size),
 		cannonClass("right",speed,right,lifetime,reload_time,owner,-30,0,sprite,random_rot,random_vel,group,proj_size),
-		cannonClass("right",speed,right,lifetime,reload_time,owner,20,0,sprite,random_rot,random_vel,group,proj_size)}
+		cannonClass("right",speed,right,lifetime,reload_time,owner,20,0,sprite,random_rot,random_vel,group,proj_size)
+		}
 	return self
 end

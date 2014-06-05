@@ -1,4 +1,14 @@
 local function build_terrain_aray(collider_table)
+	--[[
+
+	This code is currently a shitstorm dont try to understand it right now
+	It is in a state similar to how genration was once upon a time.
+	It also needs simple optimisation done
+	TURN BACK NOW, OR ABANDON ALL HOPE
+
+	todo:
+	points for bullet shapes could be a small optimisation
+	--]]
 	local x,y = PLAYER.get_tile_location()
 	local coppy_table = {}
 	for i=-4,TILES_ACROSS+4 do
@@ -27,7 +37,7 @@ end
 function instantiate_colisions ()
 	HC = require "HardonCollider"
 	Collider = HC(100,on_collision)
-	--need to instantiate obj for both player ship and land
+	--need to instantiate obj for player
 
 end
 
@@ -54,4 +64,7 @@ function on_collision(dt, shape_1, shape_2, dx, dy)
 	------------------
 	--]]
 	shape_1.owner.handle_collisions(dt,shape_2,dx,dy)
+	if shape_2.owner then
+		shape_2.owner.handle_collisions(dt,shape_1,-1*dx,-1*dy)
+	end
 end

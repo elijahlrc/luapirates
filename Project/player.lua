@@ -1,52 +1,43 @@
 function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 	
 	local self = baseShipClass(START_X,START_Y,SPRITES.ship,PLAYER_SPEED,PLAYER_TURN_SPEED,PLAYER_DRAG,MAX_PLAYER_VELOCITY,PLAYER_VELOCITY,START_ROTATION,PLAYER_MAX_HP,shape)
-	self.shape = Collider:addRectangle(self.x+2,self.y+2,SHIP_OFFSET_X-4,SHIP_OFFSET_Y-4)
-	self.shape.owner = self --shape containes referance to owner, all interactive shapes must do this
-	Collider:addToGroup("player",self.shape)
+	self.shape = Collider:addPolygon(self.x,self.y+self.height/2, self.x+self.width/2,self.y, self.x+self.width,self.y+self.height/2, self.x+self.width/2,self.y+self.height)
+	Collider:addToGroup(tostring(self.id),self.shape)
 	self.shape.name = "playershape"
-	self.cannons = basic_guns(self,"player")
+	self.cannons = basic_guns(self,tostring(self.id))
 	self.name = "PLAYER"
+	self.shape.owner = self --shape containes referance to owner, all interactive shapes must do this
+
+
+	function self.fire_guns(dt)
+		self.fireing = KEYBOARD_STATE.get_fireing()
+		for _,gun in pairs(self.cannons.guns) do
+			gun.fire(dt,self.fireing)
+		end
+	end
 	function self.move(dt)
-		--[[
-		Hey, Marcel! I need a docstring! (and documentation)
-		--]]
-		self.before_move_x = self.x
-		self.before_move_y = self.y
-
-		self.before_move_velocity = self.velocity
-
 		if KEYBOARD_STATE.get_direction() == "forward" then
 			self.velocity = self.velocity+self.speed
 		elseif KEYBOARD_STATE.get_direction() == "backward" then
-			self.velocity = self.velocity-self.speed*.3
+			self.velocity = self.velocity-self.speed*.6
 		end
 
 		if KEYBOARD_STATE.get_direction() ~= nil then
 			if KEYBOARD_STATE.get_rotation() == "clockwise" then
-				self.rotation = self.rotation + (self.turn_speed*dt)/RADIANS
+				self.rotation = self.rotation + (self.turn_speed*dt)
 			elseif KEYBOARD_STATE.get_rotation() == "counterclockwise" then
-				self.rotation = self.rotation - (self.turn_speed*dt)/RADIANS
+				self.rotation = self.rotation - (self.turn_speed*dt)
 			end
 		else
 			if KEYBOARD_STATE.get_rotation() == "clockwise" then
-				self.rotation = self.rotation + (self.turn_speed*dt)/RADIANS
+				self.rotation = self.rotation + (self.turn_speed*dt)
 				self.velocity = self.velocity+self.speed*.1
 			elseif KEYBOARD_STATE.get_rotation() == "counterclockwise" then
-				self.rotation = self.rotation - (self.turn_speed*dt)/RADIANS
+				self.rotation = self.rotation - (self.turn_speed*dt)
 				self.velocity = self.velocity+self.speed*.1
 			end
 
 		end
-		self.velocity = self.velocity - self.velocity*self.drag
-		if math.abs(self.velocity) > self.max_velocity then
-			self.velocity = self.before_move_velocity
-		end
-		
-		self.x = self.x + math.cos(self.rotation)*(self.velocity*dt)
-		self.y = self.y + math.sin(self.rotation)*(self.velocity*dt)
-		self.shape:moveTo(self.x,self.y)
-		self.shape:setRotation(self.rotation)
 	end
 	--[[function self.fire(dt)
 		local fire = KEYBOARD_STATE.get_fireing()

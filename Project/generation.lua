@@ -3,7 +3,7 @@ require "sprites"
 math.randomseed(RANDOM_SEED)
 
 -- Size of Map
-local map_scale = 11
+local map_scale =11
 -- Smoothness
 local smoothness = 1
 -- Structure Scale/Amount

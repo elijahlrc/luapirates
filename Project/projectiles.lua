@@ -1,13 +1,19 @@
-function colliding_projectile(lifetime,sprite,group,x,y,rot,vel,size)
+function colliding_projectile(lifetime,sprite,group,x,y,rot,vel,size,drag)
+	--[[This class handles the projectiles themselves
+	Instances of it can and should be added to the projectiles objects table
+	--]]
 	local self = baseClass()
 	self.name = "projectile"
 	self.sprite = sprite
+	self.width, self.height = self.sprite:getDimensions( )
 	self.x = x
 	self.y = y
 	self.velocity = vel
 	self.rotation = rot
 	self.lifetime = lifetime
-	self.shape = Collider:addRectangle(self.x,self.y,size,size)
+	self.drag = drag--optional parameter
+	self.shape = Collider:addRectangle(self.x,self.y,self.width,self.height)--does not yet suport projectile rotation, if you want this feture
+																--impliment it
 	self.shape.owner = self
 	self.group = group
 	Collider:addToGroup(self.group,self.shape)--makes cannonballs not colide with there fire-er
@@ -28,8 +34,6 @@ function colliding_projectile(lifetime,sprite,group,x,y,rot,vel,size)
 
 	end
 	function self.handle_collisions(dt,othershape,dx,dy)
-		print("sdfsdfdsf")
-		Collider:remove(self.shape)
 		self.dead = true
 	end
 	return self
