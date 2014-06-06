@@ -54,11 +54,11 @@ function basic_guns(owner,group)
 	--]]
 	local self = {}
 	self.guns = {}
-	self.speed = 350
+	self.speed = 450
 	local left = -math.pi/2
 	local right = math.pi/2
 	local reload_time = 1
-	local lifetime = 3
+	local lifetime = 1.5
 	local sprite = SPRITES.canonball
 	local random_rot = .05
 	local random_vel = 30

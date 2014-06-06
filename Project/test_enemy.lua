@@ -38,16 +38,16 @@ function enemy_ship(x_pos,y_pos)
 		--Following 5 lines sets target to location in front of player taking into acount player speed
 		--and curent ship speed
 		local time_to_impact = distance(self.x,self.y,PLAYER.x,PLAYER.y)/self.cannons.speed
-		self.goal.x = PLAYER.x + math.cos(PLAYER.rotation)*(PLAYER.velocity[1]*time_to_impact)-
-		(math.cos(self.rotation)*(self.velocity[1]*time_to_impact))
-		self.goal.y = PLAYER.y + math.sin(PLAYER.rotation)*(PLAYER.velocity[1]*time_to_impact)-
-		(math.cos(self.rotation)*(self.velocity[1]*time_to_impact))
+		self.goal.x = PLAYER.x + math.cos(PLAYER.velocity[2])*(PLAYER.velocity[1]*time_to_impact)-
+		math.cos(self.velocity[2])*(self.velocity[1]*time_to_impact)
+		self.goal.y = PLAYER.y + math.sin(PLAYER.velocity[2])*(PLAYER.velocity[1]*time_to_impact)-
+		math.sin(self.velocity[2])*(self.velocity[1]*time_to_impact)
 
 
 		self.dirToPlayer = get_direction(self.x,self.y,self.goal.x,self.goal.y)
 		self.distanceToPlayer = distance(self.x,self.y,self.goal.x,self.goal.y)
 		
-		if self.distanceToPlayer < 800 then
+		if self.distanceToPlayer < 600 then
 			self.accelerate(dt,"forward")
 			self.turnToBroadside(dt)
 		elseif self.distanceToPlayer <= 3000 then
@@ -58,15 +58,18 @@ function enemy_ship(x_pos,y_pos)
 		end
 	end
 	function self.fire_guns(dt)
+
 		local time_to_impact = distance(self.x,self.y,PLAYER.x,PLAYER.y)/self.cannons.speed
-		self.target.x = PLAYER.x + math.cos(PLAYER.rotation)*(PLAYER.velocity[1]*time_to_impact)-
-		(math.cos(self.rotation)*(self.velocity[1]*time_to_impact))
-		self.target.y = PLAYER.y + math.sin(PLAYER.rotation)*(PLAYER.velocity[1]*time_to_impact)-
-		(math.cos(self.rotation)*(self.velocity[1]*time_to_impact))
+
+		--trying to predict player location
+		self.target.x = PLAYER.x + math.cos(PLAYER.velocity[2])*(PLAYER.velocity[1]*time_to_impact)-
+		math.cos(self.velocity[2])*(self.velocity[1]*time_to_impact)
+		self.target.y = PLAYER.y + math.sin(PLAYER.velocity[2])*(PLAYER.velocity[1]*time_to_impact)-
+		math.sin(self.velocity[2])*(self.velocity[1]*time_to_impact)
 		self.dirToPlayer = get_direction(self.x,self.y,self.target.x,self.target.y)
-		if math.abs(shortAng(self.dirToPlayer-math.pi*.5 , self.rotation)) < math.pi/16 then
+		if math.abs(shortAng(self.dirToPlayer-math.pi*.5 , self.rotation)) < math.pi/32 then
 			self.fireing = "right"
-		elseif math.abs(shortAng(self.dirToPlayer+math.pi*.5 , self.rotation)) < math.pi/16 then
+		elseif math.abs(shortAng(self.dirToPlayer+math.pi*.5 , self.rotation)) < math.pi/32 then
 			self.fireing = "left"
 		else
 			self.fireing = nil

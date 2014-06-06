@@ -86,11 +86,14 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 		--obj that is fireing, ie player, or test_enemy
 	end
 	function self.doMove(dt)
+		local turn_factor =.005 --affects how much of your momentum you keep when you turn
 		self.move(dt)
 		self.dragForce = {}
 		dA = math.abs(shortAng(self.rotation,self.velocity[2]))
 		self.dragForce[1] = -1*self.velocity[1]*(1+dA)*self.drag
 		self.dragForce[2] = 1*self.velocity[2]
+		self.velocity = add_vectors(self.velocity[1],self.velocity[2],self.velocity[1]*turn_factor*dA,self.rotation)
+
 		self.velocity = add_vectors(self.velocity[1],self.velocity[2],self.dragForce[1],self.dragForce[2])
 		self.x = self.x + math.cos(self.velocity[2])*(self.velocity[1]*dt)
 		self.y = self.y + math.sin(self.velocity[2])*(self.velocity[1]*dt)
