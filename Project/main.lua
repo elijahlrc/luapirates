@@ -27,7 +27,7 @@ function love.load()
 	ID = 0
 	instantiate_colisions()
 	PLAYER = Player(START_X,START_Y,SPRITES.ship,START_ROTATION,PLAYER_SPEED,
-	PLAYER_TURN_SPEED,PLAYER_DRAG,PLAYER_VELOCITY,MAX_PLAYER_VELOCITY)
+	PLAYER_TURN_SPEED,PLAYER_DRAG,PLAYER_VELOCITY)
 
 	KEYBOARD_STATE = Keyboard({})
 	WEATHER = Weather(WEATHER_SPEED,STARTING_LIGHT,WEATHER_DIRECTION)
@@ -58,7 +58,7 @@ function love.update(dt)
 	TILE_BATCH,STATIC_OBJECTS = update_terrain(TILE_BATCH)
 	WEATHER.update_light(dt)
 	update_collisions(dt)
-	if #SHIPS < 2+score then
+	if #SHIPS < 2 then
 		table.insert(SHIPS,enemy_ship(PLAYER.x+math.random(WINDOW_WIDTH)-WINDOW_WIDTH/2,PLAYER.y+math.random(WINDOW_HEIGHT)-WINDOW_HEIGHT/2))
 	end
 	if PLAYER.dead then
@@ -109,5 +109,5 @@ function love.draw()
 	love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 10, 15)
 	love.graphics.print('Memory actually used (in kB): ' .. collectgarbage('count'), 10,30)
 	love.graphics.print("PLAYER HP "..math.ceil(PLAYER.hp),10,60,0,3,3)
-	love.graphics.print("Score:"..score,10,90,0,3,3)
+	love.graphics.print("Speed:"..score,10,90,0,3,3)
 end

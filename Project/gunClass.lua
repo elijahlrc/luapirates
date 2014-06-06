@@ -29,7 +29,7 @@ function cannonClass(name,speed,gun_rot,lifetime,reload_time,owner,x_offset,y_of
 			local x_off = math.cos(owner.rotation)*self.x +math.cos(owner.rotation)*self.y--these 2 lines calculate position of gun based on owner rotation
 			local y_off = math.sin(owner.rotation)*self.y+math.sin(owner.rotation)*self.x
 			local vec = add_vectors(self.speed,owner.rotation+self.rotation,
-									self.owner.velocity,self.owner.rotation)--these vec lines add player velocity and gun velocity
+									self.owner.velocity[1],self.owner.velocity[2])--these vec lines add player velocity and gun velocity
 			table.insert(PROJECTILES,
 				colliding_projectile(self.lifetime,
 									self.sprite,

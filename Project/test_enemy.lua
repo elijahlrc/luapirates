@@ -4,7 +4,7 @@ function enemy_ship(x_pos,y_pos)
 	local speed = PLAYER_SPEED
 
 	local self = baseShipClass(x_pos,y_pos,SPRITES.ship2,speed,
-								turnspeed,drag,MAX_PLAYER_VELOCITY,
+								turnspeed,drag,
 								PLAYER_VELOCITY,0,100)
 
 	self.name = "enemyShip"
@@ -21,11 +21,9 @@ function enemy_ship(x_pos,y_pos)
 	self.target = {}
 	function self.turnToBroadside(dt)
 		if math.abs(shortAng(self.rotation+math.pi*.5,self.dirToPlayer)) < (math.pi*.5) then
-			self.rotation = self.rotation+self.turn_speed*shortestAngleDir(self.rotation + math.pi*.5 , self.dirToPlayer)*dt
-			display = "a"
+			self.turn(dt,shortestAngleDir(self.rotation + math.pi*.5 , self.dirToPlayer))
 		else
-			self.rotation = self.rotation+self.turn_speed*shortestAngleDir(self.rotation - math.pi*.5 , self.dirToPlayer)*dt
-			display = "b"
+			self.turn(dt,shortestAngleDir(self.rotation - math.pi*.5 , self.dirToPlayer))
 		end
 	end
 
@@ -40,32 +38,31 @@ function enemy_ship(x_pos,y_pos)
 		--Following 5 lines sets target to location in front of player taking into acount player speed
 		--and curent ship speed
 		local time_to_impact = distance(self.x,self.y,PLAYER.x,PLAYER.y)/self.cannons.speed
-		self.goal.x = PLAYER.x + math.cos(PLAYER.rotation)*(PLAYER.velocity*time_to_impact)-
-		(math.cos(self.rotation)*(self.velocity*time_to_impact))
-		self.goal.y = PLAYER.y + math.sin(PLAYER.rotation)*(PLAYER.velocity*time_to_impact)-
-		(math.cos(self.rotation)*(self.velocity*time_to_impact))
+		self.goal.x = PLAYER.x + math.cos(PLAYER.rotation)*(PLAYER.velocity[1]*time_to_impact)-
+		(math.cos(self.rotation)*(self.velocity[1]*time_to_impact))
+		self.goal.y = PLAYER.y + math.sin(PLAYER.rotation)*(PLAYER.velocity[1]*time_to_impact)-
+		(math.cos(self.rotation)*(self.velocity[1]*time_to_impact))
 
 
 		self.dirToPlayer = get_direction(self.x,self.y,self.goal.x,self.goal.y)
 		self.distanceToPlayer = distance(self.x,self.y,self.goal.x,self.goal.y)
-		self.velocity = self.velocity+self.speed
+		
 		if self.distanceToPlayer < 800 then
+			self.accelerate(dt,"forward")
 			self.turnToBroadside(dt)
-		elseif self.distanceToPlayer <= 1500 then
-			display = "approching"
+		elseif self.distanceToPlayer <= 3000 then
 			--approch player
-			self.rotation = self.rotation+self.turn_speed*shortestAngleDir(self.rotation,self.dirToPlayer)*dt
+			self.accelerate(dt,"forward")
+			self.turn(dt,shortestAngleDir(self.rotation,self.dirToPlayer))
 			--if greater distances let player escape
-		else
-			display = "on its own merry way"
 		end
 	end
 	function self.fire_guns(dt)
 		local time_to_impact = distance(self.x,self.y,PLAYER.x,PLAYER.y)/self.cannons.speed
-		self.target.x = PLAYER.x + math.cos(PLAYER.rotation)*(PLAYER.velocity*time_to_impact)-
-		(math.cos(self.rotation)*(self.velocity*time_to_impact))
-		self.target.y = PLAYER.y + math.sin(PLAYER.rotation)*(PLAYER.velocity*time_to_impact)-
-		(math.cos(self.rotation)*(self.velocity*time_to_impact))
+		self.target.x = PLAYER.x + math.cos(PLAYER.rotation)*(PLAYER.velocity[1]*time_to_impact)-
+		(math.cos(self.rotation)*(self.velocity[1]*time_to_impact))
+		self.target.y = PLAYER.y + math.sin(PLAYER.rotation)*(PLAYER.velocity[1]*time_to_impact)-
+		(math.cos(self.rotation)*(self.velocity[1]*time_to_impact))
 		self.dirToPlayer = get_direction(self.x,self.y,self.target.x,self.target.y)
 		if math.abs(shortAng(self.dirToPlayer-math.pi*.5 , self.rotation)) < math.pi/16 then
 			self.fireing = "right"

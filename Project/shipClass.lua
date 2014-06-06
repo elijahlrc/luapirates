@@ -1,4 +1,4 @@
-function baseShipClass(x,y,sprite,speed,turn_speed,drag,max_velocity,velocity,rotation,health,shape)
+function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health,shape)
 	local self = baseClass()
 	function self.init()
 		--the folowing if's check if vars are passed into baseShipClass and if not set them to default
@@ -6,8 +6,7 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,max_velocity,velocity,ro
 		ID = ID+1
 		self.id = ID
 		self.rotation = rotation or 0
-		self.velocity = velocity or 0
-		self.max_velocity = max_velocity
+		self.velocity = velocity or {0,0}
 		self.max_health = max_health or 100
 		self.name = "baseSHipClass"
 		self.hp = self.max_health
@@ -54,27 +53,47 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,max_velocity,velocity,ro
 		return tile_x,tile_y
 	end
 	function self.move(dt)
-		self.shape:moveTo(self.x,self.y)
-		self.shape:setRotation(self.rotation)
+		--code for movement overrites this function
+		--use turn and accelerate to move
 	end
 	function self.update(dt)
 		self.doMove(dt)
 		self.fire_guns(dt)
 		if self.hp<0 then
 			self.dead = true
-			score = score+1
 		end
 	end
-	function self.fire_guns(dt)
-		for _,gun in pairs(self.cannons.guns) do
-			gun.fire(dt,self.fireing)
+	function self.turn(dt,dir) --setter for rotation
+		if dir == "cl" then
+			self.rotation = self.rotation+self.turn_speed*dt
+		elseif dir == "cc" then
+			self.rotation = self.rotation-self.turn_speed*dt
+		elseif dir == "hcl" then --half speed movement
+			self.rotation = self.rotation+self.turn_speed*dt*.5
+		elseif dir == "hcc" then
+			self.rotation = self.rotation-self.turn_speed*dt*.5
 		end
+	end
+	function self.accelerate(dt,dir)--setter for velocity
+		if dir == "forward" then
+			self.velocity = add_vectors(self.velocity[1] , self.velocity[2] , self.speed*dt   , self.rotation)
+		elseif dir == "backward" then 
+			self.velocity = add_vectors(self.velocity[1] , self.velocity[2] ,self.speed*dt*-.5, self.rotation)
+		end
+	end
+	function self.fire_guns(dt) --overwrite me
+		--code for when to fire wepons and which to fire goes here, overwrite this function in the
+		--obj that is fireing, ie player, or test_enemy
 	end
 	function self.doMove(dt)
 		self.move(dt)
-		self.velocity = self.velocity - self.velocity*self.drag
-		self.x = self.x + math.cos(self.rotation)*(self.velocity*dt)
-		self.y = self.y + math.sin(self.rotation)*(self.velocity*dt)
+		self.dragForce = {}
+		dA = math.abs(shortAng(self.rotation,self.velocity[2]))
+		self.dragForce[1] = -1*self.velocity[1]*(1+dA)*self.drag
+		self.dragForce[2] = 1*self.velocity[2]
+		self.velocity = add_vectors(self.velocity[1],self.velocity[2],self.dragForce[1],self.dragForce[2])
+		self.x = self.x + math.cos(self.velocity[2])*(self.velocity[1]*dt)
+		self.y = self.y + math.sin(self.velocity[2])*(self.velocity[1]*dt)
 		self.shape:moveTo(self.x,self.y)
 		self.shape:setRotation(self.rotation)
 	end
@@ -87,31 +106,30 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,max_velocity,velocity,ro
 		if othershape.name == "terrain_collider" then
 			self.x = self.x+dx 
 			self.y = self.y+dy
-			if  math.abs(self.velocity)>100 then 
-				self.hp = self.hp - math.abs(self.velocity)*.05
-			elseif  math.abs(self.velocity)>20 then
-				self.hp = self.hp - math.abs(self.velocity)*.02
+			if  math.abs(self.velocity[1])>100 then 
+				self.hp = self.hp - math.abs(self.velocity[1])*.05
+			elseif  math.abs(self.velocity[1])>20 then
+				self.hp = self.hp - math.abs(self.velocity[1])*.02
 			end
-			self.velocity = 0
+			self.velocity[1] = 0
 		elseif othershape.name == "projectile" then
 			self.hp = self.hp-5
 		elseif othershape.name == "enemy_ship" then --needs code for raming
 			self.x = self.x+dx
 			self.y = self.y+dy
-			if  math.abs(self.velocity)>100 then 
-				self.hp = self.hp - math.abs(self.velocity)*.05
-			elseif  math.abs(self.velocity)>20 then
-				self.hp = self.hp - math.abs(self.velocity)*.02
+			if  math.abs(self.velocity[1])>100 then 
+				self.hp = self.hp - math.abs(self.velocity[1])*.05
+			elseif  math.abs(self.velocity[1])>20 then
+				self.hp = self.hp - math.abs(self.velocity[1])*.02 
 			end
 		elseif othershape.name == "playershape" then --needs code for raming
 			self.x = self.x+dx
 			self.y = self.y+dy
-			if  math.abs(self.velocity)>100 then 
-				self.hp = self.hp - math.abs(self.velocity)*.05
-			elseif  math.abs(self.velocity)>20 then
-				self.hp = self.hp - math.abs(self.velocity)*.02
+			if  math.abs(self.velocity[1])>100 then 
+				self.hp = self.hp - math.abs(self.velocity[1])*.05
+			elseif  math.abs(self.velocity[1])>20 then
+				self.hp = self.hp - math.abs(self.velocity[1])*.02
 			end
-			self.velocity = 0
 		end
 	end
 	return self
