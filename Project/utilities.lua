@@ -1,5 +1,5 @@
 function distance(x1,y1,x2,y2)
-	return math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2))
+	return math.sqrt((x1-x2)^2+(y1-y2)^2)
 end
 function get_direction(x1,y1,x2,y2)
 	return math.atan2((y2-y1),(x2-x1))
@@ -19,13 +19,18 @@ function add_vectors(l1,r1,l2,r2)
 	return {l3,r3}
 end
 function shortestAngleDir(a1,a2)
-	a1 = a1%(2*math.pi)
-	a2 = a2%(2*math.pi)
-    if math.abs(a1-a2)<math.pi and a1<a2 then
-        return 1
-    elseif math.abs(a1-a2)>=math.pi and a1>a2 then
-        return 1
+	local short_ang = shortAng(a1,a2)
+    if short_ang>0 then
+    	return 1
+    elseif short_ang<0 then
+    	return -1
     else
-        return -1
+    	return 0
     end
+end
+function shortAng(a2,a1)
+    return math.atan2(math.sin(a1-a2),math.cos(a1-a2))
+end
+function round(num, idp)
+  return tonumber(string.format("%." .. (idp or 0) .. "f", num))
 end

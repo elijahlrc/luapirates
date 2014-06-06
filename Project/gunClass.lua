@@ -54,10 +54,10 @@ function basic_guns(owner,group)
 	--]]
 	local self = {}
 	self.guns = {}
-	local speed = 400
+	self.speed = 400
 	local left = -math.pi/2
 	local right = math.pi/2
-	local reload_time = .4
+	local reload_time = 1
 	local lifetime = 3
 	local sprite = SPRITES.canonball
 	local random_rot = .05
@@ -75,18 +75,15 @@ function basic_guns(owner,group)
 	end"
 	this would be cleaner/better and should be implimented
 	]]
-	self.guns = {cannonClass("left",speed,left,lifetime,reload_time,owner,-10,0,sprite,random_rot,random_vel,group,proj_size),
-		cannonClass("left",speed,left,lifetime,reload_time,owner,0,0,sprite,random_rot,random_vel,group,proj_size),
-		cannonClass("left",speed,left,lifetime,reload_time,owner,10,0,sprite,random_rot,random_vel,group,proj_size),
-		cannonClass("right",speed,right,lifetime,reload_time,owner,-10,0,sprite,random_rot,random_vel,group,proj_size),
-		cannonClass("right",speed,right,lifetime,reload_time,owner,0,0,sprite,random_rot,random_vel,group,proj_size),
-		cannonClass("right",speed,right,lifetime,reload_time,owner,10,0,sprite,random_rot,random_vel,group,proj_size),
-		cannonClass("left",speed,left,lifetime,reload_time,owner,-20,0,sprite,random_rot,random_vel,group,proj_size),
-		cannonClass("left",speed,left,lifetime,reload_time,owner,-30,0,sprite,random_rot,random_vel,group,proj_size),
-		cannonClass("left",speed,left,lifetime,reload_time,owner,20,0,sprite,random_rot,random_vel,group,proj_size),
-		cannonClass("right",speed,right,lifetime,reload_time,owner,-20,0,sprite,random_rot,random_vel,group,proj_size),
-		cannonClass("right",speed,right,lifetime,reload_time,owner,-30,0,sprite,random_rot,random_vel,group,proj_size),
-		cannonClass("right",speed,right,lifetime,reload_time,owner,20,0,sprite,random_rot,random_vel,group,proj_size)
+	self.guns = {cannonClass("left",self.speed,left,lifetime,reload_time,owner,-10,0,sprite,random_rot,random_vel,group,proj_size),
+		cannonClass("left",self.speed,left,lifetime,reload_time,owner,0,0,sprite,random_rot,random_vel,group,proj_size),
+		cannonClass("left",self.speed,left,lifetime,reload_time,owner,10,0,sprite,random_rot,random_vel,group,proj_size),
+		cannonClass("right",self.speed,right,lifetime,reload_time,owner,-10,0,sprite,random_rot,random_vel,group,proj_size),
+		cannonClass("right",self.speed,right,lifetime,reload_time,owner,0,0,sprite,random_rot,random_vel,group,proj_size),
+		cannonClass("right",self.speed,right,lifetime,reload_time,owner,10,0,sprite,random_rot,random_vel,group,proj_size),
+		cannonClass("left",self.speed,left,lifetime,reload_time,owner,-20,0,sprite,random_rot,random_vel,group,proj_size),
+		cannonClass("right",self.speed,right,lifetime,reload_time,owner,-20,0,sprite,random_rot,random_vel,group,proj_size),
+
 		}
 	return self
 end

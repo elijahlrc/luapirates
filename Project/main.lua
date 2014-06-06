@@ -36,7 +36,7 @@ function love.load()
 	STATIC_OBJECTS = {} 
 	PROJECTILES = {}
 	SHIPS = {}
-	
+	display = ""
 	table.insert(SHIPS,PLAYER)
 end
 function love.keypressed(key)
@@ -56,7 +56,7 @@ function love.update(dt)
 	TILE_BATCH,STATIC_OBJECTS = update_terrain(TILE_BATCH)
 	WEATHER.update_light(dt)
 	update_collisions(dt)
-	if #SHIPS < 4 then
+	if #SHIPS < 2 then
 		table.insert(SHIPS,enemy_ship(PLAYER.x+math.random(WINDOW_WIDTH)-WINDOW_WIDTH/2,PLAYER.y+math.random(WINDOW_HEIGHT)-WINDOW_HEIGHT/2))
 	end
 
@@ -104,4 +104,5 @@ function love.draw()
 	love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 10, 15)
 	love.graphics.print('Memory actually used (in kB): ' .. collectgarbage('count'), 10,30)
 	love.graphics.print("PLAYER HP "..math.ceil(PLAYER.hp),10,60,0,3,3)
+	love.graphics.print(display,10,85,0,3,3)
 end

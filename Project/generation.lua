@@ -15,10 +15,6 @@ local resolution = 2^map_scale
 local x = resolution
 local y = resolution
 
-function distance(x1,y1,x2,y2)
-    return math.sqrt((x1-x2)^2+(y1-y2)^2)
-end
-
 function generate()
     local list = {}
     local center = {x/2,y/2}
