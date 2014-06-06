@@ -1,7 +1,7 @@
 function enemy_ship(x_pos,y_pos)
-	local drag = .01
-	local turnspeed = PLAYER_TURN_SPEED*.9
-	local speed = 1.4
+	local drag = PLAYER_DRAG
+	local turnspeed = PLAYER_TURN_SPEED
+	local speed = PLAYER_SPEED
 
 	local self = baseShipClass(x_pos,y_pos,SPRITES.ship2,speed,
 								turnspeed,drag,MAX_PLAYER_VELOCITY,
@@ -51,7 +51,7 @@ function enemy_ship(x_pos,y_pos)
 		self.velocity = self.velocity+self.speed
 		if self.distanceToPlayer < 800 then
 			self.turnToBroadside(dt)
-		elseif self.distanceToPlayer <= 1000 then
+		elseif self.distanceToPlayer <= 1500 then
 			display = "approching"
 			--approch player
 			self.rotation = self.rotation+self.turn_speed*shortestAngleDir(self.rotation,self.dirToPlayer)*dt

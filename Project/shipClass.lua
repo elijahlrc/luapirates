@@ -62,6 +62,7 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,max_velocity,velocity,ro
 		self.fire_guns(dt)
 		if self.hp<0 then
 			self.dead = true
+			score = score+1
 		end
 	end
 	function self.fire_guns(dt)
@@ -93,7 +94,7 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,max_velocity,velocity,ro
 			end
 			self.velocity = 0
 		elseif othershape.name == "projectile" then
-			self.hp = self.hp-1
+			self.hp = self.hp-5
 		elseif othershape.name == "enemy_ship" then --needs code for raming
 			self.x = self.x+dx
 			self.y = self.y+dy
@@ -102,7 +103,6 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,max_velocity,velocity,ro
 			elseif  math.abs(self.velocity)>20 then
 				self.hp = self.hp - math.abs(self.velocity)*.02
 			end
-			self.velocity = 0
 		elseif othershape.name == "playershape" then --needs code for raming
 			self.x = self.x+dx
 			self.y = self.y+dy

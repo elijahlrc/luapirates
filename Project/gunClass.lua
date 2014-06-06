@@ -54,7 +54,7 @@ function basic_guns(owner,group)
 	--]]
 	local self = {}
 	self.guns = {}
-	self.speed = 400
+	self.speed = 350
 	local left = -math.pi/2
 	local right = math.pi/2
 	local reload_time = 1
