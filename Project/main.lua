@@ -40,6 +40,11 @@ function love.load()
 	table.insert(SHIPS,PLAYER)
 	--silly code below
 	score = 0
+	e1 = enemy_ship(PLAYER.x+math.random(WINDOW_WIDTH)-WINDOW_WIDTH/2,PLAYER.y+math.random(WINDOW_HEIGHT)-WINDOW_HEIGHT/2)
+	e2 = enemy_ship(PLAYER.x+math.random(WINDOW_WIDTH)-WINDOW_WIDTH/2,PLAYER.y+math.random(WINDOW_HEIGHT)-WINDOW_HEIGHT/2,e1)
+	e1.enemy =e2
+	table.insert(SHIPS,e1)
+	table.insert(SHIPS,e2)
 end
 function love.keypressed(key)
 	KEYBOARD_STATE.add_key(key)
@@ -58,13 +63,14 @@ function love.update(dt)
 	TILE_BATCH,STATIC_OBJECTS = update_terrain(TILE_BATCH)
 	WEATHER.update_light(dt)
 	update_collisions(dt)
-	if #SHIPS < 2 then
-		table.insert(SHIPS,enemy_ship(PLAYER.x+math.random(WINDOW_WIDTH)-WINDOW_WIDTH/2,PLAYER.y+math.random(WINDOW_HEIGHT)-WINDOW_HEIGHT/2))
-	end
+
+
 	if PLAYER.dead then
 		love.load()
 	end
-
+	if #SHIPS <2 then
+		table.insert(SHIPS,enemy_ship(PLAYER.x+math.random(WINDOW_WIDTH)-WINDOW_WIDTH/2,PLAYER.y+math.random(WINDOW_HEIGHT)-WINDOW_HEIGHT/2))
+	end
 	for i = #PROJECTILES, 1,-1 do
 		PROJECTILES[i].update(dt)
 		if PROJECTILES[i].dead then

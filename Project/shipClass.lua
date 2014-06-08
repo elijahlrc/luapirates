@@ -78,7 +78,7 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 		if dir == "forward" then
 			self.velocity = add_vectors(self.velocity[1] , self.velocity[2] , self.speed*dt   , self.rotation)
 		elseif dir == "backward" then 
-			self.velocity = add_vectors(self.velocity[1] , self.velocity[2] ,self.speed*dt*-.5, self.rotation)
+			self.velocity = add_vectors(self.velocity[1] , self.velocity[2] ,self.speed*-.75*dt, self.rotation)
 		end
 	end
 	function self.fire_guns(dt) --overwrite me
@@ -86,13 +86,13 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 		--obj that is fireing, ie player, or test_enemy
 	end
 	function self.doMove(dt)
-		local turn_factor =.005 --affects how much of your momentum you keep when you turn
+		local turn_factor =6 --affects how much of your momentum you keep when you turn
 		self.move(dt)
 		self.dragForce = {}
-		dA = math.abs(shortAng(self.rotation,self.velocity[2]))
-		self.dragForce[1] = -1*self.velocity[1]*(1+dA)*self.drag
+		dA = math.min(math.abs(shortAng(self.rotation,self.velocity[2])),math.abs(shortAng(self.rotation+math.pi,self.velocity[2])))
+		self.dragForce[1] = -1*self.velocity[1]*(1+22*dA)*self.drag--HOW YOU LIKE THAT MAGIC # BITCH
 		self.dragForce[2] = 1*self.velocity[2]
-		self.velocity = add_vectors(self.velocity[1],self.velocity[2],self.velocity[1]*turn_factor*dA,self.rotation)
+		self.velocity = add_vectors(self.velocity[1],self.velocity[2],self.velocity[1]*turn_factor*dA*dt,self.rotation)
 
 		self.velocity = add_vectors(self.velocity[1],self.velocity[2],self.dragForce[1],self.dragForce[2])
 		self.x = self.x + math.cos(self.velocity[2])*(self.velocity[1]*dt)
@@ -107,32 +107,26 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 		picking up loot, etc might go here.
 		--]]
 		if othershape.name == "terrain_collider" then
-			self.x = self.x+dx 
-			self.y = self.y+dy
-			if  math.abs(self.velocity[1])>100 then 
-				self.hp = self.hp - math.abs(self.velocity[1])*.05
-			elseif  math.abs(self.velocity[1])>20 then
-				self.hp = self.hp - math.abs(self.velocity[1])*.02
-			end
-			self.velocity[1] = 0
+			--self.x = self.x+dx 
+			--self.y = self.y+dy
+			self.hp = self.hp - distance(0,0,dx,dy)
+			local vel_x = dx/dt
+			local vel_y = dy/dt
+			local vec = {distance(0,0,vel_x,vel_y)*.25,get_direction(0,0,vel_x,vel_y)}
+			self.velocity = add_vectors(self.velocity[1],self.velocity[2],vec[1],vec[2])
+
 		elseif othershape.name == "projectile" then
 			self.hp = self.hp-5
-		elseif othershape.name == "enemy_ship" then --needs code for raming
-			self.x = self.x+dx
-			self.y = self.y+dy
-			if  math.abs(self.velocity[1])>100 then 
-				self.hp = self.hp - math.abs(self.velocity[1])*.05
-			elseif  math.abs(self.velocity[1])>20 then
-				self.hp = self.hp - math.abs(self.velocity[1])*.02 
-			end
-		elseif othershape.name == "playershape" then --needs code for raming
-			self.x = self.x+dx
-			self.y = self.y+dy
-			if  math.abs(self.velocity[1])>100 then 
-				self.hp = self.hp - math.abs(self.velocity[1])*.05
-			elseif  math.abs(self.velocity[1])>20 then
-				self.hp = self.hp - math.abs(self.velocity[1])*.02
-			end
+		elseif othershape.owner.name == "baseSHipClass" then --needs code for raming
+			self.hp = self.hp - distance(0,0,dx,dy)
+			local vel_x = dx/dt
+			local vel_y = dy/dt
+			local vec = {distance(0,0,vel_x,vel_y)*.25,get_direction(0,0,vel_x,vel_y)}
+			self.velocity = add_vectors(self.velocity[1],self.velocity[2],vec[1],vec[2])
+			-- if  math.abs(self.velocity[1])>100 then 
+			-- 	self.hp = self.hp - math.abs(self.velocity[1])*.05
+			-- elseif  math.abs(self.velocity[1])>20 then
+			-- 	self.hp = self.hp - math.abs(self.velocity[1])*.02 
 		end
 	end
 	return self

@@ -1,4 +1,4 @@
-function enemy_ship(x_pos,y_pos)
+function enemy_ship(x_pos,y_pos,enemy)
 	local drag = PLAYER_DRAG
 	local turnspeed = PLAYER_TURN_SPEED
 	local speed = PLAYER_SPEED
@@ -7,7 +7,6 @@ function enemy_ship(x_pos,y_pos)
 								turnspeed,drag,
 								PLAYER_VELOCITY,0,100)
 
-	self.name = "enemyShip"
 	self.shape = Collider:addPolygon(self.x,self.y+self.height/2, --dimond shape
 														self.x+self.width/2,self.y, 
 														self.x+self.width,self.y+self.height/2, 
@@ -17,6 +16,7 @@ function enemy_ship(x_pos,y_pos)
 	Collider:addToGroup(tostring(self.id),self.shape)
 	self.shape.name = "enemy_ship"
 	self.cannons = basic_guns(self,tostring(self.id))
+	self.enemy = enemy or PLAYER
 	self.goal = {}
 	self.target = {}
 	function self.turnToBroadside(dt)
@@ -37,10 +37,10 @@ function enemy_ship(x_pos,y_pos)
 
 		--Following 5 lines sets target to location in front of player taking into acount player speed
 		--and curent ship speed
-		local time_to_impact = distance(self.x,self.y,PLAYER.x,PLAYER.y)/self.cannons.speed
-		self.goal.x = PLAYER.x + math.cos(PLAYER.velocity[2])*(PLAYER.velocity[1]*time_to_impact)-
+		local time_to_impact = distance(self.x,self.y,self.enemy.x,self.enemy.y)/self.cannons.speed
+		self.goal.x = self.enemy.x + math.cos(self.enemy.velocity[2])*(self.enemy.velocity[1]*time_to_impact)-
 		math.cos(self.velocity[2])*(self.velocity[1]*time_to_impact)
-		self.goal.y = PLAYER.y + math.sin(PLAYER.velocity[2])*(PLAYER.velocity[1]*time_to_impact)-
+		self.goal.y = self.enemy.y + math.sin(self.enemy.velocity[2])*(self.enemy.velocity[1]*time_to_impact)-
 		math.sin(self.velocity[2])*(self.velocity[1]*time_to_impact)
 
 
@@ -59,24 +59,24 @@ function enemy_ship(x_pos,y_pos)
 	end
 	function self.fire_guns(dt)
 
-		local time_to_impact = distance(self.x,self.y,PLAYER.x,PLAYER.y)/self.cannons.speed
+		-- local time_to_impact = distance(self.x,self.y,self.enemy.x,self.enemy.y)/self.cannons.speed
 
-		--trying to predict player location
-		self.target.x = PLAYER.x + math.cos(PLAYER.velocity[2])*(PLAYER.velocity[1]*time_to_impact)-
-		math.cos(self.velocity[2])*(self.velocity[1]*time_to_impact)
-		self.target.y = PLAYER.y + math.sin(PLAYER.velocity[2])*(PLAYER.velocity[1]*time_to_impact)-
-		math.sin(self.velocity[2])*(self.velocity[1]*time_to_impact)
-		self.dirToPlayer = get_direction(self.x,self.y,self.target.x,self.target.y)
-		if math.abs(shortAng(self.dirToPlayer-math.pi*.5 , self.rotation)) < math.pi/32 then
-			self.fireing = "right"
-		elseif math.abs(shortAng(self.dirToPlayer+math.pi*.5 , self.rotation)) < math.pi/32 then
-			self.fireing = "left"
-		else
-			self.fireing = nil
-		end
-		for _,gun in pairs(self.cannons.guns) do
-			gun.fire(dt,self.fireing)
-		end
+		-- --trying to predict player location
+		-- self.target.x = self.enemy.x + math.cos(self.enemy.velocity[2])*(self.enemy.velocity[1]*time_to_impact)-
+		-- math.cos(self.velocity[2])*(self.velocity[1]*time_to_impact)
+		-- self.target.y = self.enemy.y + math.sin(self.enemy.velocity[2])*(self.enemy.velocity[1]*time_to_impact)-
+		-- math.sin(self.velocity[2])*(self.velocity[1]*time_to_impact)
+		-- self.dirToPlayer = get_direction(self.x,self.y,self.target.x,self.target.y)
+		-- if math.abs(shortAng(self.dirToPlayer-math.pi*.5 , self.rotation)) < math.pi/8 then
+		-- 	self.fireing = "right"
+		-- elseif math.abs(shortAng(self.dirToPlayer+math.pi*.5 , self.rotation)) < math.pi/8 then
+		-- 	self.fireing = "left"
+		-- else
+		-- 	self.fireing = nil
+		-- end
+		-- for _,gun in pairs(self.cannons.guns) do
+		-- 	gun.fire(dt,self.fireing)
+		-- end
 	end
 
 	return self
