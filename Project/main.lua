@@ -25,14 +25,23 @@ function love.load()
 	require "gunClass"
 	require "test_enemy"
 	ID = 0
-	instantiate_colisions()
-	PLAYER = Player(START_X,START_Y,SPRITES.ship,START_ROTATION,PLAYER_SPEED,
-	PLAYER_TURN_SPEED,PLAYER_DRAG,PLAYER_VELOCITY)
+
 
 	KEYBOARD_STATE = Keyboard({})
 	WEATHER = Weather(WEATHER_SPEED,STARTING_LIGHT,WEATHER_DIRECTION)
-	--TERRAIN_MAP = generate_map()
-	TERRAIN_MAP = love.image.newImageData("/map/map.png")
+	TERRAIN_MAP = generate_map()
+	instantiate_colisions()
+	--trying to make the player always start in water
+    _, water, _ = TERRAIN_MAP:getPixel(math.random(2048),math.random(2048))
+	while water>=123 do
+		START_X = math.random(2048)
+		START_Y = math.random(2048)
+		_,water,_ = TERRAIN_MAP:getPixel(START_X,START_Y)
+	end
+
+	PLAYER = Player(START_X*TILE_SIZE,START_Y*TILE_SIZE,SPRITES.ship,START_ROTATION,PLAYER_SPEED,
+	PLAYER_TURN_SPEED,PLAYER_DRAG,PLAYER_VELOCITY)
+	--TERRAIN_MAP = love.image.newImageData("/map/map.png")
 	STATIC_OBJECTS = {} 
 	PROJECTILES = {}
 	SHIPS = {}
@@ -40,11 +49,11 @@ function love.load()
 	table.insert(SHIPS,PLAYER)
 	--silly code below
 	score = 0
-	e1 = enemy_ship(PLAYER.x+math.random(WINDOW_WIDTH)-WINDOW_WIDTH/2,PLAYER.y+math.random(WINDOW_HEIGHT)-WINDOW_HEIGHT/2)
-	e2 = enemy_ship(PLAYER.x+math.random(WINDOW_WIDTH)-WINDOW_WIDTH/2,PLAYER.y+math.random(WINDOW_HEIGHT)-WINDOW_HEIGHT/2,e1)
-	e1.enemy =e2
-	table.insert(SHIPS,e1)
-	table.insert(SHIPS,e2)
+-- 	e1 = enemy_ship(PLAYER.x+math.random(WINDOW_WIDTH)-WINDOW_WIDTH/2,PLAYER.y+math.random(WINDOW_HEIGHT)-WINDOW_HEIGHT/2)
+-- 	e2 = enemy_ship(PLAYER.x+math.random(WINDOW_WIDTH)-WINDOW_WIDTH/2,PLAYER.y+math.random(WINDOW_HEIGHT)-WINDOW_HEIGHT/2,e1)
+-- 	e1.enemy =e2
+-- 	table.insert(SHIPS,e1)
+-- 	table.insert(SHIPS,e2)
 end
 function love.keypressed(key)
 	KEYBOARD_STATE.add_key(key)

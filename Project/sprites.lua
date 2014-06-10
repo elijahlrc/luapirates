@@ -5,6 +5,7 @@ SPRITES.ship2 = love.graphics.newImage("/sprites/ship2.png")
 SPRITES.tiles = love.graphics.newImage("/sprites/tiles.png")
 SPRITES.canonball = love.graphics.newImage("/sprites/cannonBall.png")
 SPRITES.scaterball = love.graphics.newImage('/sprites/smallBall.png')
+SPRITES.house = love.graphics.newImage('/sprites/house.png')
 local tiles_width = SPRITES.tiles:getWidth()
 local tiles_height = SPRITES.tiles:getHeight()
 
@@ -33,7 +34,7 @@ OBJECTS[1] = love.graphics.newImage("/sprites/tree.png")
 OBJECTS[2] = love.graphics.newImage("/sprites/seaweed.png")
 OBJECTS[3] = love.graphics.newImage("/sprites/woodplank.png")
 OBJECTS[4] = love.graphics.newImage("/sprites/rock.png")
-
+OBJECTS[5] = love.graphics.newImage('/sprites/house.png')
 ---- End Static Object List
 
 function update_terrain(batch)
@@ -43,8 +44,8 @@ function update_terrain(batch)
 	batch:clear()
 
 	local x,y = PLAYER.get_tile_location()
-	local height = nil
-	local _ = nil
+	local height
+	local _
 	local objects = {}
 
 
@@ -55,9 +56,10 @@ function update_terrain(batch)
 			if pixel_x < 0 or pixel_x > MAP_SIZE or pixel_y < 0 or pixel_y > MAP_SIZE then
 				height = 255
 			else
-				_,height,object = TERRAIN_MAP:getPixel(pixel_x,pixel_y)
-				if object ~= 0 then
-					table.insert(objects,{OBJECTS[object],pixel_x*TILE_SIZE,pixel_y*TILE_SIZE-OBJECTS[object]:getHeight()+TILE_SIZE})
+				_, height, object = TERRAIN_MAP:getPixel(pixel_x,pixel_y)
+				if object ~= 0 and OBJECTS[object] then
+					local obj = {OBJECTS[object],pixel_x*TILE_SIZE,pixel_y*TILE_SIZE-OBJECTS[object]:getHeight()+TILE_SIZE}
+					table.insert(objects,obj)
 				end
 			end
 

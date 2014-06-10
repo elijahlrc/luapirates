@@ -20,7 +20,7 @@ local function build_terrain_aray(collider_table)
 			else
 				_,height,_ = TERRAIN_MAP:getPixel(pixel_x,pixel_y)
 			end
-			if height>122 then
+			if height > 122 then
 				local pos =  pixel_x.."_"..pixel_y
 				if  not collider_table[pos] then
 					coppy_table[pos] = Collider:addRectangle(pixel_x*TILE_SIZE,pixel_y*TILE_SIZE, TILE_SIZE,TILE_SIZE)

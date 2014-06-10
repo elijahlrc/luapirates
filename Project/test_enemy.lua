@@ -50,7 +50,7 @@ function enemy_ship(x_pos,y_pos,enemy)
 		if self.distanceToPlayer < 600 then
 			self.accelerate(dt,"forward")
 			self.turnToBroadside(dt)
-		elseif self.distanceToPlayer <= 3000 then
+		elseif self.distanceToPlayer <= 6000 then
 			--approch player
 			self.accelerate(dt,"forward")
 			self.turn(dt,shortestAngleDir(self.rotation,self.dirToPlayer))
@@ -59,24 +59,24 @@ function enemy_ship(x_pos,y_pos,enemy)
 	end
 	function self.fire_guns(dt)
 
-		-- local time_to_impact = distance(self.x,self.y,self.enemy.x,self.enemy.y)/self.cannons.speed
+		local time_to_impact = distance(self.x,self.y,self.enemy.x,self.enemy.y)/self.cannons.speed
 
-		-- --trying to predict player location
-		-- self.target.x = self.enemy.x + math.cos(self.enemy.velocity[2])*(self.enemy.velocity[1]*time_to_impact)-
-		-- math.cos(self.velocity[2])*(self.velocity[1]*time_to_impact)
-		-- self.target.y = self.enemy.y + math.sin(self.enemy.velocity[2])*(self.enemy.velocity[1]*time_to_impact)-
-		-- math.sin(self.velocity[2])*(self.velocity[1]*time_to_impact)
-		-- self.dirToPlayer = get_direction(self.x,self.y,self.target.x,self.target.y)
-		-- if math.abs(shortAng(self.dirToPlayer-math.pi*.5 , self.rotation)) < math.pi/8 then
-		-- 	self.fireing = "right"
-		-- elseif math.abs(shortAng(self.dirToPlayer+math.pi*.5 , self.rotation)) < math.pi/8 then
-		-- 	self.fireing = "left"
-		-- else
-		-- 	self.fireing = nil
-		-- end
-		-- for _,gun in pairs(self.cannons.guns) do
-		-- 	gun.fire(dt,self.fireing)
-		-- end
+		--trying to predict player location
+		self.target.x = self.enemy.x + math.cos(self.enemy.velocity[2])*(self.enemy.velocity[1]*time_to_impact)-
+		math.cos(self.velocity[2])*(self.velocity[1]*time_to_impact)
+		self.target.y = self.enemy.y + math.sin(self.enemy.velocity[2])*(self.enemy.velocity[1]*time_to_impact)-
+		math.sin(self.velocity[2])*(self.velocity[1]*time_to_impact)
+		self.dirToPlayer = get_direction(self.x,self.y,self.target.x,self.target.y)
+		if math.abs(shortAng(self.dirToPlayer-math.pi*.5 , self.rotation)) < math.pi/8 then
+			self.fireing = "right"
+		elseif math.abs(shortAng(self.dirToPlayer+math.pi*.5 , self.rotation)) < math.pi/8 then
+			self.fireing = "left"
+		else
+			self.fireing = nil
+		end
+		for _,gun in pairs(self.cannons.guns) do
+			gun.fire(dt,self.fireing)
+		end
 	end
 
 	return self

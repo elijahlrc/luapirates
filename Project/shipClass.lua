@@ -2,7 +2,7 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 	local self = baseClass()
 	function self.init()
 		--the folowing if's check if vars are passed into baseShipClass and if not set them to default
-		
+		self.bounus = (4.5+math.random())/5
 		ID = ID+1
 		self.id = ID
 		self.rotation = rotation or 0
@@ -13,9 +13,9 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 		self.x = x
 		self.y = y
 		self.sprite = sprite
-		self.speed = speed
-		self.turn_speed = turn_speed
-		self.drag = drag
+		self.speed = speed*self.bounus
+		self.turn_speed = turn_speed*self.bounus
+		self.drag = drag*self.bounus
 		self.cannons = basic_guns(self)
 		self.width, self.height = self.sprite:getDimensions( )
 		if shape then

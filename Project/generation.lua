@@ -89,11 +89,17 @@ end
 
 function generate_map()
     local point_list = generate()
+    print("done")
     local temp_list = generate()
+    print("done2")
     perlin(map_scale,point_list,temp_list)
+    print("done3")
     smooth(smoothness,point_list)
+    print("done4")
     make_image(point_list)
+    print("done5")
     collectgarbage('collect')
+    print("done6")
     return love.image.newImageData("map.png")
 end
 
@@ -102,48 +108,142 @@ function make_image(point_list)
 	for i = 0,x-1 do
 		for j = 0,y-1 do
 			local value = math.floor(point_list[i+1][j+1]*255)
-			local adjacent_value = -1
-
-			if point_list[i+2] ~= nil then
-				adjacent_value = math.floor(point_list[i+2][j+1]*255)
-			end
-
 			if value > 255 then
 				value = 255
 			end
 			if value < 0 then
 				value = 0
 			end
-			handle_objects(map_image,value,adjacent_value,i,j)
+			handle_terrain(map_image,value,i,j)
 		end
 	end
-
+	for i = 0,x-1 do
+		for j = 0,y-1 do
+			local value = math.floor(point_list[i+1][j+1]*255)
+			if value > 255 then
+				value = 255
+			end
+			if value < 0 then
+				value = 0
+			end
+			handle_objects(map_image,value,i,j)
+		end
+	end
 	map_image:encode("map.png")
 end
+function handle_terrain(map_image,value,i,j)
+	map_image:setPixel(i,j,0,value,0)
+end
+function handle_objects(map_image,value,i,j)
+	local height
+	local obj
+	_,_,ocupied = map_image:getPixel(i,j)
+	if value > 111 and value < 119 and ocupied == 0 and math.random(100) > 95 then -- Seaweed
+		map_image:setPixel(i,j,0,value,2)
+	end
+	if value>124 and value <= 150 and ocupied == 0 and math.random(100) > 95 then -- Tree
+		map_image:setPixel(i,j,0,value,1)--tree
+	end
+	if value > 122 and value <= 123 and ocupied == 0 and math.random(1000)<3 then --doc and city generation code
+		local max_len = math.random(15)+2
+		local len = 0
+		local points = {}
+		local di = 0
+		local dj = 0
+		local rand_start = math.random(4)
+		local ocupied = {}
+		while len<max_len do --this while loop makes the doc
+			len = len+1
+			if i + di + 1 < x and i + di - 1 >0 and j + dj +1 <y and j + dj -1>0 then
+				_, points[1] , ocupied[1] = map_image:getPixel(i+di+1,j+dj) -- i+1, i-1 j+1, j-1
+				_, points[2] , ocupied[2] = map_image:getPixel(i+di-1,j+dj)
+				_, points[3] , ocupied[3] = map_image:getPixel(i+di,j+dj+1)
+				_, points[4] , ocupied[4] = map_image:getPixel(i+di,j+dj-1)
+				if math.random(8) == 1 then --1 in 8 chance of random turn in doc
+					rand_start = math.random(4)
+				end
 
-function handle_objects(map_image,value,adjacent_value,i,j)
 
-	if value > 122 then -- Land Objects
+				--folowing block makes sure that next point is in water
+				local new_start = 0
+				if points[rand_start]>=123 or ocupied[rand_start] ~= 0 then--if its not in water
+					new_start = math.random(4)--set direction randomly
+					rand_start = new_start
+				end
 
-		if value > 124 and value < 150 and math.random(100) > 95 and adjacent_value > 124 and adjacent_value < 150 then -- Tree
-			map_image:setPixel(i,j,1,value,1)
-		
-		else -- Default tile
-			map_image:setPixel(i,j,1,value,0) 
+				local done = false
+				while done == false and (points[rand_start]>=123 or ocupied[rand_start] ~= 0 ) do--if its still not in water
+					if rand_start >= 4 then
+						rand_start = 1
+					else 
+						rand_start = rand_start+1--cicle around untill it is
+					end
+					if rand_start == new_start then--unless you cant and the point is totaly isolated
+						len = max_len				--in which case break and stop making the doc.
+						done = true
+						rand_start = 0
+					end
+				end
+
+
+				--end block
+
+				if rand_start == 1 then--makes the doc
+					di = di+1
+					map_image:setPixel(i+di,j+dj,0,value,3)
+				elseif rand_start == 2 then
+					di = di-1
+					map_image:setPixel(i+di,j+dj,0,value,3)
+				elseif rand_start == 3 then
+					dj = dj+1
+					map_image:setPixel(i+di,j+dj,0,value,3)
+				elseif rand_start == 4 then
+					dj = dj-1
+					map_image:setPixel(i+di,j+dj,0,value,3)
+				end
+			end
 		end
-
-	elseif value > 100 then
-
-		if value > 111 and value < 119 and math.random(100) > 98 then -- Seaweed
-			map_image:setPixel(i,j,0,value,2)
-
-		else -- Default tile
-			map_image:setPixel(i,j,0,value,0)
+		--now generating towns
+		local size = 0
+		local max_size = math.random(max_len)*2+5
+		local rad = math.sqrt(max_size)
+		di = 0
+		dj = 0
+		local val
+		local counter = max_size*4
+		while size<max_size  and counter > 0 do
+			counter = counter-1
+			di = math.random(rad*2)-rad
+			dj = math.random(rad*2)-rad
+			if i+di>0 and i+di<x and j+dj>0 and j+dj<y then
+				_, val, ocupied = map_image:getPixel(i+di,j+dj)
+				if val >= 123 and ocupied == 0 then
+					size = size+1
+					map_image:setPixel(i+di,j+dj,0,value,5)
+				end
+			end
 		end
-
-
-
-	else
-		map_image:setPixel(i,j,0,value,0)
 	end
 end
+
+
+
+
+
+	--[[
+	local _
+	local full
+	_,_,full = map_image:getPixel(i,j)
+	if full == 255 or full == 0 then
+		map_image:setPixel(i,j,0,value,0)--set as default
+	end
+	if value < 122 then
+		if value > 111 and value < 119 and math.random(100) > 95 then -- Seaweed
+			map_image:setPixel(i,j,0,value,2)
+		end
+	elseif (value > 122) and (value <= 123) and math.random(100)>98 then --docs
+		makeTown(i,j,map_image)
+	elseif value < 150 and math.random(100) > 95 and adjacent_value > 124 and adjacent_value < 150 then -- Tree
+		map_image:setPixel(i,j,0,value,1)--tree
+	end
+end--]]

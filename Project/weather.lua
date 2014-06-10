@@ -9,8 +9,8 @@ local function Weather(speed,light,direction)
 		if self.direction == "up" then
 
 			self.light = self.light+self.speed*dt
-			if self.light >= 150 then
-				self.light = 150
+			if self.light >= 50 then
+				self.light = 50
 				self.direction = "down"
 			end
 
