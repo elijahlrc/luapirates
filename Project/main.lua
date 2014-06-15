@@ -24,24 +24,28 @@ function love.load()
 	require "collisions"
 	require "gunClass"
 	require "test_enemy"
+	require "map"
 	ID = 0
 
 
 	KEYBOARD_STATE = Keyboard({})
 	WEATHER = Weather(WEATHER_SPEED,STARTING_LIGHT,WEATHER_DIRECTION)
 	TERRAIN_MAP = generate_map()
+	--TERRAIN_MAP = love.image.newImageData("/map/map.png")
+	minimap_image = makemap(TERRAIN_MAP)
+	miniMap = minimap(minimap_image)
 	instantiate_colisions()
 	--trying to make the player always start in water
-    _, water, _ = TERRAIN_MAP:getPixel(math.random(2048),math.random(2048))
+	local water = 255
 	while water>=123 do
 		START_X = math.random(2048)
 		START_Y = math.random(2048)
 		_,water,_ = TERRAIN_MAP:getPixel(START_X,START_Y)
+		print(water)
 	end
 
 	PLAYER = Player(START_X*TILE_SIZE,START_Y*TILE_SIZE,SPRITES.ship,START_ROTATION,PLAYER_SPEED,
 	PLAYER_TURN_SPEED,PLAYER_DRAG,PLAYER_VELOCITY)
-	--TERRAIN_MAP = love.image.newImageData("/map/map.png")
 	STATIC_OBJECTS = {} 
 	PROJECTILES = {}
 	SHIPS = {}
@@ -117,8 +121,9 @@ function love.draw()
 		love.graphics.draw(obj.sprite,obj.x+xOffset,obj.y+yOffset,obj.rotation,1,1,obj.width/2,obj.height/2)
 	end
 	WEATHER.draw_weather()
-
+	miniMap.drawmap(PLAYER.x,PLAYER.y)
 	local x,y = PLAYER.get_tile_location()
+	miniMap.drawmap(x,y)
 	love.graphics.print(tostring(x)..","..tostring(y), 10, 0)
 	love.graphics.print("ship at"..tostring(PLAYER.shape:center()), 10, 50)
 	love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 10, 15)

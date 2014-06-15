@@ -22,7 +22,7 @@ TILES.grass_dirt = love.graphics.newQuad(TILE_SIZE*2,  TILE_SIZE*1, TILE_SIZE, T
 TILES.shallow_water = love.graphics.newQuad(TILE_SIZE*0,  TILE_SIZE*2, TILE_SIZE, TILE_SIZE, tiles_height, tiles_width)
 TILES.dark_water = love.graphics.newQuad(TILE_SIZE*1,  TILE_SIZE*2, TILE_SIZE, TILE_SIZE, tiles_height, tiles_width)
 TILES.medium_water = love.graphics.newQuad(TILE_SIZE*2,  TILE_SIZE*2, TILE_SIZE, TILE_SIZE, tiles_height, tiles_width)
-
+GRUNGEMAP = love.graphics.newImage("/sprites/Grungemap.png")
 
 
 
@@ -53,7 +53,7 @@ function update_terrain(batch)
 		for j=-4,TILES_DOWN+4 do
 			local pixel_x,pixel_y = (i+x-(TILES_ACROSS/2)),(j+y-(TILES_DOWN/2))
 
-			if pixel_x < 0 or pixel_x > MAP_SIZE or pixel_y < 0 or pixel_y > MAP_SIZE then
+			if pixel_x < 0 or pixel_x > MAP_SIZE-1 or pixel_y < 0 or pixel_y > MAP_SIZE-1 then
 				height = 255
 			else
 				_, height, object = TERRAIN_MAP:getPixel(pixel_x,pixel_y)
@@ -72,13 +72,13 @@ function update_terrain(batch)
 end
 
 function get_tile_sprite(value)
-    if value > 127 then
+    if value > 130 then
         return TILES.dirt
-    elseif value>125 then
+    elseif value>129 then
     	return TILES.grass_dirt
-    elseif value > 124 then
+    elseif value > 127 then
         return TILES.grass
-    elseif value> 123 then
+    elseif value> 124 then
     	return TILES.sand_grass
     elseif value > 122 then
         return TILES.sand

@@ -36,5 +36,10 @@ function shortAng(a2,a1)
     return math.atan2(math.sin(a1-a2),math.cos(a1-a2))--DEEEEEEP magic
 end
 function round(num, idp)
-  return tonumber(string.format("%." .. (idp or 0) .. "f", num))
+  return tonumber(string.format("%." .. (idp or 0) .. "f", num))--more magic
+end
+
+function random_gauss(center,varyance)
+   local standard_normal =  math.sqrt(-2 * math.log(math.random())) * math.cos(2 * math.pi * math.random()) / 2
+   return standard_normal*varyance + center
 end
