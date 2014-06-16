@@ -2,36 +2,65 @@ function makemap(terrain)
 	local map = love.image.newImageData("/sprites/blank_map.png")
 	for i = 1, terrain:getWidth()-1 do
 		for j=1, terrain:getHeight()-1 do
-			_, height, obj =terrain:getPixel(i,j)
-			if obj == 0 then--pink and blue
-				if height>122 then
-					if height+100>255 then
-						height = 155
-					end
-					if (height-3)%10 == 0 then
-						if height == 123 then
-							map:setPixel(i,j,height-75,height-75,height-75)
-						else
-							map:setPixel(i,j,height+35,height+25,height+25)
-						end
-					else
-						map:setPixel(i,j,height+100,height+50,height-40)
-					end
-				else
-					if (height-3)%10 == 0 then
-						map:setPixel(i,j,height,height,height)
-					else
-						map:setPixel(i,j,height+10,height+35,height+60)
-					end
+			_, height, obj = terrain:getPixel(i,j)
+			if height>122 then
+				if height+100>255 then
+					height = 155
 				end
-			elseif obj == 1 then
-				map:setPixel(i,j,100,200,100)
+				if height == 123 then
+					map:setPixel(i,j,height-75,height-75,height-75)
+				elseif (height-3)%10 == 0 then
+					map:setPixel(i,j,height+15,height,height)
+				else
+					map:setPixel(i,j,height+100,height+50,height-40)
+				end
+			else
+				if height == 122 then
+					map:setPixel(i,j,height,height+20,height+80)
+				elseif height == 121 then
+					map:setPixel(i,j,height+30,height+40,height+60)
+				elseif height == 120 then
+					map:setPixel(i,j,height+50,height+55,height+60)
+				elseif (height-3)%15 == 0 then
+					map:setPixel(i,j,height-30,height-30,height-30)
+				else
+					map:setPixel(i,j,height+90,height+80,height+60)
+				end
+			end
+		end
+	end
+
+	for i = 2, terrain:getWidth()-2 do
+		for j=2, terrain:getHeight()-2 do
+			_, height, obj = terrain:getPixel(i,j)
+			local r, g, b = map:getPixel(i,j)
+			if obj == 1 then
+				if r-80>0 and b-80>0 and g-40>0 then
+					map:setPixel(i,j,  r-80  ,g-40 ,b-80)
+				end
+				local r, g, b = map:getPixel(i+1,j)
+				if r-40>0 and b-40>0 and g-30>0 then
+					map:setPixel(i+1,j,r-40  ,g-30 ,b-40)
+				end
+				local r, g, b = map:getPixel(i-1,j)
+				if r-40>0 and b-40>0 and g-30>0 then
+					map:setPixel(i-1,j,r-40  ,g-30 ,b-40)
+				end
+				local r, g, b = map:getPixel(i,j+1)
+				if r-40>0 and b-40>0 and g-30>0 then
+					map:setPixel(i,j+1,r-40  ,g-30 ,b-40)
+				end
+				local r, g, b = map:getPixel(i,j-1)
+				if r-40>0 and b-40>0 and g-30>0 then
+					map:setPixel(i,j-1,r-40  ,g-30 ,b-40)
+				end
 			elseif obj == 2 then
-				map:setPixel(i,j,50,75,125)
+				--map:setPixel(i,j,50,75,125)
+
 			elseif obj == 3 then
 				map:setPixel(i,j,150,100,50)
 			elseif obj == 4 then
-				map:setPixel(i,j,200,50,50)
+				map:setPixel(i,j,100,100,100)
 			elseif obj == 5 then
 				map:setPixel(i,j,200,50,50)
 			end

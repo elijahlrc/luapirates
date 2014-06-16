@@ -8,7 +8,7 @@ local map_scale =11
 local smoothness = 1
 -- Structure Scale/Amount
 local structure_scale = 2.1--wat do these do?
-local structure_constant = .0145
+local structure_constant = .0155
 --Map Resolution
 local resolution = 2^map_scale
 --Map width,height
@@ -198,8 +198,8 @@ end
 function maketown(i,j,size,map_image,value)
 	local size = 0
 	local rad = math.sqrt(max_size)
-	di = 0
-	dj = 0
+	local di = 0
+	local dj = 0
 	local val
 	local counter = max_size*8
 	while size<max_size  and counter > 0 do
@@ -215,6 +215,45 @@ function maketown(i,j,size,map_image,value)
 		end
 	end
 end
+function makeforest(i,j,map_image,value,max_size)
+	local size = 0
+	local rad = math.sqrt(max_size)
+	local di = 0
+	local dj = 0
+	local val
+	while size<max_size do
+		size = size+1
+		di = random_gauss(0,rad*4)
+		dj = random_gauss(0,rad*4)
+		if i+di>0 and i+di<x and j+dj>0 and j+dj<y then
+			_, val, ocupied = map_image:getPixel(i+di,j+dj)
+			if val > 123 and ocupied == 0 then
+				map_image:setPixel(i+di,j+dj,0,val,1)
+			end
+			if math.random(max_size) ==1 and max_size>10 then
+				makeforest(i+di,j+dj,map_image,val,math.random(max_size)*1.5)
+			end
+		end
+	end
+end
+function makeboulderfeild(i,j,map_image,value,max_size)
+	local size = 0
+	local rad = math.sqrt(max_size)
+	local di = 0
+	local dj = 0
+	local val
+	while size<max_size do
+		size = size+1
+		di = random_gauss(0,rad)
+		dj = random_gauss(0,rad)
+		if i+di>0 and i+di<x and j+dj>0 and j+dj<y then
+			_, val, ocupied = map_image:getPixel(i+di,j+dj)
+			if val >= 123 and ocupied == 0 then
+				map_image:setPixel(i+di,j+dj,0,val,4)
+			end
+		end
+	end
+end
 function handle_objects(map_image,value,i,j)
 	local height
 	local obj
@@ -222,8 +261,13 @@ function handle_objects(map_image,value,i,j)
 	if value > 111 and value < 119 and ocupied == 0 and math.random(100) > 95 then -- Seaweed
 		map_image:setPixel(i,j,0,value,2)
 	end
-	if value>124 and value <= 150 and ocupied == 0 and math.random(100) > 95 then -- Tree
-		map_image:setPixel(i,j,0,value,1)--tree
+	if value>135 and value <= 180 and ocupied == 0 and math.random(1000) < 5 then -- Tree
+		local max_size = math.abs(random_gauss(100,100))
+		makeforest(i,j,map_image,value,max_size)
+	end
+	if value >122 and value <= 127 and math.random(1000)<3 then
+		--max_size = math.abs(random_gauss(50,50))
+		--makeboulderfeild(i,j,map_image,value,max_size)
 	end
 	if value > 122 and value <= 123 and ocupied == 0 and math.random(1000)<2 then --doc and city generation code
 		max_size = makedoc(i,j,map_image,value)
