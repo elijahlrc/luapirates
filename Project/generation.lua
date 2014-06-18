@@ -223,8 +223,8 @@ function makeforest(i,j,map_image,value,max_size)
 	local val
 	while size<max_size do
 		size = size+1
-		di = random_gauss(0,rad*4)
-		dj = random_gauss(0,rad*4)
+		di = round(random_gauss(0,rad*4))
+		dj = round(random_gauss(0,rad*4))
 		if i+di>0 and i+di<x and j+dj>0 and j+dj<y then
 			_, val, ocupied = map_image:getPixel(i+di,j+dj)
 			if val > 123 and ocupied == 0 then
@@ -269,7 +269,7 @@ function handle_objects(map_image,value,i,j)
 		--max_size = math.abs(random_gauss(50,50))
 		--makeboulderfeild(i,j,map_image,value,max_size)
 	end
-	if value > 122 and value <= 123 and ocupied == 0 and math.random(1000)<2 then --doc and city generation code
+	if value > 122 and value <= 123 and ocupied == 0 and math.random(10000)<8 then --doc and city generation code
 		max_size = makedoc(i,j,map_image,value)
 		--now generating towns
 		max_size = math.abs(random_gauss(max_size*5,10))

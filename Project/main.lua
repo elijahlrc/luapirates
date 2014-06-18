@@ -26,7 +26,7 @@ function love.load()
 	require "test_enemy"
 	require "map"
 	ID = 0
-
+	paused = false
 
 	KEYBOARD_STATE = Keyboard({})
 	WEATHER = Weather(WEATHER_SPEED,STARTING_LIGHT,WEATHER_DIRECTION)
@@ -61,6 +61,9 @@ function love.load()
 end
 function love.keypressed(key)
 	KEYBOARD_STATE.add_key(key)
+	if key == 'p' then
+		paused = not paused
+	end
 end
 
 function love.keyreleased(key)
@@ -73,31 +76,34 @@ function love.update(dt)
 	]]
 
 	--temp code to gen fun enemies
-	TILE_BATCH,STATIC_OBJECTS = update_terrain(TILE_BATCH)
-	WEATHER.update_light(dt)
-	update_collisions(dt)
+	if not paused then
+		TILE_BATCH,STATIC_OBJECTS = update_terrain(TILE_BATCH)
+		WEATHER.update_light(dt)
+		update_collisions(dt)
 
 
-	if PLAYER.dead then
-		love.load()
-	end
-	if #SHIPS <2 then
-		table.insert(SHIPS,enemy_ship(PLAYER.x+math.random(WINDOW_WIDTH)-WINDOW_WIDTH/2,PLAYER.y+math.random(WINDOW_HEIGHT)-WINDOW_HEIGHT/2))
-	end
-	for i = #PROJECTILES, 1,-1 do
-		PROJECTILES[i].update(dt)
-		if PROJECTILES[i].dead then
-			Collider:remove(PROJECTILES[i].shape)
-			table.remove(PROJECTILES,i)
+		if PLAYER.dead then
+			love.load()
+		end
+		if #SHIPS <2 then
+			table.insert(SHIPS,enemy_ship(PLAYER.x+math.random(WINDOW_WIDTH)-WINDOW_WIDTH/2,PLAYER.y+math.random(WINDOW_HEIGHT)-WINDOW_HEIGHT/2))
+		end
+		for i = #PROJECTILES, 1,-1 do
+			PROJECTILES[i].update(dt)
+			if PROJECTILES[i].dead then
+				Collider:remove(PROJECTILES[i].shape)
+				table.remove(PROJECTILES,i)
+			end
+		end
+		for i = #SHIPS, 1,-1 do
+			SHIPS[i].update(dt)
+			if SHIPS[i].dead then
+				Collider:remove(SHIPS[i].shape)
+				table.remove(SHIPS,i)
+			end
 		end
 	end
-	for i = #SHIPS, 1,-1 do
-		SHIPS[i].update(dt)
-		if SHIPS[i].dead then
-			Collider:remove(SHIPS[i].shape)
-			table.remove(SHIPS,i)
-		end
-	end
+		--do some pause menue or some shit
 end
 
 function love.draw()
@@ -108,7 +114,7 @@ function love.draw()
 	local xOffset = math.floor(-PLAYER.x)+math.floor(WINDOW_WIDTH/2)
 	local yOffset = math.floor(-PLAYER.y)+math.floor(WINDOW_HEIGHT/2)
 	love.graphics.draw(TILE_BATCH,xOffset,yOffset)
-	for i=1,#STATIC_OBJECTS do
+	for i=1,#STATIC_OBJECTS do--batchme
 		local obj = STATIC_OBJECTS[i]
 		love.graphics.draw(obj[1],obj[2]+xOffset,obj[3]+yOffset)
 	end

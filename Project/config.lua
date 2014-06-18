@@ -7,7 +7,7 @@ Give me a docstring marcell!!!!!!!
 -- Screen Config
 _, _, flags = love.window.getMode()
 WINDOW_WIDTH, WINDOW_HEIGHT = love.window.getDesktopDimensions(flags.display)
-love.window.setMode(WINDOW_WIDTH, WINDOW_HEIGHT, {fullscreen=true, resizable=false, vsync=true, minwidth=800, minheight=600})
+love.window.setMode(WINDOW_WIDTH, WINDOW_HEIGHT, {fullscreen=true, resizable=false, vsync=false, minwidth=800, minheight=600})
 love.window.setTitle("")
 
 -- Tile Config
@@ -23,9 +23,9 @@ START_X = math.floor(WINDOW_WIDTH/2)+1024*TILE_SIZE
 START_Y = math.floor(WINDOW_HEIGHT/2)+1024*TILE_SIZE
 
 START_ROTATION = 0
-PLAYER_SPEED = 100
-PLAYER_TURN_SPEED = math.pi*.5
-PLAYER_DRAG = .005
+PLAYER_SPEED = 50
+PLAYER_TURN_SPEED = math.pi*.25
+PLAYER_DRAG = .3
 PLAYER_VELOCITY = {0,0} -- speed, rotation
 PLAYER_MAX_HP = 100
 PLAYER_RELOAD_RATE = .33

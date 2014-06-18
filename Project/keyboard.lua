@@ -19,7 +19,15 @@ function Keyboard(queue,direction,rotation)
 	function self.add_key(key)
 		table.insert(self.queue,key)
 	end
-
+	-- function self.get_pause()
+	-- 	for i=#self.queue,1,-1 do
+	-- 		if self.queue[i] == 'p' then
+	-- 			return true
+	-- 		else
+	-- 			return false
+	-- 		end
+	-- 	end
+	-- end
 	function self.get_direction()
 		self.direction = nil
 		for i=#self.queue,1,-1 do
