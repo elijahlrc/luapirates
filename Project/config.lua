@@ -36,3 +36,4 @@ RANDOM_SEED = tonumber(tostring(os.time()):reverse():sub(1,6))
 WEATHER_SPEED = 10
 STARTING_LIGHT = 0
 WEATHER_DIRECTION = "down"
+TOWNS = {}

@@ -2,7 +2,6 @@ function enemy_ship(x_pos,y_pos,enemy)
 	local drag = PLAYER_DRAG
 	local turnspeed = PLAYER_TURN_SPEED
 	local speed = PLAYER_SPEED
-
 	local self = baseShipClass(x_pos,y_pos,SPRITES.ship2,speed,
 								turnspeed,drag,
 								PLAYER_VELOCITY,0,100)
@@ -19,6 +18,7 @@ function enemy_ship(x_pos,y_pos,enemy)
 	self.enemy = enemy or PLAYER
 	self.goal = {}
 	self.target = {}
+	self.name = "enemy_ship"
 	function self.turnToBroadside(dt)
 		if math.abs(shortAng(self.rotation+math.pi*.5,self.dirToPlayer)) < (math.pi*.5) then
 			self.turn(dt,shortestAngleDir(self.rotation + math.pi*.5 , self.dirToPlayer))

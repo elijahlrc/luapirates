@@ -7,8 +7,9 @@ function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 	self.cannons = basic_guns(self,tostring(self.id))
 	self.shape.owner = self --shape containes referance to owner, all interactive shapes must do this
 	self.hp = 100
-	self.speed = 100
-
+	self.speed = 200
+	self.turn_speed = math.pi
+	self.name = "player"
 	function self.fire_guns(dt)
 		self.fireing = KEYBOARD_STATE.get_fireing()
 		for _,gun in pairs(self.cannons.guns) do

@@ -18,6 +18,8 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 		self.drag = drag*self.bounus
 		self.cannons = basic_guns(self)
 		self.width, self.height = self.sprite:getDimensions( )
+		self.money = 100
+		self.hold = {}
 		if shape then
 			self.shape = shape
 			if not self.shape.name then
@@ -81,6 +83,23 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 			self.velocity = add_vectors(self.velocity[1] , self.velocity[2] ,self.speed*-.75*dt, self.rotation)
 		end
 	end
+	function self.addToHold(good,quantity)
+		quantity = quantity or 1
+		if self.hold[good] ~= nil then
+			self.hold[good] = self.hold[good]+quantity
+		else 
+			self.hold[good] = quantity
+		end
+		return self.hold[good]
+	end
+	function self.removeFromHold(good,quantity)
+		quantity = quantity or 1
+		if self.hold[good] ~= nil and self.hold[good] >= quantity then
+			self.hold[good] = self.hold[good]-quantity
+			return self.hold[good]
+		end
+		return false
+	end
 	function self.fire_guns(dt) --overwrite me
 		--code for when to fire wepons and which to fire goes here, overwrite this function in the
 		--obj that is fireing, ie player, or test_enemy
@@ -91,7 +110,7 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 		self.move(dt)
 		self.dragForce = {}
 		dA = math.min(math.abs(shortAng(self.rotation,self.velocity[2])),math.abs(shortAng(self.rotation+math.pi,self.velocity[2])))
-		self.dragForce[1] = -1*self.velocity[1]*(1+drag_factor*dA)*self.drag*dt--HOW YOU LIKE THAT MAGIC # BITCH
+		self.dragForce[1] = -1*self.velocity[1]*(1+drag_factor*dA)*self.drag*dt
 		self.dragForce[2] = 1*self.velocity[2]
 		self.velocity = add_vectors(self.velocity[1],self.velocity[2],self.velocity[1]*turn_factor*dA*dt,self.rotation)
 
@@ -128,6 +147,14 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 			-- 	self.hp = self.hp - math.abs(self.velocity[1])*.05
 			-- elseif  math.abs(self.velocity[1])>20 then
 			-- 	self.hp = self.hp - math.abs(self.velocity[1])*.02 
+		elseif othershape.owner.name == "town" then 
+			self.hp = self.hp - distance(0,0,dx,dy)
+			self.velocity[1] = 0
+			self.x = self.x+dx*5
+			self.y = self.y+dy*5
+			if self.name == "player" then
+				portMenu(othershape.owner)
+			end
 		end
 	end
 	return self

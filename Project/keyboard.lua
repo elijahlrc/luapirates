@@ -9,7 +9,7 @@ function Keyboard(queue,direction,rotation)
 	self.rotation = rotation
 	
 	function self.remove_key(key)
-		for i=1,#self.queue do
+		for i=#self.queue,1,-1 do
 			if self.queue[i] == key then
 				table.remove(self.queue,i)
 			end

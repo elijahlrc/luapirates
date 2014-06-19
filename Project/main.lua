@@ -25,32 +25,44 @@ function love.load()
 	require "gunClass"
 	require "test_enemy"
 	require "map"
+	require "LoveFrames"
+	require "ui"
 	ID = 0
 	paused = false
+	print("Instantiating:")
 
+	instantiate_colisions()
+	print("Colider               Done")
 	KEYBOARD_STATE = Keyboard({})
+	print("Keyboard              Done")
 	WEATHER = Weather(WEATHER_SPEED,STARTING_LIGHT,WEATHER_DIRECTION)
+	print("Weather               Done")
+	print(" ")
+	print("Begining Map Generation")
+	print(" ")
 	TERRAIN_MAP = generate_map()
+	--print("Loading map from file")
 	--TERRAIN_MAP = love.image.newImageData("/map/map.png")
 	minimap_image = makemap(TERRAIN_MAP)
 	miniMap = minimap(minimap_image)
-	instantiate_colisions()
+	print("Generating minimap    Done")
 	--trying to make the player always start in water
 	local water = 255
 	while water>=123 do
 		START_X = math.random(2048)
 		START_Y = math.random(2048)
 		_,water,_ = TERRAIN_MAP:getPixel(START_X,START_Y)
-		print(water)
 	end
-
 	PLAYER = Player(START_X*TILE_SIZE,START_Y*TILE_SIZE,SPRITES.ship,START_ROTATION,PLAYER_SPEED,
 	PLAYER_TURN_SPEED,PLAYER_DRAG,PLAYER_VELOCITY)
+	print("Instantiating Player  Done")
 	STATIC_OBJECTS = {} 
 	PROJECTILES = {}
 	SHIPS = {}
 	display = ""
 	table.insert(SHIPS,PLAYER)
+	pauseMenu()
+	print("Instantiating UI      Done")
 	--silly code below
 	score = 0
 -- 	e1 = enemy_ship(PLAYER.x+math.random(WINDOW_WIDTH)-WINDOW_WIDTH/2,PLAYER.y+math.random(WINDOW_HEIGHT)-WINDOW_HEIGHT/2)
@@ -58,16 +70,34 @@ function love.load()
 -- 	e1.enemy =e2
 -- 	table.insert(SHIPS,e1)
 -- 	table.insert(SHIPS,e2)
+	print(" ")
+	print("Game loaded successfully")
+	print(" ")
 end
-function love.keypressed(key)
+function love.keypressed(key)--,unicode)
 	KEYBOARD_STATE.add_key(key)
-	if key == 'p' then
+	if key == 'escape' then
 		paused = not paused
+		if paused then
+			loveframes.SetState("pausemenu")
+		else
+			loveframes.SetState("none")
+		end
 	end
+	loveframes.keypressed(key, unicode)
 end
 
 function love.keyreleased(key)
 	KEYBOARD_STATE.remove_key(key)
+	loveframes.keyreleased(key)
+end
+
+function love.mousepressed(x, y, button)
+    loveframes.mousepressed(x, y, button)
+end
+
+function love.mousereleased(x, y, button)
+    loveframes.mousereleased(x, y, button)
 end
 
 function love.update(dt)
@@ -102,8 +132,11 @@ function love.update(dt)
 				table.remove(SHIPS,i)
 			end
 		end
+		for _,town in pairs(TOWNS) do
+			town.update(dt)
+		end
 	end
-		--do some pause menue or some shit
+	loveframes.update(dt)
 end
 
 function love.draw()
@@ -136,4 +169,6 @@ function love.draw()
 	love.graphics.print('Memory actually used (in kB): ' .. collectgarbage('count'), 10,30)
 	love.graphics.print("PLAYER HP "..math.ceil(PLAYER.hp),10,60,0,3,3)
 	love.graphics.print("Speed:"..score,10,90,0,3,3)
+	love.graphics.print("Money: "..PLAYER.money,10,120,0,3,3)
+	loveframes.draw()
 end

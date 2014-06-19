@@ -11,6 +11,7 @@ local function build_terrain_aray(collider_table)
 	--]]
 	local x,y = PLAYER.get_tile_location()
 	local coppy_table = {}
+	local height, obj
 	for i=-4,TILES_ACROSS+4 do
 		for j=-4,TILES_DOWN+4 do
 			local pixel_x,pixel_y = (i+x-(TILES_ACROSS/2)),(j+y-(TILES_DOWN/2))
@@ -18,10 +19,10 @@ local function build_terrain_aray(collider_table)
 			if pixel_x < 0 or pixel_x > MAP_SIZE or pixel_y < 0 or pixel_y > MAP_SIZE then
 				height = 255
 			else
-				_,height,_ = TERRAIN_MAP:getPixel(pixel_x,pixel_y)
+				_,height,obj = TERRAIN_MAP:getPixel(pixel_x,pixel_y)
 			end
-			if height > 122 then
-				local pos =  pixel_x.."_"..pixel_y
+			if height > 122 and obj ~= 3 then --if its not a doc because there coliders are special
+				local pos =  pixel_x.."_"..pixel_y --so that they can referance the city
 				if  not collider_table[pos] then
 					coppy_table[pos] = Collider:addRectangle(pixel_x*TILE_SIZE,pixel_y*TILE_SIZE, TILE_SIZE,TILE_SIZE)
 					coppy_table[pos].name = "terrain_collider"

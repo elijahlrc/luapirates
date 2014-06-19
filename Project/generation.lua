@@ -8,7 +8,7 @@ local map_scale =11
 local smoothness = 1
 -- Structure Scale/Amount
 local structure_scale = 2.1--wat do these do?
-local structure_constant = .0155
+local structure_constant = .0150
 --Map Resolution
 local resolution = 2^map_scale
 --Map width,height
@@ -89,17 +89,17 @@ end
 
 function generate_map()
     local point_list = generate()
-    print("Part 1 of Generation Done")
+    print("Array 1 Generation    Done")
     local temp_list = generate()
-    print("Part 2 of Generation Done")
+    print("Array 2 Generation    Done")
     perlin(map_scale,point_list,temp_list)
-    print("Part 3 of Generation Done")
+    print("Perlin Noize          Done")
     smooth(smoothness,point_list)
-    print("Part 4 of Generation Done")
+    print("Smothing              Done")
     make_image(point_list)
-    print("Part 5 of Generation Done")
+    print("Image Generation      Done")
     collectgarbage('collect')
-    print("Part 6 of Generation Done")
+    print("Garbage Collection    Done")
     return love.image.newImageData("map.png")
 end
 
@@ -134,7 +134,52 @@ end
 function handle_terrain(map_image,value,i,j)
 	map_image:setPixel(i,j,0,value,0)
 end
-function makedoc(i,j,map_image,value)
+function MakeTownStats(size)
+	local self = baseClass()
+	self.elapsed = 0
+	self.name = "town"
+	self.prices = {}
+	self.prices.food = {}
+	local mean_price = 	random_gauss(20,10)
+	self.prices.food[1] = mean_price--prices.foo[1] = starting price/current price
+	self.prices.food[2] = mean_price--mean price
+	self.prices.food[3] = 10--varyance constant
+	self.prices.food[4] = 0--curent rate of change
+	self.prices.sugar = {}
+	mean_price = 		random_gauss(40,20)
+	self.prices.sugar[1] = mean_price
+	self.prices.sugar[2] = mean_price
+	self.prices.sugar[3] = 20
+	self.prices.sugar[4] = 0
+	self.prices.cloth = {}
+	local mean_price = 	random_gauss(80,22)
+	self.prices.cloth[1] = mean_price
+	self.prices.cloth[2] = mean_price
+	self.prices.cloth[3] = 22
+	self.prices.cloth[4] = 0
+	self.prices.tabaco = {}
+	mean_price = 		random_gauss(125,35)
+	self.prices.tabaco[1] = mean_price
+	self.prices.tabaco[2] = mean_price
+	self.prices.tabaco[3] = 35
+	self.prices.tabaco[4] = 0
+	function self.update(dt)
+		self.elapsed = self.elapsed+dt
+		if self.elapsed >= 1 then--update prices every 1 sec
+			for name, item in pairs(self.prices) do
+				item[1] = math.abs(item[1]+item[4])
+				change = random_gauss(item[2]-item[1],item[3])/100
+				item[4] = item[4]+change
+			end
+			self.elapsed = 0
+		end
+	end
+	function self.handle_collisions(dt,othershape,dx,dy)
+		print("doc collision!")
+	end
+	return self
+end
+function makedock(i,j,map_image,value)
 	local max_len = math.random(15)+2
 	local len = 0
 	local points = {}
@@ -142,6 +187,9 @@ function makedoc(i,j,map_image,value)
 	local dj = 0
 	local rand_start = math.random(4)
 	local ocupied = {}
+	local colision_rect
+	local town = MakeTownStats(max_len)
+	table.insert(TOWNS,town)
 	while len<max_len do --this while loop makes the doc
 		len = len+1
 		if i + di + 1 < x and i + di - 1 >0 and j + dj +1 <y and j + dj -1>0 then
@@ -156,7 +204,7 @@ function makedoc(i,j,map_image,value)
 
 			--folowing block makes sure that next point is in water
 			local new_start = 0
-			if points[rand_start]>=123 or ocupied[rand_start] ~= 0 then--if its not in water
+			if points[rand_start]>=123 or ocupied[rand_start] ~= 0 then--if its not in water or already there
 				new_start = math.random(4)--set direction randomly
 				rand_start = new_start
 			end
@@ -169,33 +217,36 @@ function makedoc(i,j,map_image,value)
 					rand_start = rand_start+1--cicle around untill it is
 				end
 				if rand_start == new_start then--unless you cant and the point is totaly isolated
-					len = max_len				--in which case break and stop making the doc.
 					done = true
-					rand_start = 0
+					len = max_len
+					if len == 1 then
+						return false
+					end
 				end
 			end
 
 
 			--end block
-
+			colision_rect = Collider:addRectangle((i+di)*TILE_SIZE,(j+dj)*TILE_SIZE, TILE_SIZE,TILE_SIZE)
+			colision_rect.name = "dock_collider"
+			colision_rect.owner = town
+			Collider:setPassive(colision_rect)
+			map_image:setPixel(i+di,j+dj,0,value,3)
 			if rand_start == 1 then--makes the doc
 				di = di+1
-				map_image:setPixel(i+di,j+dj,0,value,3)
 			elseif rand_start == 2 then
 				di = di-1
-				map_image:setPixel(i+di,j+dj,0,value,3)
 			elseif rand_start == 3 then
 				dj = dj+1
-				map_image:setPixel(i+di,j+dj,0,value,3)
 			elseif rand_start == 4 then
 				dj = dj-1
-				map_image:setPixel(i+di,j+dj,0,value,3)
+		
 			end
 		end
 	end
 	return max_len
 end
-function maketown(i,j,size,map_image,value)
+function maketown(i,j,size,map_image,value)--makes town positions and graphics, not statistics or items or stores or anythang
 	local size = 0
 	local rad = math.sqrt(max_size)
 	local di = 0
@@ -236,24 +287,6 @@ function makeforest(i,j,map_image,value,max_size)
 		end
 	end
 end
-function makeboulderfeild(i,j,map_image,value,max_size)
-	local size = 0
-	local rad = math.sqrt(max_size)
-	local di = 0
-	local dj = 0
-	local val
-	while size<max_size do
-		size = size+1
-		di = random_gauss(0,rad)
-		dj = random_gauss(0,rad)
-		if i+di>0 and i+di<x and j+dj>0 and j+dj<y then
-			_, val, ocupied = map_image:getPixel(i+di,j+dj)
-			if val >= 123 and ocupied == 0 then
-				map_image:setPixel(i+di,j+dj,0,val,4)
-			end
-		end
-	end
-end
 function handle_objects(map_image,value,i,j)
 	local height
 	local obj
@@ -269,11 +302,13 @@ function handle_objects(map_image,value,i,j)
 		--max_size = math.abs(random_gauss(50,50))
 		--makeboulderfeild(i,j,map_image,value,max_size)
 	end
-	if value > 122 and value <= 123 and ocupied == 0 and math.random(10000)<8 then --doc and city generation code
-		max_size = makedoc(i,j,map_image,value)
+	if value > 122 and value <= 123 and ocupied == 0 and math.random(10000)<20 then --doc and city generation code, this 20/10000 does not tell the whole story
+		max_size = makedock(i,j,map_image,value)  									-- because sometimes the city is cancled because its not near h2o
 		--now generating towns
-		max_size = math.abs(random_gauss(max_size*5,10))
-		maketown(i,j,max_size,map_image,value)
+		if max_size then--max_size is set to 0 if the town is cancled
+			max_size = math.abs(random_gauss(max_size*5,10))
+			maketown(i,j,max_size,map_image,value)
+		end
 	end
 end
 
