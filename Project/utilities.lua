@@ -43,3 +43,16 @@ function random_gauss(center,varyance)
    local standard_normal =  math.sqrt(-2 * math.log(math.random())) * math.cos(2 * math.pi * math.random()) / 2
    return standard_normal*varyance + center
 end
+function coppyTable(orig)
+    local orig_type = type(orig)
+    local copy
+    if orig_type == 'table' then
+        copy = {}
+        for orig_key, orig_value in next, orig, nil do
+            copy[coppyTable(orig_key)] = coppyTable(orig_value)
+        end
+    else -- number, string, boolean, etc
+        copy = orig
+    end
+    return copy
+end

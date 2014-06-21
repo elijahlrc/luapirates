@@ -138,38 +138,18 @@ function MakeTownStats(size)
 	local self = baseClass()
 	self.elapsed = 0
 	self.name = "town"
-	self.prices = {}
-	self.prices.food = {}
-	local mean_price = 	random_gauss(20,10)
-	self.prices.food[1] = mean_price--prices.foo[1] = starting price/current price
-	self.prices.food[2] = mean_price--mean price
-	self.prices.food[3] = 10--varyance constant
-	self.prices.food[4] = 0--curent rate of change
-	self.prices.sugar = {}
-	mean_price = 		random_gauss(40,20)
-	self.prices.sugar[1] = mean_price
-	self.prices.sugar[2] = mean_price
-	self.prices.sugar[3] = 20
-	self.prices.sugar[4] = 0
-	self.prices.cloth = {}
-	local mean_price = 	random_gauss(80,22)
-	self.prices.cloth[1] = mean_price
-	self.prices.cloth[2] = mean_price
-	self.prices.cloth[3] = 22
-	self.prices.cloth[4] = 0
-	self.prices.tabaco = {}
-	mean_price = 		random_gauss(125,35)
-	self.prices.tabaco[1] = mean_price
-	self.prices.tabaco[2] = mean_price
-	self.prices.tabaco[3] = 35
-	self.prices.tabaco[4] = 0
+	self.goods = coppyTable(TRADEGOODS)
+	for name,good in pairs(self.goods) do
+		self.goods[name].current_price = self.goods[name].value
+		self.goods[name].rate_of_change = 0
+	end
 	function self.update(dt)
 		self.elapsed = self.elapsed+dt
 		if self.elapsed >= 1 then--update prices every 1 sec
-			for name, item in pairs(self.prices) do
-				item[1] = math.abs(item[1]+item[4])
-				change = random_gauss(item[2]-item[1],item[3])/100
-				item[4] = item[4]+change
+			for name, item in pairs(self.goods) do
+				item.current_price = math.abs(item.current_price+item.rate_of_change)
+				change = random_gauss(item.value-item.current_price,item.sDev)/100
+				item.current_price = round(item.current_price+change,2)
 			end
 			self.elapsed = 0
 		end

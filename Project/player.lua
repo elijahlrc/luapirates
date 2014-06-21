@@ -4,7 +4,12 @@ function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 	self.shape = Collider:addPolygon(self.x+2,self.y+self.height/2, self.x+self.width/2,self.y+2, self.x+self.width-2,self.y+self.height/2, self.x+self.width/2,self.y+self.height-2)
 	Collider:addToGroup(tostring(self.id),self.shape)
 	self.shape.name = "playershape"
-	self.cannons = basic_guns(self,tostring(self.id))
+	local gun_set =basic_guns(self,tostring(self.id))
+	for i,obj in pairs(gun_set.guns) do
+		obj.equipped = true
+		table.insert(self.cannons,obj)
+		table.insert(self.inventory,{obj,1})
+	end
 	self.shape.owner = self --shape containes referance to owner, all interactive shapes must do this
 	self.hp = 100
 	self.speed = 200

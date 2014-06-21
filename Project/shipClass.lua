@@ -19,7 +19,7 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 		self.cannons = basic_guns(self)
 		self.width, self.height = self.sprite:getDimensions( )
 		self.money = 100
-		self.hold = {}
+		self.inventory = {}
 		if shape then
 			self.shape = shape
 			if not self.shape.name then
@@ -78,25 +78,36 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 	end
 	function self.accelerate(dt,dir)--setter for velocity
 		if dir == "forward" then
-			self.velocity = add_vectors(self.velocity[1] , self.velocity[2] , self.speed*dt   , self.rotation)
+			self.velocity = add_vectors(self.velocity[1] , self.velocity[2] ,self.speed*dt   , self.rotation)
 		elseif dir == "backward" then 
 			self.velocity = add_vectors(self.velocity[1] , self.velocity[2] ,self.speed*-.75*dt, self.rotation)
 		end
 	end
 	function self.addToHold(good,quantity)
-		quantity = quantity or 1
-		if self.hold[good] ~= nil then
-			self.hold[good] = self.hold[good]+quantity
-		else 
-			self.hold[good] = quantity
+		local quantity = quantity or 1
+		local name = good.name
+		local found = false
+		for i,val in pairs(self.inventory) do
+			if val[1].name == name and found ~= true then
+				val[2] = val[2]+quantity
+				return val[2]
+			end
 		end
-		return self.hold[good]
+		table.insert(self.inventory, {good,quantity})
+		return quantity
 	end
 	function self.removeFromHold(good,quantity)
 		quantity = quantity or 1
-		if self.hold[good] ~= nil and self.hold[good] >= quantity then
-			self.hold[good] = self.hold[good]-quantity
-			return self.hold[good]
+		local name = good.name
+		for i,val in pairs(self.inventory) do
+			if val[1].name == name and val[2]>= quantity then
+				val[2] = val[2]-quantity
+				if val[2] == 0 then
+					self.inventory[i] = nil
+					return 0
+				end
+				return self.inventory[i][2]
+			end
 		end
 		return false
 	end

@@ -11,14 +11,17 @@ function love.load()
 	HC: 		 colider
 	other code is just instansiation
 	]]
-	require "utilities"
 	require "config"
+	require "baseclass"
+	require "sprites"
+	require "utilities"
+	
 	require "player"
 	require "keyboard"
+	require "items"
 	require "generation"
-	require "sprites"
+	
 	Weather = require "weather"
-	require "baseclass"
 	require "shipClass"
 	require "projectiles"
 	require "collisions"
@@ -42,15 +45,15 @@ function love.load()
 	print(" ")
 	TERRAIN_MAP = generate_map()
 	--print("Loading map from file")
-	--TERRAIN_MAP = love.image.newImageData("/map/map.png")
+	--TERRAIN_MAP = love.image.newImageData("/map/map.png")--if you do this owns will not actualy get generated
 	minimap_image = makemap(TERRAIN_MAP)
 	miniMap = minimap(minimap_image)
 	print("Generating minimap    Done")
 	--trying to make the player always start in water
 	local water = 255
 	while water>=123 do
-		START_X = math.random(2048)
-		START_Y = math.random(2048)
+		START_X = math.random(2047)
+		START_Y = math.random(2047)
 		_,water,_ = TERRAIN_MAP:getPixel(START_X,START_Y)
 	end
 	PLAYER = Player(START_X*TILE_SIZE,START_Y*TILE_SIZE,SPRITES.ship,START_ROTATION,PLAYER_SPEED,
@@ -83,6 +86,9 @@ function love.keypressed(key)--,unicode)
 		else
 			loveframes.SetState("none")
 		end
+	end
+	if key == "i" and loveframes.GetState() ~= "pausemenu" then
+		inventory(PLAYER.inventory)
 	end
 	loveframes.keypressed(key, unicode)
 end
