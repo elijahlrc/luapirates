@@ -157,13 +157,26 @@ function portMenu(port)
 		frame:Remove()
 	end
 
+	local repair = loveframes.Create("button",frame)
+	repair:CenterX()
+	repair:SetY(height-70)
+	repair:SetText("Repair")
+	repair.OnClick = function(object)
+		local cost = (PLAYER.max_health-PLAYER.hp)*10
+		print (cost,PLAYER.money,PLAYER.max_health)
+		if PLAYER.money >= cost then
+			PLAYER.money = PLAYER.money-cost
+			PLAYER.hp = PLAYER.max_health
+		end
+	end
 	function buyButton(good,price)
 		local button = loveframes.Create("button")
 		button:SetText("Buy")
 		button.OnClick = function(object,x,y)
 			if PLAYER.money >= price then
-				PLAYER.money = PLAYER.money-price
-				PLAYER.addToHold(good,1)
+				if PLAYER.addToHold(good,1) then
+					PLAYER.money = PLAYER.money-price
+				end
 			end
 		end
 		return button

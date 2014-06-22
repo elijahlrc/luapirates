@@ -1,10 +1,9 @@
-function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health,shape)
+function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health,shape,holdsize,max_health)
 	local self = baseClass()
 	function self.init()
 		--the folowing if's check if vars are passed into baseShipClass and if not set them to default
 		self.bounus = (4.5+math.random())/5
-		ID = ID+1
-		self.id = ID
+		self.id = makeID()
 		self.rotation = rotation or 0
 		self.velocity = velocity or {0,0}
 		self.max_health = max_health or 100
@@ -20,7 +19,9 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 		self.width, self.height = self.sprite:getDimensions( )
 		self.money = 100
 		self.inventory = {}
+		self.holdsize = holdsize
 		if shape then
+
 			self.shape = shape
 			if not self.shape.name then
 				error("ship shape given without name, Y U DO THIS!")
@@ -83,20 +84,33 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 			self.velocity = add_vectors(self.velocity[1] , self.velocity[2] ,self.speed*-.75*dt, self.rotation)
 		end
 	end
-	function self.addToHold(good,quantity)
-		local quantity = quantity or 1
-		local name = good.name
-		local found = false
-		for i,val in pairs(self.inventory) do
-			if val[1].name == name and found ~= true then
-				val[2] = val[2]+quantity
-				return val[2]
-			end
+	function self.holdSpace()--get space remaining in hold
+		local total_mass = 0
+		for key,item in pairs(self.inventory) do
+			total_mass = total_mass + item[1].mass*item[2]--mass times quantaty
 		end
-		table.insert(self.inventory, {good,quantity})
-		return quantity
+		return total_mass
+
 	end
-	function self.removeFromHold(good,quantity)
+
+	function self.addToHold(good,quantity)--add instances of the item class to hold
+		local quantity = quantity or 1
+		if good.mass*quantity <= self.holdSpace() then
+			local name = good.name
+			local found = false
+			for i,val in pairs(self.inventory) do
+				if val[1].name == name and found ~= true then
+					val[2] = val[2]+quantity
+					return val[2]
+				end
+			end
+			table.insert(self.inventory, {good,quantity})
+			return quantity
+		else
+			return false
+		end
+	end
+	function self.removeFromHold(good,quantity)--remove instances of the item class from hold
 		quantity = quantity or 1
 		local name = good.name
 		for i,val in pairs(self.inventory) do
@@ -115,7 +129,7 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 		--code for when to fire wepons and which to fire goes here, overwrite this function in the
 		--obj that is fireing, ie player, or test_enemy
 	end
-	function self.doMove(dt)
+	function self.doMove(dt)--the nuts and bolts of moving, should be the same on all ships
 		local turn_factor = 2 --affects how much of your momentum you keep when you turn
 		local drag_factor = 10
 		self.move(dt)
@@ -147,8 +161,8 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 			self.velocity = add_vectors(self.velocity[1],self.velocity[2],vec[1],vec[2])
 
 		elseif othershape.name == "projectile" then
-			self.hp = self.hp-5
-		elseif othershape.owner.name == "baseSHipClass" then --needs code for raming
+			self.hp = self.hp-2
+		elseif othershape.name == "enemy_ship" then --needs code for raming
 			self.hp = self.hp - distance(0,0,dx,dy)
 			local vel_x = dx/dt
 			local vel_y = dy/dt

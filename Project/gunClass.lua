@@ -39,6 +39,7 @@ function cannonClass(position,speed,gun_rot,lifetime,reload_time,owner,x_offset,
 									vec[2]+random_r,
 									vec[1]+random_v,
 									self.proj_size))--create proj instance
+
 		end
 
 	end
@@ -86,5 +87,5 @@ function basic_guns(owner,group)
 		cannonClass("right",self.speed,right,lifetime,	reload_time,owner,-20,0,sprite,random_rot,random_vel,group,proj_size,1000,1, "Small Cannon"),
 
 		}
-	return self
+	return self.guns
 end

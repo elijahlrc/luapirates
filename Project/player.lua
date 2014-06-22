@@ -1,23 +1,20 @@
 function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 	
-	local self = baseShipClass(x,y,SPRITES.ship,PLAYER_SPEED,PLAYER_TURN_SPEED,PLAYER_DRAG,PLAYER_VELOCITY,START_ROTATION,PLAYER_MAX_HP,shape)
+	local self = baseShipClass(x,y,SPRITES.ship,PLAYER_SPEED,PLAYER_TURN_SPEED,PLAYER_DRAG,PLAYER_VELOCITY,START_ROTATION,PLAYER_MAX_HP,nil,100,100)
 	self.shape = Collider:addPolygon(self.x+2,self.y+self.height/2, self.x+self.width/2,self.y+2, self.x+self.width-2,self.y+self.height/2, self.x+self.width/2,self.y+self.height-2)
 	Collider:addToGroup(tostring(self.id),self.shape)
 	self.shape.name = "playershape"
 	local gun_set =basic_guns(self,tostring(self.id))
-	for i,obj in pairs(gun_set.guns) do
+	for i,obj in pairs(gun_set) do
 		obj.equipped = true
-		table.insert(self.cannons,obj)
 		table.insert(self.inventory,{obj,1})
 	end
+	self.cannons = gun_set
 	self.shape.owner = self --shape containes referance to owner, all interactive shapes must do this
-	self.hp = 100
-	self.speed = 200
-	self.turn_speed = math.pi
 	self.name = "player"
 	function self.fire_guns(dt)
 		self.fireing = KEYBOARD_STATE.get_fireing()
-		for _,gun in pairs(self.cannons.guns) do
+		for _,gun in pairs(self.cannons) do
 			gun.fire(dt,self.fireing)
 		end
 	end

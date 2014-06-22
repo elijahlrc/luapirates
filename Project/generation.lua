@@ -142,20 +142,20 @@ function MakeTownStats(size)
 	for name,good in pairs(self.goods) do
 		self.goods[name].current_price = self.goods[name].value
 		self.goods[name].rate_of_change = 0
+
 	end
 	function self.update(dt)
 		self.elapsed = self.elapsed+dt
 		if self.elapsed >= 1 then--update prices every 1 sec
 			for name, item in pairs(self.goods) do
 				item.current_price = math.abs(item.current_price+item.rate_of_change)
-				change = random_gauss(item.value-item.current_price,item.sDev)/100
+				change = random_gauss((item.value-item.current_price)/80,item.sDev)/20
 				item.current_price = round(item.current_price+change,2)
 			end
 			self.elapsed = 0
 		end
 	end
 	function self.handle_collisions(dt,othershape,dx,dy)
-		print("doc collision!")
 	end
 	return self
 end

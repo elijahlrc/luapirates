@@ -31,6 +31,10 @@ function love.load()
 	require "LoveFrames"
 	require "ui"
 	ID = 0
+	function makeID()
+		ID = ID+1
+		return ID
+	end
 	paused = false
 	print("Instantiating:")
 
@@ -43,6 +47,7 @@ function love.load()
 	print(" ")
 	print("Begining Map Generation")
 	print(" ")
+	SHIPS = {}
 	TERRAIN_MAP = generate_map()
 	--print("Loading map from file")
 	--TERRAIN_MAP = love.image.newImageData("/map/map.png")--if you do this owns will not actualy get generated
@@ -61,7 +66,6 @@ function love.load()
 	print("Instantiating Player  Done")
 	STATIC_OBJECTS = {} 
 	PROJECTILES = {}
-	SHIPS = {}
 	display = ""
 	table.insert(SHIPS,PLAYER)
 	pauseMenu()
@@ -121,7 +125,7 @@ function love.update(dt)
 		if PLAYER.dead then
 			love.load()
 		end
-		if #SHIPS <2 then
+		if #SHIPS <= 2 and math.random()<dt and math.random(100)>90 then
 			table.insert(SHIPS,enemy_ship(PLAYER.x+math.random(WINDOW_WIDTH)-WINDOW_WIDTH/2,PLAYER.y+math.random(WINDOW_HEIGHT)-WINDOW_HEIGHT/2))
 		end
 		for i = #PROJECTILES, 1,-1 do
@@ -174,7 +178,7 @@ function love.draw()
 	love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 10, 15)
 	love.graphics.print('Memory actually used (in kB): ' .. collectgarbage('count'), 10,30)
 	love.graphics.print("PLAYER HP "..math.ceil(PLAYER.hp),10,60,0,3,3)
-	love.graphics.print("Speed:"..score,10,90,0,3,3)
-	love.graphics.print("Money: "..PLAYER.money,10,120,0,3,3)
+	love.graphics.print("Speed:"..round(score,1),10,90,0,3,3)
+	love.graphics.print("Money: "..round(PLAYER.money,2),10,120,0,3,3)
 	loveframes.draw()
 end
