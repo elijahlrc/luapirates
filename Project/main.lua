@@ -11,8 +11,8 @@ function love.load()
 	HC: 		 colider
 	other code is just instansiation
 	]]
-	require "config"
-	require "baseclass"
+	require "config"--order of these things could be changed
+	require "baseclass"--and some could be called from within others, not sure if thats good or bad form.
 	require "sprites"
 	require "utilities"
 	
@@ -36,7 +36,7 @@ function love.load()
 		return ID
 	end
 	paused = false
-	print("Instantiating:")
+	print("Instantiating:")--added all these loading messages so i can feel like we did lots of stuff, yay
 
 	instantiate_colisions()
 	print("Colider               Done")
@@ -48,13 +48,15 @@ function love.load()
 	print("Begining Map Generation")
 	print(" ")
 	SHIPS = {}
+	TOWNS = {}
+	DYNAMIC_OBJ = {}
 	TERRAIN_MAP = generate_map()
 	--print("Loading map from file")
-	--TERRAIN_MAP = love.image.newImageData("/map/map.png")--if you do this owns will not actualy get generated
+	--TERRAIN_MAP = love.image.newImageData("/map/map.png")--if you do this towns will not actualy get generated
 	minimap_image = makemap(TERRAIN_MAP)
 	miniMap = minimap(minimap_image)
 	print("Generating minimap    Done")
-	--trying to make the player always start in water
+	--make the player always start in water
 	local water = 255
 	while water>=123 do
 		START_X = math.random(2047)
@@ -86,7 +88,7 @@ function love.keypressed(key)--,unicode)
 	if key == 'escape' then
 		paused = not paused
 		if paused then
-			loveframes.SetState("pausemenu")
+			loveframes.SetState("pausemenu")--menus half use loveframes states and half just use logic, needs to be unified one way or the other
 		else
 			loveframes.SetState("none")
 		end
@@ -138,8 +140,17 @@ function love.update(dt)
 		for i = #SHIPS, 1,-1 do
 			SHIPS[i].update(dt)
 			if SHIPS[i].dead then
-				Collider:remove(SHIPS[i].shape)
+				if SHIPS[i].shape ~= nil then
+					Collider:remove(SHIPS[i].shape)
+				end
 				table.remove(SHIPS,i)
+			end
+		end
+		for i = #DYNAMIC_OBJ,1,-1 do
+			DYNAMIC_OBJ[i].update(dt)
+			if DYNAMIC_OBJ[i].dead then
+				Collider:remove(DYNAMIC_OBJ[i].shape)
+				table.remove(DYNAMIC_OBJ,i)
 			end
 		end
 		for _,town in pairs(TOWNS) do
@@ -157,7 +168,7 @@ function love.draw()
 	local xOffset = math.floor(-PLAYER.x)+math.floor(WINDOW_WIDTH/2)
 	local yOffset = math.floor(-PLAYER.y)+math.floor(WINDOW_HEIGHT/2)
 	love.graphics.draw(TILE_BATCH,xOffset,yOffset)
-	for i=1,#STATIC_OBJECTS do--batchme
+	for i=1,#STATIC_OBJECTS do--batchme, batch everything since they can be dynaimc?
 		local obj = STATIC_OBJECTS[i]
 		love.graphics.draw(obj[1],obj[2]+xOffset,obj[3]+yOffset)
 	end
@@ -169,10 +180,15 @@ function love.draw()
 		local obj = SHIPS[i]
 		love.graphics.draw(obj.sprite,obj.x+xOffset,obj.y+yOffset,obj.rotation,1,1,obj.width/2,obj.height/2)
 	end
+	for i = 1, #DYNAMIC_OBJ do
+		local obj = DYNAMIC_OBJ[i]
+		love.graphics.draw(obj.sprite,obj.x+xOffset,obj.y+yOffset,obj.rotation,1,1,obj.width/2,obj.height/2)
+	end
 	WEATHER.draw_weather()
 	miniMap.drawmap(PLAYER.x,PLAYER.y)
 	local x,y = PLAYER.get_tile_location()
-	miniMap.drawmap(x,y)
+
+	miniMap.drawmap(x,y)--debug info below
 	love.graphics.print(tostring(x)..","..tostring(y), 10, 0)
 	love.graphics.print("ship at"..tostring(PLAYER.shape:center()), 10, 50)
 	love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 10, 15)

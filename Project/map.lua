@@ -71,7 +71,7 @@ function makemap(terrain)
 	map:encode("player_map.png")
 	return map
 end
-function minimap(map)
+function minimap(map)--makes the drawable object
 	local self = baseClass()
 	self.width = MAP_SIZE
 	self.height = MAP_SIZE
@@ -92,10 +92,10 @@ function minimap(map)
 	}}
 	self.rect = love.graphics.newMesh(vertices,self.map,"fan")
   
-	function self.drawmap(x,y)
+	function self.drawmap(x,y)--updates the drawable object that is the map
 		local offset = 1/8
 		local size = 512
-		vertices = {
+		vertices = { --map is geometry which is textured by the sprite generated in makemap
 		{WINDOW_WIDTH-size,WINDOW_HEIGHT-size,--cords of vertex
 			x/self.width-offset, y/self.height-offset
 		},

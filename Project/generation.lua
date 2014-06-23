@@ -103,7 +103,7 @@ function generate_map()
     return love.image.newImageData("map.png")
 end
 
-function make_image(point_list)
+function make_image(point_list)--this makes the image used to load the map r chanel is curently unused, g is height, b is object
 	local map_image = love.image.newImageData("/sprites/blank_map.png")
 	for i = 0,x-1 do
 		for j = 0,y-1 do
@@ -134,17 +134,17 @@ end
 function handle_terrain(map_image,value,i,j)
 	map_image:setPixel(i,j,0,value,0)
 end
-function MakeTownStats(size)
+function MakeTownStats(size)--makes town prices/goods
 	local self = baseClass()
 	self.elapsed = 0
 	self.name = "town"
 	self.goods = coppyTable(TRADEGOODS)
-	for name,good in pairs(self.goods) do
-		self.goods[name].current_price = self.goods[name].value
-		self.goods[name].rate_of_change = 0
+	for i,good in pairs(self.goods) do
+		self.goods[i].current_price = self.goods[i].value
+		self.goods[i].rate_of_change = 0
 
 	end
-	function self.update(dt)
+	function self.update(dt) --function for goods to change prices
 		self.elapsed = self.elapsed+dt
 		if self.elapsed >= 1 then--update prices every 1 sec
 			for name, item in pairs(self.goods) do
@@ -155,11 +155,11 @@ function MakeTownStats(size)
 			self.elapsed = 0
 		end
 	end
-	function self.handle_collisions(dt,othershape,dx,dy)
+	function self.handle_collisions(dt,othershape,dx,dy)--does this need to be here?
 	end
 	return self
 end
-function makedock(i,j,map_image,value)
+function makedock(i,j,map_image,value)--generates doc which changes dirction ocationaly and has a random lenth
 	local max_len = math.random(15)+2
 	local len = 0
 	local points = {}
@@ -267,7 +267,7 @@ function makeforest(i,j,map_image,value,max_size)
 		end
 	end
 end
-function handle_objects(map_image,value,i,j)
+function handle_objects(map_image,value,i,j)--generates towns, forests, seaweed, docs, etc
 	local height
 	local obj
 	_,_,ocupied = map_image:getPixel(i,j)

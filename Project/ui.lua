@@ -29,21 +29,34 @@ function pauseMenu()
 end
 
 
-
 function inventory(items)
 	paused = true
 	local frame = loveframes.Create("frame")
 	frame:SetName("")
 	frame:ShowCloseButton(false)
 	frame:MakeTop()
-	frame:SetDraggable(false)
+	--frame:SetDraggable(false)
 	local width = 800
 	local height = 650
 	frame:SetSize(width,height)
 	frame:SetPos(WINDOW_WIDTH/2-width/2,WINDOW_HEIGHT/2-height/2,false)
+
+	form = inventory_list(items,width,height,frame)
+
+	local exit = loveframes.Create("button",frame)
+	exit:CenterX()
+	exit:SetY(height-40)
+	exit:SetText("Exit")
+	exit.OnClick = function(object)
+		paused = false
+		frame:Remove()
+		
+	end
+end
+function inventory_list(items,width,height,parent)
 	local listWidth = width-100
 	local listHeight = height-200
-	local form = loveframes.Create("form",frame)
+	local form = loveframes.Create("form",parent)
 	form:SetY(50)
 	form:SetSize(listWidth,30)
 	form:CenterX()
@@ -77,15 +90,8 @@ function inventory(items)
 	form:AddItem(used)
 	
 
-	local exit = loveframes.Create("button",frame)
-	exit:CenterX()
-	exit:SetY(height-40)
-	exit:SetText("Exit")
-	exit.OnClick = function(object)
-		paused = false
-		frame:Remove()
-	end
-	iList = loveframes.Create("list",frame)
+
+	iList = loveframes.Create("list",parent)
 	iList:SetSize(listWidth,listHeight)
 	iList:CenterX()
 	iList:SetY(100)
@@ -243,5 +249,135 @@ function portMenu(port)
 		goods:AddItem(buyprice, column,3)
 		goods:AddItem(bb,column,4)
 		goods:AddItem(sb,column,5)
+	end
+end
+
+function loot_screen(obj)
+	local items = obj.inventory
+	local money = obj.money
+	local frame = loveframes.Create("frame")
+	paused = true
+	frame:SetName("")
+	frame:ShowCloseButton(false)
+	frame:MakeTop()
+	frame:SetDraggable(false)
+	width = 800
+	height = 650
+	frame:SetSize(width,height)
+	loot_list(items,width,height,frame)
+
+	local take_money = loveframes.Create("button",frame)
+	take_money:SetWidth(100)
+	take_money:SetText("Take Money:"..tostring(money))
+	take_money:SetY(height-80)
+	take_money.OnClick = function(object)
+		take_money:SetText("Take Money:"..tostring(money))
+		PLAYER.money = PLAYER.money + money
+		obj.money = 0
+		take_money:SetText("Take Money:"..tostring(obj.money))
+	end
+
+	local exit = loveframes.Create("button",frame)
+	exit:CenterX()
+	exit:SetY(height-40)
+	exit:SetText("Exit")
+	exit.OnClick = function(object)
+		paused = false
+		frame:Remove()
+	end
+end
+
+function loot_list(items,width,height,parent)
+	local listWidth = width-100
+	local listHeight = height-200
+	local form = loveframes.Create("form",parent)
+	form:SetY(50)
+	form:SetSize(listWidth,30)
+	form:CenterX()
+	form:SetName("")
+	form:SetLayoutType("horizontal")
+	
+
+	local image = loveframes.Create("text")
+	image:SetWidth(50)
+	image:SetText("")
+	form:AddItem(image)
+		
+	local name = loveframes.Create("text")
+	name:SetWidth(200)
+	name:SetText("Name:")
+	form:AddItem(name)
+
+	local number = loveframes.Create("text")
+	number:SetWidth(50)
+	number:SetText("Quantity:")
+	form:AddItem(number)
+
+	local mass = loveframes.Create("text")
+	mass:SetWidth(50)
+	mass:SetText("Mass:")
+	form:AddItem(mass)
+
+	local used = loveframes.Create("text")
+	used:SetText("Take")
+	used:SetWidth(100)
+	form:AddItem(used)
+	
+
+
+	iList = loveframes.Create("list",parent)
+	iList:SetSize(listWidth,listHeight)
+	iList:CenterX()
+	iList:SetY(100)
+
+	for i, item in pairs(items) do
+		local form = loveframes.Create("form")
+		form:SetName("")
+		form:SetSize(listWidth,30)
+		form:SetLayoutType("horizontal")
+		local image = loveframes.Create("image")
+		print(type(item))
+		print(type(item[1]))
+		for i,j in pairs(item[1]) do
+			print(i,j)
+		end
+		image:SetImage(item[1].icon)
+		image_x,image_y = image:GetImageSize()
+		image:SetScale(30/image_x,30/image_y)
+		image:SetSize(50,30)
+		form:AddItem(image)
+		
+		local name = loveframes.Create("text")
+		name:SetWidth(200)
+		form:AddItem(name)
+		name:SetText(item[1].name)
+
+		local number = loveframes.Create("text")
+		number:SetWidth(50)
+		number:SetText(item[2])
+		form:AddItem(number)
+
+		local mass = loveframes.Create("text")
+		mass:SetWidth(50)
+		mass:SetText(item[1].mass)
+		form:AddItem(mass)
+
+		local take_button = loveframes.Create("button")
+		take_button:SetWidth(100)
+		take_button:SetText("Take")
+		take_button.OnClick = function(object)
+			if PLAYER.addToHold(item[1],1) then
+				item[2] = item[2] - 1
+				number:SetText(item[2])
+				if item[2] == 0 then
+					iList:RemoveItem(form)
+					items[i] = nil
+				end
+			end
+		end
+
+		form:AddItem(take_button)
+
+		iList:AddItem(form)
 	end
 end

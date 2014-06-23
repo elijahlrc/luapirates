@@ -1,3 +1,15 @@
+
+function makeWreck(ship)
+	local wreck = baseShipClass(ship.x,ship.y,ship.sprite,0,0,ship.drag,ship.velocity,ship.rotation,ship.max_health/5,ship.shape,ship.holdsize,ship.max_health)
+	wreck.name = "wreck"
+	wreck.shape = ship.shape
+	wreck.shape.owner = wreck
+	wreck.shape.name = "wreck"
+	ship.shape = nil
+	wreck.inventory = ship.inventory
+	wreck.money = ship.money
+	return wreck
+end
 function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health,shape,holdsize,max_health)
 	local self = baseClass()
 	function self.init()
@@ -64,8 +76,33 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 		self.fire_guns(dt)
 		if self.hp<0 then
 			self.dead = true
+			if self.name ~= "wreck" then
+				table.insert(SHIPS, makeWreck(self))
+			end
 		end
 	end
+
+	function self.holdSpace()--get space remaining in hold
+		local total_mass = 0
+		for key,item in pairs(self.inventory) do
+			total_mass = total_mass + item[1].mass*item[2]--mass times quantaty
+		end
+		return self.holdsize - total_mass
+
+	end
+	--[[
+	following are getters and setters
+	addToHold(good, quantaty)
+	removeFromHold(good,quantity)
+	fire_guns(dt) should be overwriten in generator for whatever ship your generating
+	turn(dt,dir) accepts as dir
+		"cl" = clockwise
+		"cc" = counterclockwise
+		"hcl" = half speed clockwise
+		"hcc" = half speed counter clockwise
+	accelerate(dt,dir) accepts "forward" or "backward" for dir
+		
+	--]]
 	function self.turn(dt,dir) --setter for rotation
 		if dir == "cl" then
 			self.rotation = self.rotation+self.turn_speed*dt
@@ -75,6 +112,8 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 			self.rotation = self.rotation+self.turn_speed*dt*.5
 		elseif dir == "hcc" then
 			self.rotation = self.rotation-self.turn_speed*dt*.5
+		else 
+			error(dir, "not acceptable input to shipClass.turn(dt,dir)")
 		end
 	end
 	function self.accelerate(dt,dir)--setter for velocity
@@ -82,20 +121,13 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 			self.velocity = add_vectors(self.velocity[1] , self.velocity[2] ,self.speed*dt   , self.rotation)
 		elseif dir == "backward" then 
 			self.velocity = add_vectors(self.velocity[1] , self.velocity[2] ,self.speed*-.75*dt, self.rotation)
+		else
+			error(dir, "not acceptable input to shipClass.accelerate(dt,dir)")
 		end
 	end
-	function self.holdSpace()--get space remaining in hold
-		local total_mass = 0
-		for key,item in pairs(self.inventory) do
-			total_mass = total_mass + item[1].mass*item[2]--mass times quantaty
-		end
-		return total_mass
-
-	end
-
 	function self.addToHold(good,quantity)--add instances of the item class to hold
 		local quantity = quantity or 1
-		if good.mass*quantity <= self.holdSpace() then
+		if good.mass*quantity <= self.holdSpace() then--if space
 			local name = good.name
 			local found = false
 			for i,val in pairs(self.inventory) do
@@ -107,7 +139,7 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 			table.insert(self.inventory, {good,quantity})
 			return quantity
 		else
-			return false
+			return false--if not enough space return false to signify that adding to hold failed
 		end
 	end
 	function self.removeFromHold(good,quantity)--remove instances of the item class from hold
@@ -118,12 +150,12 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 				val[2] = val[2]-quantity
 				if val[2] == 0 then
 					self.inventory[i] = nil
-					return 0
+					return 0 --if there is nothing left after removal return 0
 				end
-				return self.inventory[i][2]
+				return self.inventory[i][2]--other wise return the # left
 			end
 		end
-		return false
+		return false --if the thing was not in the inventoy return false to signify that removal failed
 	end
 	function self.fire_guns(dt) --overwrite me
 		--code for when to fire wepons and which to fire goes here, overwrite this function in the
@@ -152,26 +184,41 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 		picking up loot, etc might go here.
 		--]]
 		if othershape.name == "terrain_collider" then
-			--self.x = self.x+dx 
+			--self.x = self.x+dx
 			--self.y = self.y+dy
-			self.hp = self.hp - distance(0,0,dx,dy)
+			if self.velocity[1] > 20 then
+				self.hp = self.hp - distance(0,0,dx,dy)
+			end
 			local vel_x = dx/dt
 			local vel_y = dy/dt
 			local vec = {distance(0,0,vel_x,vel_y)*.25,get_direction(0,0,vel_x,vel_y)}
 			self.velocity = add_vectors(self.velocity[1],self.velocity[2],vec[1],vec[2])
 
 		elseif othershape.name == "projectile" then
-			self.hp = self.hp-2
+			self.hp = self.hp-10
 		elseif othershape.name == "enemy_ship" then --needs code for raming
-			self.hp = self.hp - distance(0,0,dx,dy)
+			if self.velocity[1] > 20 then--but wat if the other ship is moving, needs to be fixed but not yet, relitivly low priority
+				self.hp = self.hp - distance(0,0,dx,dy)
+			end
 			local vel_x = dx/dt
 			local vel_y = dy/dt
 			local vec = {distance(0,0,vel_x,vel_y)*.25,get_direction(0,0,vel_x,vel_y)}
 			self.velocity = add_vectors(self.velocity[1],self.velocity[2],vec[1],vec[2])
-			-- if  math.abs(self.velocity[1])>100 then 
-			-- 	self.hp = self.hp - math.abs(self.velocity[1])*.05
-			-- elseif  math.abs(self.velocity[1])>20 then
-			-- 	self.hp = self.hp - math.abs(self.velocity[1])*.02 
+
+		elseif othershape.owner.name == "wreck" then
+			if self.velocity[1] > 20 then
+				self.hp = self.hp - distance(0,0,dx,dy)
+			end
+			local vel_x = dx/dt
+			local vel_y = dy/dt
+			self.x = self.x+dx*5
+			self.y = self.y+dy*5
+			local vec = {distance(0,0,vel_x,vel_y)*.25,get_direction(0,0,vel_x,vel_y)}
+			self.velocity = add_vectors(self.velocity[1],self.velocity[2],vec[1],vec[2])
+			if self.name == "player" then
+				self.velocity[1] = 0
+				loot_screen(othershape.owner)
+			end
 		elseif othershape.owner.name == "town" then 
 			self.hp = self.hp - distance(0,0,dx,dy)
 			self.velocity[1] = 0

@@ -4,7 +4,7 @@ function enemy_ship(x_pos,y_pos,enemy)
 	local speed = PLAYER_SPEED
 	local self = baseShipClass(x_pos,y_pos,SPRITES.ship2,speed,
 								turnspeed,drag,
-								PLAYER_VELOCITY,0,100,nil,50)
+								PLAYER_VELOCITY,0,100,nil,100,100)
 
 	self.shape = Collider:addPolygon(self.x,self.y+self.height/2, --dimond shape
 														self.x+self.width/2,self.y, 
@@ -19,6 +19,13 @@ function enemy_ship(x_pos,y_pos,enemy)
 	self.goal = {}
 	self.target = {}
 	self.name = "enemy_ship"
+
+	--cargo
+	local cargo_options = coppyTable(TRADEGOODS)
+
+	self.addToHold(cargo_options[math.random(#cargo_options)],math.random(self.holdsize-10))
+
+
 	function self.turnToBroadside(dt)
 		if math.abs(shortAng(self.rotation+math.pi*.5,self.dirToPlayer)) < (math.pi*.5) then
 			self.turn(dt,shortestAngleDir(self.rotation + math.pi*.5 , self.dirToPlayer))

@@ -1,10 +1,10 @@
-function ItemBaseClass(value,mass,name,type,standard_dev,icon)
+function ItemBaseClass(value,mass,name,type,standard_dev,icon)--class for things that sit in inventories
 	self = baseClass()
-	self.value = value
-	self.mass = mass
-	self.name = name
-	self.type = type
-	self.icon = icon or SPRITES.canonball
+	self.value = value --base price
+	self.mass = mass --how much space is taken up
+	self.name = name 
+	self.type = type --"tradegood", "equipment", etc
+	self.icon = icon or SPRITES.canonball--need some sprite so cannonball by defualt, shoud be overwriten for everything but cannonballs, lel
 	if self.type == equipment then
 		self.equipped = false
 	elseif self.type == "tradegood" then
@@ -15,11 +15,12 @@ function ItemBaseClass(value,mass,name,type,standard_dev,icon)
 	end
 	return self
 end
-TRADEGOODS = {}--list of items
-TRADEGOODS.food 	= ItemBaseClass(20,1,	"food",		"tradegood",10)
-TRADEGOODS.sugar 	= ItemBaseClass(40,1,	"sugar",	"tradegood",20)
-TRADEGOODS.cloth 	= ItemBaseClass(80,1,	"cloth",	"tradegood",25)
-TRADEGOODS.tabaco 	= ItemBaseClass(125,1,	"tabaco",	"tradegood",35)
+TRADEGOODS = {}--list of items which citys sell in bulk.
+table.insert(TRADEGOODS, ItemBaseClass(20,1,	"food",		"tradegood",10))
+table.insert(TRADEGOODS, ItemBaseClass(40,1,	"sugar",	"tradegood",20))
+table.insert(TRADEGOODS, ItemBaseClass(80,1,	"cloth",	"tradegood",25))
+table.insert(TRADEGOODS, ItemBaseClass(125,1,	"tabaco",	"tradegood",35))
+
 
 
 
