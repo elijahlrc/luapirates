@@ -159,6 +159,8 @@ function MakeTownStats(size)--makes town prices/goods
 	end
 	return self
 end
+
+
 function makedock(i,j,map_image,value)--generates doc which changes dirction ocationaly and has a random lenth
 	local max_len = math.random(15)+2
 	local len = 0

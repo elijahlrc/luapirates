@@ -9,6 +9,8 @@ function love.load()
 	generation:	 is a shitstorm of bad code which does perlin noize
 	sprites:     imports sprites as well as updates
 	HC: 		 colider
+	loveframes:  Ui library
+	ui:          The ui implimentation
 	other code is just instansiation
 	]]
 	require "config"--order of these things could be changed
@@ -124,9 +126,7 @@ function love.update(dt)
 		update_collisions(dt)
 
 
-		if PLAYER.dead then
-			love.load()
-		end
+		
 		if #SHIPS <= 2 and math.random()<dt and math.random(100)>90 then
 			table.insert(SHIPS,enemy_ship(PLAYER.x+math.random(WINDOW_WIDTH)-WINDOW_WIDTH/2,PLAYER.y+math.random(WINDOW_HEIGHT)-WINDOW_HEIGHT/2))
 		end
@@ -155,6 +155,9 @@ function love.update(dt)
 		end
 		for _,town in pairs(TOWNS) do
 			town.update(dt)
+		end
+		if PLAYER.dead then
+			love.load()
 		end
 	end
 	loveframes.update(dt)
