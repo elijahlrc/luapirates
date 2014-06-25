@@ -235,8 +235,8 @@ function maketown(i,j,size,map_image,value)--makes town positions and graphics, 
 	local counter = max_size*8
 	while size<max_size  and counter > 0 do
 		counter = counter-1
-		di = random_gauss(0,rad)
-		dj = random_gauss(0,rad)
+		di = round(random_gauss(0,rad))
+		dj = round(random_gauss(0,rad))
 		if i+di>0 and i+di<x and j+dj>0 and j+dj<y then
 			_, val, ocupied = map_image:getPixel(i+di,j+dj)
 			if val >= 123 and ocupied == 0 then
