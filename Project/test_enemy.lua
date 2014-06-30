@@ -48,44 +48,71 @@ function enemy_ship(x_pos,y_pos,enemy)
 		return total_speed/(#self.cannons)
 	end
 	function self.move(dt)
+		self.line_directions = {}
+		DEBUG_TEXT="ALL RAYS MISED"
+		self.movemode = "normal"
+
+		
 
 		--Following 5 lines sets target to location in front of player taking into acount player speed
 		--and curent ship speed
 		local time_to_impact = distance(self.x,self.y,self.enemy.x,self.enemy.y)/self.get_average_gun_speed()
 		self.goal.x = self.enemy.x + math.cos(self.enemy.velocity[2])*(self.enemy.velocity[1]*time_to_impact)-
-		math.cos(self.velocity[2])*(self.velocity[1]*time_to_impact)
+			math.cos(self.velocity[2])*(self.velocity[1]*time_to_impact)
 		self.goal.y = self.enemy.y + math.sin(self.enemy.velocity[2])*(self.enemy.velocity[1]*time_to_impact)-
-		math.sin(self.velocity[2])*(self.velocity[1]*time_to_impact)
+			math.sin(self.velocity[2])*(self.velocity[1]*time_to_impact)
 
 
 		self.dirToPlayer = get_direction(self.x,self.y,self.goal.x,self.goal.y)
 		self.distanceToPlayer = distance(self.x,self.y,self.goal.x,self.goal.y)
-		
 
 
-		local rays = self.checkfront(500)
+		--close check
+		local ang = math.pi/16
+		local rays = self.checkfront(450,ang)
 		local left_ray = rays[1]
-		local right_ray = rays[3]
 		local middle_ray = rays[2]
-		local accel = "forward"
-		if middle_ray or right_ray or left_ray then
-			if left_ray and right_ray and middle_ray then
-
-				if left_ray 		> 	middle_ray then
-					self.turn(dt,"cl")
-				elseif right_ray 	> 	middle_ray then
+		local right_ray = rays[3]
+		
+		if middle_ray and right_ray and left_ray then
+			while middle_ray and right_ray and left_ray and ang < math.pi do
+				DEBUG_TEXT = "SOMTHING HIT"
+				ang = ang+math.pi/16
+				rays = self.checkfront(450,ang)
+				left_ray = rays[1]
+				middle_ray = rays[2]
+				right_ray = rays[3]
+				if left_ray == false then
 					self.turn(dt,"cc")
-				else
-					accel = "backward"
-					--corner prob
+					DEBUG_TEXT = "widened untill LEFT RAY MISSED"
+				elseif right_ray == false then
+					self.turn(dt,"cl")
+					DEBUG_TEXT = "widened untill RIGHT RAY MISSED"
+				elseif ang>=math.pi then
+					if left_ray<right_ray then
+						self.turn(dt,"cl")
+						DEBUG_TEXT = "widened untill RIGHT RAY was shorter"
+					else
+						self.turn(dt,"cc")
+						DEBUG_TEXT = "widened untill LEFT RAY was shorter"
+					end
 				end
-			elseif left_ray == nil then
-				self.turn(dt,"cc")
-			elseif right_ray == nil then
-				self.turn(dt,"cl")
-			elseif middle_ray == nil then
 			end
-			self.accelerate(dt,accel)
+			
+			if middle_ray>300 then
+				self.accelerate(dt,"forward")
+			end
+
+		elseif  left_ray == false and right_ray then
+			DEBUG_TEXT = "RIGHT ray hitting"
+			self.turn(dt,"cc")
+			self.accelerate(dt,"forward")
+		elseif  right_ray == false and left_ray then
+			DEBUG_TEXT = "LEFT ray hitting"
+			self.turn(dt,"cl")
+			self.accelerate(dt,"forward")
+		--maybe insert a far check as well
+
 		elseif self.distanceToPlayer < 600 then
 			self.accelerate(dt,"forward")
 			self.turnToBroadside(dt)
@@ -118,39 +145,43 @@ function enemy_ship(x_pos,y_pos,enemy)
 		end
 	end
 	function hit(shape)
-		if shape.name == "terrain_collider" then
+		if shape.name == "terrain_collider" or shape.owner.name == "wreck" or shape.owner.name == "town" then
 			return true
 		else
 			return false
 		end
 	end
-	function self.checkfront(size)
-		local shape_list = Collider:shapesInRange(self.x-size, self.y-size, self.x+size, self.y+size)--not working why???
-		local directions = {self.rotation-math.pi/8,self.rotation,self.rotation+math.pi/8}
+	function self.checkfront(size,ang)
+		local directions = {(self.rotation-ang) , (self.rotation), (self.rotation+ang)}
 		local results = {}
-		for _,dir in pairs(directions) do
-			table.insert(results, raycast(self.x,self.y,dir,size,shape_list))
+		for i=1, #directions do
+			local result = raycast(self.x,self.y,directions[i],size)
+			table.insert(results, result)
 		end
 		return results
 	end
-	function raycast(x,y,dir,size,shape_list)
-		local dx = math.cos(dir)
-		local dy = math.sin(dir)
-		local distance = size
-		for shape in pairs(shape_list) do
-			intersecting, dist = shape:intersectsRay(x,y,dx,dy)
-			if hit(shape) then
-				if distance > dist then
-					distance = dist
+	function raycast(x,y,dir,size)--need to be redone
+		local step = 5
+		local dx = math.cos(dir)*step
+		local dy = math.sin(dir)*step
+		local x_pos = 0
+		local y_pos = 0
+		local shapes
+		for i = 0, round(size/step) do
+			shapes = Collider:shapesAt(x+x_pos,y_pos+y)
+			for _,shape in pairs(shapes) do
+				if hit(shape) then
+					table.insert(self.line_directions, {dir, true})
+					return i*step
 				end
 			end
+			x_pos = x_pos+dx
+			y_pos = y_pos+dy
 		end
-		if distance < size then
-			return distance
-		else
-			return false
-		end
+		table.insert(self.line_directions, {dir, false})
+		return false
 	end
+
 
 
 	return self

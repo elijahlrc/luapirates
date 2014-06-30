@@ -71,6 +71,8 @@ function love.load()
 	STATIC_OBJECTS = {} 
 	PROJECTILES = {}
 	display = ""
+	DEBUG_TEXT = ""
+	DEBUG_TEXT2 = ""
 	table.insert(SHIPS,PLAYER)
 	pauseMenu()
 	print("Instantiating UI      Done")
@@ -127,7 +129,7 @@ function love.update(dt)
 
 
 		
-		if #SHIPS <= 2 and math.random()<dt and math.random(100)>90 then
+		if #SHIPS <= 1 and math.random()<dt and math.random(100)>90 then
 			table.insert(SHIPS,enemy_ship(PLAYER.x+math.random(WINDOW_WIDTH)-WINDOW_WIDTH/2,PLAYER.y+math.random(WINDOW_HEIGHT)-WINDOW_HEIGHT/2))
 		end
 		for i = #PROJECTILES, 1,-1 do
@@ -182,6 +184,18 @@ function love.draw()
 	for i = 1, #SHIPS do
 		local obj = SHIPS[i]
 		love.graphics.draw(obj.sprite,obj.x+xOffset,obj.y+yOffset,obj.rotation,1,1,obj.width/2,obj.height/2)
+		if obj.line_directions then
+			for j = 1, #obj.line_directions do
+				dir = obj.line_directions[j][1]
+				if obj.line_directions[j][2] then
+					love.graphics.setColor(255,50,50)
+				else
+					love.graphics.setColor(255,255,255)
+				end
+				love.graphics.line(obj.x+xOffset,obj.y+yOffset, obj.x+math.cos(dir)*450+xOffset, obj.y+yOffset + math.sin(dir)*450)
+			end
+		end
+		love.graphics.draw(obj.sprite,obj.x+xOffset,obj.y+yOffset,obj.rotation,1,1,obj.width/2,obj.height/2)
 	end
 	for i = 1, #DYNAMIC_OBJ do
 		local obj = DYNAMIC_OBJ[i]
@@ -199,5 +213,8 @@ function love.draw()
 	love.graphics.print("PLAYER HP "..math.ceil(PLAYER.hp),10,60,0,3,3)
 	love.graphics.print("Speed:"..round(score,1),10,90,0,3,3)
 	love.graphics.print("Money: "..round(PLAYER.money,2),10,120,0,3,3)
+	love.graphics.print("DEBUG TEXT :  "..DEBUG_TEXT,10,150,0,3,3)
+	love.graphics.print("DEBUG TEXT 2 :  "..DEBUG_TEXT2,10,175,0,3,3)
+
 	loveframes.draw()
 end
