@@ -68,49 +68,42 @@ function enemy_ship(x_pos,y_pos,enemy)
 
 
 		--close check
-		local ang = math.pi/16
+		local ang = 0
 		local rays = self.checkfront(450,ang)
 		local left_ray = rays[1]
 		local middle_ray = rays[2]
 		local right_ray = rays[3]
 		
-		if middle_ray and right_ray and left_ray then
+		if middle_ray or right_ray or left_ray then
 			while middle_ray and right_ray and left_ray and ang < math.pi do
 				DEBUG_TEXT = "SOMTHING HIT"
-				ang = ang+math.pi/16
+				ang = ang+math.pi/32
 				rays = self.checkfront(450,ang)
 				left_ray = rays[1]
 				middle_ray = rays[2]
 				right_ray = rays[3]
-				if left_ray == false then
-					self.turn(dt,"cc")
-					DEBUG_TEXT = "widened untill LEFT RAY MISSED"
-				elseif right_ray == false then
+			end
+			if ang>=math.pi then
+				if left_ray<right_ray then
 					self.turn(dt,"cl")
-					DEBUG_TEXT = "widened untill RIGHT RAY MISSED"
-				elseif ang>=math.pi then
-					if left_ray<right_ray then
-						self.turn(dt,"cl")
-						DEBUG_TEXT = "widened untill RIGHT RAY was shorter"
-					else
-						self.turn(dt,"cc")
-						DEBUG_TEXT = "widened untill LEFT RAY was shorter"
-					end
+					DEBUG_TEXT = "widened untill RIGHT RAY was shorter"
+				else
+					self.turn(dt,"cc")
+					DEBUG_TEXT = "widened untill LEFT RAY was shorter"
 				end
+			elseif left_ray == false then
+				self.turn(dt,"cc")
+				DEBUG_TEXT = "LEFT RAY MISSED"
+			elseif right_ray == false then
+				self.turn(dt,"cl")
+				DEBUG_TEXT = "RIGHT RAY MISSED"
 			end
 			
-			if middle_ray>300 then
+			if not middle_ray or middle_ray>300 then
 				self.accelerate(dt,"forward")
+			elseif middle_ray<100 then
+				self.accelerate(dt,"backward")
 			end
-
-		elseif  left_ray == false and right_ray then
-			DEBUG_TEXT = "RIGHT ray hitting"
-			self.turn(dt,"cc")
-			self.accelerate(dt,"forward")
-		elseif  right_ray == false and left_ray then
-			DEBUG_TEXT = "LEFT ray hitting"
-			self.turn(dt,"cl")
-			self.accelerate(dt,"forward")
 		--maybe insert a far check as well
 
 		elseif self.distanceToPlayer < 600 then
@@ -144,8 +137,8 @@ function enemy_ship(x_pos,y_pos,enemy)
 			gun.fire(dt,self.fireing)
 		end
 	end
-	function hit(shape)
-		if shape.name == "terrain_collider" or shape.owner.name == "wreck" or shape.owner.name == "town" then
+	function self.hit(shape)
+		if shape.name == "terrain_collider" or shape.owner.name == "wreck" or shape.owner.name == "town" or (shape.name == "enemy_ship" and shape.owner.id ~= self.id) then
 			return true
 		else
 			return false
@@ -153,14 +146,19 @@ function enemy_ship(x_pos,y_pos,enemy)
 	end
 	function self.checkfront(size,ang)
 		local directions = {(self.rotation-ang) , (self.rotation), (self.rotation+ang)}
+		local offset = 	{
+						{-1*math.cos(self.rotation+math.pi/2)*self.height/2,-1*math.sin(self.rotation+math.pi/2)*self.height/2},
+						{0,0},
+						{math.cos(self.rotation+math.pi/2)*self.height/2,math.sin(self.rotation+math.pi/2)*self.height/2}
+						}
 		local results = {}
 		for i=1, #directions do
-			local result = raycast(self.x,self.y,directions[i],size)
+			local result = self.raycast(self.x+offset[i][1],self.y+offset[i][2],directions[i],size)
 			table.insert(results, result)
 		end
 		return results
 	end
-	function raycast(x,y,dir,size)--need to be redone
+	function self.raycast(x,y,dir,size)--need to be redone
 		local step = 5
 		local dx = math.cos(dir)*step
 		local dy = math.sin(dir)*step
@@ -170,15 +168,15 @@ function enemy_ship(x_pos,y_pos,enemy)
 		for i = 0, round(size/step) do
 			shapes = Collider:shapesAt(x+x_pos,y_pos+y)
 			for _,shape in pairs(shapes) do
-				if hit(shape) then
-					table.insert(self.line_directions, {dir, true})
+				if self.hit(shape) then
+					table.insert(self.line_directions, {dir, x, y, true})
 					return i*step
 				end
 			end
 			x_pos = x_pos+dx
 			y_pos = y_pos+dy
 		end
-		table.insert(self.line_directions, {dir, false})
+		table.insert(self.line_directions, {dir, x, y, false})
 		return false
 	end
 

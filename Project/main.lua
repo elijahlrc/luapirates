@@ -129,7 +129,7 @@ function love.update(dt)
 
 
 		
-		if #SHIPS <= 1 and math.random()<dt and math.random(100)>90 then
+		if #SHIPS <= 8 and math.random()<dt and math.random(100)>90 then
 			table.insert(SHIPS,enemy_ship(PLAYER.x+math.random(WINDOW_WIDTH)-WINDOW_WIDTH/2,PLAYER.y+math.random(WINDOW_HEIGHT)-WINDOW_HEIGHT/2))
 		end
 		for i = #PROJECTILES, 1,-1 do
@@ -187,12 +187,14 @@ function love.draw()
 		if obj.line_directions then
 			for j = 1, #obj.line_directions do
 				dir = obj.line_directions[j][1]
-				if obj.line_directions[j][2] then
+				local ray_x = obj.line_directions[j][2]
+				local ray_y = obj.line_directions[j][3]
+				if obj.line_directions[j][4] then
 					love.graphics.setColor(255,50,50)
 				else
 					love.graphics.setColor(255,255,255)
 				end
-				love.graphics.line(obj.x+xOffset,obj.y+yOffset, obj.x+math.cos(dir)*450+xOffset, obj.y+yOffset + math.sin(dir)*450)
+				love.graphics.line(ray_x+xOffset,ray_y+yOffset, ray_x+math.cos(dir)*450+xOffset, ray_y+yOffset + math.sin(dir)*450)
 			end
 		end
 		love.graphics.draw(obj.sprite,obj.x+xOffset,obj.y+yOffset,obj.rotation,1,1,obj.width/2,obj.height/2)
