@@ -129,8 +129,12 @@ function love.update(dt)
 
 
 		
-		if #SHIPS <= 8 and math.random()<dt and math.random(100)>90 then
-			table.insert(SHIPS,enemy_ship(PLAYER.x+math.random(WINDOW_WIDTH)-WINDOW_WIDTH/2,PLAYER.y+math.random(WINDOW_HEIGHT)-WINDOW_HEIGHT/2))
+		if #SHIPS <= 30 and math.random()<dt then 
+			if math.random(100)<50 then
+				table.insert(SHIPS,cargo_ship(PLAYER.x+math.random(WINDOW_WIDTH*2)-WINDOW_WIDTH,PLAYER.y+math.random(WINDOW_HEIGHT*2)-WINDOW_HEIGHT,"independent"))
+			elseif math.random(100)<50 then
+				table.insert(SHIPS,pirate_ship(PLAYER.x+math.random(WINDOW_WIDTH*2)-WINDOW_WIDTH,PLAYER.y+math.random(WINDOW_HEIGHT*2)-WINDOW_HEIGHT,"pirate"))
+			end
 		end
 		for i = #PROJECTILES, 1,-1 do
 			PROJECTILES[i].update(dt)
@@ -142,7 +146,7 @@ function love.update(dt)
 		for i = #SHIPS, 1,-1 do
 			SHIPS[i].update(dt)
 			if SHIPS[i].dead then
-				if SHIPS[i].shape ~= nil then
+				if SHIPS[i].shape ~= nil then--shape set to nil if wreck is using shape
 					Collider:remove(SHIPS[i].shape)
 				end
 				table.remove(SHIPS,i)
@@ -184,20 +188,21 @@ function love.draw()
 	for i = 1, #SHIPS do
 		local obj = SHIPS[i]
 		love.graphics.draw(obj.sprite,obj.x+xOffset,obj.y+yOffset,obj.rotation,1,1,obj.width/2,obj.height/2)
-		if obj.line_directions then
-			for j = 1, #obj.line_directions do
-				dir = obj.line_directions[j][1]
-				local ray_x = obj.line_directions[j][2]
-				local ray_y = obj.line_directions[j][3]
-				if obj.line_directions[j][4] then
-					love.graphics.setColor(255,50,50)
-				else
-					love.graphics.setColor(255,255,255)
-				end
-				love.graphics.line(ray_x+xOffset,ray_y+yOffset, ray_x+math.cos(dir)*450+xOffset, ray_y+yOffset + math.sin(dir)*450)
-			end
-		end
-		love.graphics.draw(obj.sprite,obj.x+xOffset,obj.y+yOffset,obj.rotation,1,1,obj.width/2,obj.height/2)
+		-- if obj.line_directions then
+		-- 	for j = 1, #obj.line_directions do
+		-- 		dir = obj.line_directions[j][1]
+		-- 		local ray_x = obj.line_directions[j][2]
+		-- 		local ray_y = obj.line_directions[j][3]
+		-- 		if obj.line_directions[j][4] then
+		-- 			love.graphics.setColor(255,50,50)
+		-- 			len = obj.line_directions[j][4]
+		-- 		else
+		-- 			love.graphics.setColor(255,255,255)
+		-- 			len = 450
+		-- 		end
+		-- 		love.graphics.line(ray_x+xOffset,ray_y+yOffset, ray_x+math.cos(dir)*len+xOffset, ray_y+yOffset + math.sin(dir)*len)
+		-- 	end
+		-- end
 	end
 	for i = 1, #DYNAMIC_OBJ do
 		local obj = DYNAMIC_OBJ[i]
@@ -215,8 +220,7 @@ function love.draw()
 	love.graphics.print("PLAYER HP "..math.ceil(PLAYER.hp),10,60,0,3,3)
 	love.graphics.print("Speed:"..round(score,1),10,90,0,3,3)
 	love.graphics.print("Money: "..round(PLAYER.money,2),10,120,0,3,3)
-	love.graphics.print("DEBUG TEXT :  "..DEBUG_TEXT,10,150,0,3,3)
-	love.graphics.print("DEBUG TEXT 2 :  "..DEBUG_TEXT2,10,175,0,3,3)
+
 
 	loveframes.draw()
 end

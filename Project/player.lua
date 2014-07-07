@@ -6,6 +6,7 @@ function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 	self.shape.name = "playershape"
 	self.hp = 10000
 	--folowing block is kinda jurry rigged/subject to change
+	self.faction = "independent"
 	local gun_set =basic_guns(self,tostring(self.id))
 	for i,obj in pairs(gun_set) do
 		obj.equipped = true

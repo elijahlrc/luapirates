@@ -134,8 +134,10 @@ end
 function handle_terrain(map_image,value,i,j)
 	map_image:setPixel(i,j,0,value,0)
 end
-function MakeTownStats(size)--makes town prices/goods
+function MakeTownStats(size,pos)--makes town prices/goods
 	local self = baseClass()
+	self.x = pos[1]
+	self.y = pos[2]
 	self.elapsed = 0
 	self.name = "town"
 	self.goods = coppyTable(TRADEGOODS)
@@ -170,7 +172,7 @@ function makedock(i,j,map_image,value)--generates doc which changes dirction oca
 	local rand_start = math.random(4)
 	local ocupied = {}
 	local colision_rect
-	local town = MakeTownStats(max_len)
+	local town = MakeTownStats(max_len,{i*TILE_SIZE,j*TILE_SIZE})
 	table.insert(TOWNS,town)
 	while len<max_len do --this while loop makes the doc
 		len = len+1

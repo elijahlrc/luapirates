@@ -175,24 +175,24 @@ function portMenu(port)
 			PLAYER.hp = PLAYER.max_health
 		end
 	end
-	function buyButton(good,price)
+	function buyButton(good,price,quant)
 		local button = loveframes.Create("button")
-		button:SetText("Buy")
+		button:SetText("Buy "..tostring(quant))
 		button.OnClick = function(object,x,y)
-			if PLAYER.money >= price then
-				if PLAYER.addToHold(good,1) then
-					PLAYER.money = PLAYER.money-price
+			if PLAYER.money >= price*quant then
+				if PLAYER.addToHold(good,quant) then
+					PLAYER.money = PLAYER.money-price*quant
 				end
 			end
 		end
 		return button
 	end
-	function sellButton(good,price)
+	function sellButton(good,price,quant)
 		local button = loveframes.Create("button")
-		button:SetText("Sell")
+		button:SetText("Sell "..tostring(quant))
 		button.OnClick = function(object,x,y)
-			if PLAYER.removeFromHold(good,1) ~= false then
-				PLAYER.money = PLAYER.money+price
+			if PLAYER.removeFromHold(good,quant) ~= false then
+				PLAYER.money = PLAYER.money+price*quant
 			end
 		end
 		return button
@@ -201,8 +201,8 @@ function portMenu(port)
 	local goods = loveframes.Create("grid",frame)
 	goods:SetPos(10,100)
 	goods:SetSize(780,450)
-	goods:SetColumns(#port.goods+1)
-	goods:SetRows(5)
+	goods:SetColumns(7)
+	goods:SetRows(#port.goods+1)
 	goods:SetCellWidth(60)
 	goods:SetCellHeight(20)
 	local item = loveframes.Create("text")
@@ -220,11 +220,19 @@ function portMenu(port)
 	local sell = loveframes.Create("text")
 	sell:SetText("Sell:")
 	sell:SetWidth(60)
+	local buy_10 = loveframes.Create("text")
+	buy_10:SetText("Buy 10:")
+	buy_10:SetWidth(60)
+	local sell_10 = loveframes.Create("text")
+	sell_10:SetText("Sell 10:")
+	sell_10:SetWidth(60)
 	goods:AddItem(item      ,1,1)
 	goods:AddItem(sellprice ,1,2)
 	goods:AddItem(buyprice  ,1,3)
 	goods:AddItem(buy       ,1,4)
 	goods:AddItem(sell      ,1,5)
+	goods:AddItem(buy_10    ,1,6)
+	goods:AddItem(sell_10   ,1,7)
 	local column = 1
 	for key,good in pairs(port.goods) do
 		column = column+1
@@ -239,16 +247,22 @@ function portMenu(port)
 		local sellprice = loveframes.Create("text")
 		sellprice:SetText(tostring(good.current_price,1))
 		sellprice:SetWidth(60)
-		local bb = buyButton (good,good.current_price*1.05)
+		local bb = buyButton (good,good.current_price*1.05,1)
 		bb:SetWidth(60)
-		local sb = sellButton(good,good.current_price)
+		local sb = sellButton(good,good.current_price,1)
 		sb:SetWidth(60)
+		local b10b = buyButton (good,good.current_price*1.05,10)
+		bb:SetWidth(60)
+		local s10b = sellButton(good,good.current_price,10)
+		sb:SetWidth(60)
+
 		goods:AddItem(name,column,1)
-		
 		goods:AddItem(sellprice,column,2)
 		goods:AddItem(buyprice, column,3)
 		goods:AddItem(bb,column,4)
 		goods:AddItem(sb,column,5)
+		goods:AddItem(b10b,column,6)
+		goods:AddItem(s10b,column,7)
 	end
 end
 
@@ -270,11 +284,23 @@ function loot_screen(obj)
 	take_money:SetWidth(100)
 	take_money:SetText("Take Money:"..tostring(money))
 	take_money:SetY(height-80)
+	take_money:SetX(75)
 	take_money.OnClick = function(object)
 		take_money:SetText("Take Money:"..tostring(money))
 		PLAYER.money = PLAYER.money + money
 		obj.money = 0
 		take_money:SetText("Take Money:"..tostring(obj.money))
+	end
+
+	local scuttle = loveframes.Create("button",frame)
+	scuttle:SetWidth(100)
+	scuttle:SetText("Scuttle")
+	scuttle:CenterX()
+	scuttle:SetY(height-100)
+	scuttle.OnClick = function(object)
+		obj.dead = true
+		paused = false
+		frame:Remove()
 	end
 
 	local exit = loveframes.Create("button",frame)
@@ -375,8 +401,22 @@ function loot_list(items,width,height,parent)
 				end
 			end
 		end
-
 		form:AddItem(take_button)
+		local take_10 = loveframes.Create("button")
+		take_10:SetWidth(100)
+		take_10:SetText("Take 10")
+		take_10.OnClick = function(object)
+			if item[2]>=10 and PLAYER.addToHold(item[1],10) then
+				item[2] = item[2] - 10
+				number:SetText(item[2])
+				if item[2] == 0 then
+					iList:RemoveItem(form)
+					items[i] = nil
+				end
+			end
+		end
+		form:AddItem(take_10)
+		
 
 		iList:AddItem(form)
 	end

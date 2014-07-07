@@ -1,3 +1,9 @@
+--[[
+file for projectiles themselves, not there generators
+as far as i can telll this whole file is never used, g
+i dont even think it gets loaded anywhere
+--]]
+
 function projectile_base_class(sprite,name,rotation,velocity,x_pos,y_pos,lifespan) --feel free to add more things
 	self = baseClass()
 	self.name = "projectile_base_class"

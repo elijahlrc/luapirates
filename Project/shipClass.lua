@@ -2,9 +2,9 @@
 function makeWreck(ship)
 	local wreck = baseShipClass(ship.x,ship.y,ship.sprite,0,0,ship.drag,ship.velocity,ship.rotation,ship.max_health/5,ship.shape,ship.holdsize,ship.max_health)
 	wreck.name = "wreck"
-	wreck.shape = ship.shape
 	wreck.shape.owner = wreck
 	wreck.shape.name = "wreck"
+	wreck.faction = "wreck"
 	ship.shape = nil
 	wreck.inventory = ship.inventory
 	wreck.money = ship.money
@@ -14,7 +14,7 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 	local self = baseClass()
 	function self.init()
 		--the folowing if's check if vars are passed into baseShipClass and if not set them to default
-		self.bounus = (4.5+math.random())/5
+		self.bounus = (2.5+math.random())/3
 		self.id = makeID()
 		self.rotation = rotation or 0
 		self.velocity = velocity or {0,0}
@@ -32,8 +32,8 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 		self.money = 100
 		self.inventory = {}
 		self.holdsize = holdsize
+		self.dead = false
 		if shape then
-
 			self.shape = shape
 			if not self.shape.name then
 				error("ship shape given without name, Y U DO THIS!")
@@ -126,6 +126,9 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 		end
 	end
 	function self.addToHold(good,quantity)--add instances of the item class to hold
+		--[[
+		TODO: add items to equipment list/pasive bounus list based on there type
+		--]]
 		local quantity = quantity or 1
 		if good.mass*quantity <= self.holdSpace() then--if space
 			local name = good.name
@@ -143,6 +146,9 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 		end
 	end
 	function self.removeFromHold(good,quantity)--remove instances of the item class from hold
+		--[[
+		TODO: Remove items from equipment list/pasive bounus list based on there type
+		--]]
 		quantity = quantity or 1
 		local name = good.name
 		for i,val in pairs(self.inventory) do
@@ -177,12 +183,25 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 		self.shape:moveTo(self.x,self.y)
 		self.shape:setRotation(self.rotation)
 	end
+
+
+
+
+		--[[if (self.rotation+math.pi/2)%(2*math.pi)-get_direction(self.x,self.y,x,y)<0 then
+				self.rotation = self.rotation+self.turn_speed*dt
+		elseif (self.rotation-math.pi/2)%(2*math.pi)-get_direction(self.x,self.y,x,y)<0 then
+			self.rotation = self.rotation-self.turn_speed*dt
+		end--]]
+	
 	function self.handle_collisions(dt,othershape,dx,dy)
 		--[[
 		if othershape is a obj which should damage ship (wepons, etc)
 		the code for that should prob go here. Aditionaly docking in ports
 		picking up loot, etc might go here.
 		--]]
+		if self.name == "player" then
+			print(othershape.name)
+		end
 		if othershape.name == "terrain_collider" then
 			--self.x = self.x+dx
 			--self.y = self.y+dy
@@ -196,7 +215,7 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 
 		elseif othershape.name == "projectile" then
 			self.hp = self.hp-10
-		elseif othershape.name == "enemy_ship" then --needs code for raming
+		elseif othershape.name == "npc_ship" then --needs code for raming
 			if self.velocity[1] > 20 then--but wat if the other ship is moving, needs to be fixed but not yet, relitivly low priority
 				self.hp = self.hp - distance(0,0,dx,dy)
 			end

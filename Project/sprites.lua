@@ -2,6 +2,7 @@ SPRITES = {}
 
 SPRITES.ship = love.graphics.newImage("/sprites/ship.png")
 SPRITES.ship2 = love.graphics.newImage("/sprites/ship2.png")
+SPRITES.cargo_ship = love.graphics.newImage("/sprites/cargo.png")
 SPRITES.tiles = love.graphics.newImage("/sprites/tiles.png")
 SPRITES.canonball = love.graphics.newImage("/sprites/cannonBall.png")
 SPRITES.scaterball = love.graphics.newImage('/sprites/smallBall.png')
