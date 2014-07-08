@@ -29,7 +29,7 @@ function pauseMenu()
 end
 
 
-function inventory(items)
+function inventory_menu(owner)
 	paused = true
 	local frame = loveframes.Create("frame")
 	frame:SetName("")
@@ -41,7 +41,7 @@ function inventory(items)
 	frame:SetSize(width,height)
 	frame:SetPos(WINDOW_WIDTH/2-width/2,WINDOW_HEIGHT/2-height/2,false)
 
-	form = inventory_list(items,width,height,frame)
+	form = inventory_list(owner,width-100,height-200,frame)
 
 	local exit = loveframes.Create("button",frame)
 	exit:CenterX()
@@ -53,9 +53,7 @@ function inventory(items)
 		
 	end
 end
-function inventory_list(items,width,height,parent)
-	local listWidth = width-100
-	local listHeight = height-200
+function inventory_list(owner,listWidth,listHeight,parent)
 	local form = loveframes.Create("form",parent)
 	form:SetY(50)
 	form:SetSize(listWidth,30)
@@ -96,17 +94,12 @@ function inventory_list(items,width,height,parent)
 	iList:CenterX()
 	iList:SetY(100)
 
-	for _, item in pairs(items) do
+	for i, item in pairs(owner.inventory) do
 		local form = loveframes.Create("form")
 		form:SetName("")
 		form:SetSize(listWidth,30)
 		form:SetLayoutType("horizontal")
 		local image = loveframes.Create("image")
-		print(type(item))
-		print(type(item[1]))
-		for i,j in pairs(item[1]) do
-			print(i,j)
-		end
 		image:SetImage(item[1].icon)
 		image_x,image_y = image:GetImageSize()
 		image:SetScale(30/image_x,30/image_y)
@@ -137,6 +130,20 @@ function inventory_list(items,width,height,parent)
 			end
 			used:SetWidth(100)
 			form:AddItem(used)
+
+
+			local equip_b = loveframes.Create("button")
+			equip_b:SetText("Toggle Equiped")
+			equip_b.OnClick = function()
+				owner.toggle_equipt(i)
+				if item[1].equipped then
+					used:SetText("Equipped")
+				else
+					used:SetText("Unequipped")
+				end
+			end
+			form:AddItem(equip_b)
+
 		end
 		iList:AddItem(form)
 	end
@@ -199,6 +206,7 @@ function portMenu(port)
 	end
 	
 	local goods = loveframes.Create("grid",frame)
+	--FOLOWING BLOCK IS TRADE GOODS:
 	goods:SetPos(10,100)
 	goods:SetSize(780,450)
 	goods:SetColumns(7)
@@ -264,8 +272,11 @@ function portMenu(port)
 		goods:AddItem(b10b,column,6)
 		goods:AddItem(s10b,column,7)
 	end
-end
+	--END TRADE GOOD BLoCK
+	--FOLOWING BLOCK IS FOR EQUIPMENT:
+	--(tabs? maybe having a trade tab and a inventory tab and a equipment tab and a mission tab would be a good way of organising the port screen)
 
+end
 function loot_screen(obj)
 	local items = obj.inventory
 	local money = obj.money

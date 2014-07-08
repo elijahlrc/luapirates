@@ -1,16 +1,21 @@
-function ItemBaseClass(value,mass,name,type,standard_dev,icon,gun)--class for things that sit in inventories
+function ItemBaseClass(value,mass,name,type,standard_dev,icon,active,pasive)--class for things that sit in inventories
 	self = baseClass()
 	self.value = value --base price
 	self.mass = mass --how much space is taken up
 	self.name = name 
 	self.type = type --"tradegood", "equipment", etc
 	self.icon = icon or SPRITES.canonball--need some sprite so cannonball by defualt, shoud be overwriten for everything but cannonballs, lel
-	if gun then
-		self.gun = true
+	if active then
+		self.active = true
 	else
-		self.gun = false
+		self.active = false
 	end
-	if self.type == equipment then
+	if pasive then
+		self.pasive = true
+	else
+		self.pasive = false
+	end
+	if self.type == "equipment" then
 		self.equipped = false
 	elseif self.type == "tradegood" then
 		if standard_dev == nil then

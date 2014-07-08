@@ -163,6 +163,21 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 		end
 		return false --if the thing was not in the inventoy return false to signify that removal failed
 	end
+	function self.toggle_equipt(index)
+		print(self.inventory[index][1].equipped)
+		self.inventory[index][1].equipped = not self.inventory[index][1].equipped
+		print(self.inventory[index][1].equipped)
+		self.reCalculateStats()
+
+	end
+	function self.reCalculateStats()
+		self.cannons = {}
+		for i,obj in pairs(self.inventory) do
+			if obj[1].type == "equipment" and obj[1].active == true and obj[1].equipped == true then
+				table.insert(self.cannons,obj[1])
+			end
+		end
+	end
 	function self.fire_guns(dt) --overwrite me
 		--code for when to fire wepons and which to fire goes here, overwrite this function in the
 		--obj that is fireing, ie player, or test_enemy

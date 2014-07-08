@@ -7,7 +7,7 @@ function cannonClass(position,speed,gun_rot,lifetime,reload_time,owner,x_offset,
 	guns act by inserting particles with certan params into the 
 	DYNAMIC OBJECTs table when certan conditions are met, ie reload time and fire pressed
 	--]]
-	local self = ItemBaseClass(cost,mass,name,"equipment",nil,nil,"gun")
+	local self = ItemBaseClass(cost,mass,name,"equipment",nil,nil,true,false)
 	self.x = x_offset or 0 --these set to 0 if not passed into function, neet trick eh?
 	self.y = y_offset or 0-- like using foo(x,y=3) to make y default to 3 in python
 	self.position = position

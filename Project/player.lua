@@ -5,18 +5,16 @@ function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 	Collider:addToGroup(tostring(self.id),self.shape)
 	self.shape.name = "playershape"
 	self.hp = 10000
-	--folowing block is kinda jurry rigged/subject to change
-	self.faction = "independent"
-	local gun_set =basic_guns(self,tostring(self.id))
-	for i,obj in pairs(gun_set) do
+	self.faction  = "independent"
+	local gun_set = basic_guns(self,tostring(self.id))
+	for i, obj in pairs(gun_set) do
 		obj.equipped = true
 		table.insert(self.inventory,{obj,1})
 	end
-	self.cannons = gun_set
-	--end weird jurry riged block, wepons should change how there handeled so that objects that are equipt automaticaly apply bounuses/fire/get a update call (i think)
 
 	self.shape.owner = self --shape containes referance to owner, all interactive shapes must do this
 	self.name = "player"
+	self.reCalculateStats()
 	function self.fire_guns(dt)
 		self.fireing = KEYBOARD_STATE.get_fireing()
 		for _,gun in pairs(self.cannons) do

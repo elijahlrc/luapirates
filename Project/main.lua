@@ -98,7 +98,7 @@ function love.keypressed(key)--,unicode)
 		end
 	end
 	if key == "i" and loveframes.GetState() ~= "pausemenu" then
-		inventory(PLAYER.inventory)
+		inventory_menu(PLAYER)
 	end
 	loveframes.keypressed(key, unicode)
 end

@@ -42,7 +42,7 @@ function cargo_ship(x_pos,y_pos,faction)
 			self.target = self.find_target_town()
 		end
 		target_timer = target_timer+dt
-		if self.avoid_colisions(dt) then
+		if self.avoid_colisions(dt,600) then
 		else
 			self.accelerate(dt,"forward")
 			self.dirToTarget = get_direction(self.x,self.y,self.target.x,self.target.y)
@@ -125,7 +125,7 @@ function pirate_ship (x_pos,y_pos,faction)
 
 	
 		--maybe insert a far check as well
-		if self.avoid_colisions(dt) then
+		if self.avoid_colisions(dt,500) then
 		elseif self.distanceToPlayer < self.get_average_gun_range() then
 			self.accelerate(dt,"forward")
 			self.turnToBroadside(dt)
@@ -192,7 +192,7 @@ function npc_ship(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health,shap
 	end
 
 	function self.hit(shape)
-		if shape.name == "terrain_collider" or shape.owner.name == "wreck" or (shape.name == "npc_ship" and shape.owner.id ~= self.id) then
+		if shape.name == "terrain_collider" or shape.name == "playershape" or shape.owner.name == "wreck" or (shape.name == "npc_ship" and shape.owner.id ~= self.id) then
 			return true
 		else
 			return false
@@ -241,16 +241,16 @@ function npc_ship(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health,shap
 			self.turn(dt,shortestAngleDir(self.rotation - math.pi*.5 , self.dirToPlayer))
 		end
 	end
-	function self.avoid_colisions(dt)--returns true if it did something, false if no rays hit.
+	function self.avoid_colisions(dt,range)--returns true if it did something, false if no rays hit.
 		local ang = math.pi/32
-		local rays = self.checkfront(450,ang)
+		local rays = self.checkfront(range,ang)
 		local left_ray = rays[1]
 		local middle_ray = rays[2]
 		local right_ray = rays[3]
 		if middle_ray or right_ray or left_ray then
 			while right_ray and left_ray and ang < math.pi do
 				ang = ang+math.pi/32
-				rays = self.checkfront(450,ang)
+				rays = self.checkfront(range,ang)
 				left_ray = rays[1]
 				middle_ray = rays[2]
 				right_ray = rays[3]
