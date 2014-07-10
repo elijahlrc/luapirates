@@ -10,7 +10,7 @@ SPRITES.house = love.graphics.newImage('/sprites/house.png')
 local tiles_width = SPRITES.tiles:getWidth()
 local tiles_height = SPRITES.tiles:getHeight()
 
-TILE_BATCH = love.graphics.newSpriteBatch(SPRITES.tiles, 8192)
+TILE_BATCH = love.graphics.newSpriteBatch(SPRITES.tiles, 8192,"stream")
 
 TILES = {}
 
@@ -48,11 +48,11 @@ function update_terrain(batch)
 	local height
 	local _
 	local objects = {}
-
+	local id_list = {}
 
 	for i=-4,TILES_ACROSS+4 do
 		for j=-4,TILES_DOWN+4 do
-			local pixel_x,pixel_y = round(i+x-(TILES_ACROSS/2)),round(j+y-(TILES_DOWN/2))
+			local pixel_x,pixel_y = math.floor(i+x-(TILES_ACROSS/2)),math.floor(j+y-(TILES_DOWN/2))
 
 			if pixel_x < 0 or pixel_x > MAP_SIZE-1 or pixel_y < 0 or pixel_y > MAP_SIZE-1 then
 				height = 255

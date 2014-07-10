@@ -213,7 +213,7 @@ function npc_ship(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health,shap
 		return results
 	end
 	function self.raycast(x,y,dir,size)--need to be redone
-		local step = 20
+		local step = 30
 		local dx = math.cos(dir)*step
 		local dy = math.sin(dir)*step
 		local x_pos = 0

@@ -148,10 +148,10 @@ function MakeTownStats(size,pos)--makes town prices/goods
 	end
 	function self.update(dt) --function for goods to change prices
 		self.elapsed = self.elapsed+dt
-		if self.elapsed >= 1 then--update prices every 1 sec
+		if self.elapsed >= 5 then--update prices every 1 sec
 			for name, item in pairs(self.goods) do
 				item.current_price = math.abs(item.current_price+item.rate_of_change)
-				change = random_gauss((item.value-item.current_price)/80,item.sDev)/20
+				change = random_gauss((item.value-item.current_price)/20,item.sDev)/4
 				item.current_price = round(item.current_price+change,2)
 			end
 			self.elapsed = 0

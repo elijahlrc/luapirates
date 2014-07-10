@@ -148,40 +148,8 @@ function inventory_list(owner,listWidth,listHeight,parent)
 		iList:AddItem(form)
 	end
 end
-			
-function portMenu(port)
-	paused = true
-	local frame = loveframes.Create("frame")
-	frame:SetName("")
-	frame:ShowCloseButton(false)
-	frame:MakeTop()
-	frame:SetDraggable(false)
-	local width = 800
-	local height = 650
-	frame:SetSize(width,height)
-	frame:SetPos(WINDOW_WIDTH/2-width/2,WINDOW_HEIGHT/2-height/2,false)--had to manualy center, dont know why
-	
-	local exit = loveframes.Create("button",frame)
-	exit:CenterX()
-	exit:SetY(height-40)
-	exit:SetText("Exit")
-	exit.OnClick = function(object)
-		paused = false
-		frame:Remove()
-	end
 
-	local repair = loveframes.Create("button",frame)
-	repair:CenterX()
-	repair:SetY(height-70)
-	repair:SetText("Repair")
-	repair.OnClick = function(object)
-		local cost = (PLAYER.max_health-PLAYER.hp)*10
-		print (cost,PLAYER.money,PLAYER.max_health)
-		if PLAYER.money >= cost then
-			PLAYER.money = PLAYER.money-cost
-			PLAYER.hp = PLAYER.max_health
-		end
-	end
+function trade_goods_list(port,frame)
 	function buyButton(good,price,quant)
 		local button = loveframes.Create("button")
 		button:SetText("Buy "..tostring(quant))
@@ -272,7 +240,42 @@ function portMenu(port)
 		goods:AddItem(b10b,column,6)
 		goods:AddItem(s10b,column,7)
 	end
-	--END TRADE GOOD BLoCK
+	return goods
+end		
+function portMenu(port)
+	paused = true
+	local frame = loveframes.Create("frame")
+	frame:SetName("")
+	frame:ShowCloseButton(false)
+	frame:MakeTop()
+	frame:SetDraggable(false)
+	local width = 800
+	local height = 650
+	frame:SetSize(width,height)
+	frame:SetPos(WINDOW_WIDTH/2-width/2,WINDOW_HEIGHT/2-height/2,false)--had to manualy center, dont know why
+	
+	local exit = loveframes.Create("button",frame)
+	exit:CenterX()
+	exit:SetY(height-40)
+	exit:SetText("Exit")
+	exit.OnClick = function(object)
+		paused = false
+		frame:Remove()
+	end
+
+	local repair = loveframes.Create("button",frame)
+	repair:CenterX()
+	repair:SetY(height-70)
+	repair:SetText("Repair")
+	repair.OnClick = function(object)
+		local cost = (PLAYER.max_health-PLAYER.hp)*10
+		print (cost,PLAYER.money,PLAYER.max_health)
+		if PLAYER.money >= cost then
+			PLAYER.money = PLAYER.money-cost
+			PLAYER.hp = PLAYER.max_health
+		end
+	end
+	trade_goods_list(port,frame)
 	--FOLOWING BLOCK IS FOR EQUIPMENT:
 	--(tabs? maybe having a trade tab and a inventory tab and a equipment tab and a mission tab would be a good way of organising the port screen)
 

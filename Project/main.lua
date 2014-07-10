@@ -129,7 +129,7 @@ function love.update(dt)
 
 
 		
-		if #SHIPS <= 30 and math.random()<dt then 
+		if #SHIPS <= 10 and math.random()<dt then 
 			if math.random(100)<50 then
 				table.insert(SHIPS,cargo_ship(PLAYER.x+math.random(WINDOW_WIDTH*2)-WINDOW_WIDTH,PLAYER.y+math.random(WINDOW_HEIGHT*2)-WINDOW_HEIGHT,"independent"))
 			elseif math.random(100)<50 then
@@ -160,7 +160,8 @@ function love.update(dt)
 			end
 		end
 		for _,town in pairs(TOWNS) do
-			town.update(dt)
+			town.update(dt)--optimize because causing framerate hit
+
 		end
 		if PLAYER.dead then
 			love.load()
