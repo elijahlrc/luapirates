@@ -65,7 +65,7 @@ function love.load()
 		START_Y = math.random(2047)
 		_,water,_ = TERRAIN_MAP:getPixel(START_X,START_Y)
 	end
-	PLAYER = Player(START_X*TILE_SIZE,START_Y*TILE_SIZE,SPRITES.ship,START_ROTATION,PLAYER_SPEED,
+	PLAYER = Player(START_X*TILE_SIZE,START_Y*TILE_SIZE,SPRITES.ship,PLAYER_SPEED,
 	PLAYER_TURN_SPEED,PLAYER_DRAG,PLAYER_VELOCITY)
 	print("Instantiating Player  Done")
 	STATIC_OBJECTS = {} 
@@ -131,9 +131,9 @@ function love.update(dt)
 		
 		if #SHIPS <= 10 and math.random()<dt then 
 			if math.random(100)<50 then
-				table.insert(SHIPS,cargo_ship(PLAYER.x+math.random(WINDOW_WIDTH*2)-WINDOW_WIDTH,PLAYER.y+math.random(WINDOW_HEIGHT*2)-WINDOW_HEIGHT,"independent"))
+				table.insert(SHIPS,make_cargo_ship(PLAYER.x+math.random(WINDOW_WIDTH*2)-WINDOW_WIDTH,PLAYER.y+math.random(WINDOW_HEIGHT*2)-WINDOW_HEIGHT))
 			elseif math.random(100)<50 then
-				table.insert(SHIPS,pirate_ship(PLAYER.x+math.random(WINDOW_WIDTH*2)-WINDOW_WIDTH,PLAYER.y+math.random(WINDOW_HEIGHT*2)-WINDOW_HEIGHT,"pirate"))
+				table.insert(SHIPS,make_pirate_ship(PLAYER.x+math.random(WINDOW_WIDTH*2)-WINDOW_WIDTH,PLAYER.y+math.random(WINDOW_HEIGHT*2)-WINDOW_HEIGHT,"pirate"))
 			end
 		end
 		for i = #PROJECTILES, 1,-1 do
@@ -160,7 +160,7 @@ function love.update(dt)
 			end
 		end
 		for _,town in pairs(TOWNS) do
-			town.update(dt)--optimize because causing framerate hit
+			town.update(dt)
 
 		end
 		if PLAYER.dead then

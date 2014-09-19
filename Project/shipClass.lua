@@ -10,46 +10,134 @@ function makeWreck(ship)
 	wreck.money = ship.money
 	return wreck
 end
-function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health,shape,holdsize,max_health)
+
+startingShip = {
+	holdsize = 100,
+	max_health = 100,
+	hp = 100,
+	speed = 100,
+	turn_speed = PLAYER_TURN_SPEED,
+	sprite = SPRITES.ship,
+	width= SPRITES.ship:getWidth(),
+	height = SPRITES.ship:getHeight(),
+	drag = .3,
+	inventory = {},
+	cannons = {},
+	slots = { 
+		{	x = 10,
+			y = 0,
+			ocupied = false,
+			position = "left",
+			rotation = math.pi/2},
+		{	x = 0,
+			y = 0,
+			ocupied = false,
+			position = "left",
+			rotation = math.pi/2},
+		{	x = -10,
+			y = 0,
+			ocupied = false,
+			position = "left",
+			rotation = math.pi/2},
+		{	x = 0,
+			y = 0,
+			ocupied = false,
+			position = "right",
+			rotation = -1*math.pi/2},
+		{	x = -10,
+			y = 0,
+			ocupied = false,
+			position = "right",
+			rotation = -1*math.pi/2},
+		{	x = 10,
+			y = 0,
+			ocupied = false,
+			position = "right",
+			rotation = -1*math.pi/2}
+	}
+}
+mediumCargoShip = {
+	holdsize = 1000,
+	max_health = 250,
+	hp = 250,
+	speed = 50,
+	turn_speed = PLAYER_TURN_SPEED*.5,
+	sprite = SPRITES.cargo_ship,
+	width= SPRITES.ship:getWidth(),
+	height = SPRITES.ship:getHeight(),
+	drag = .3,
+	inventory = {},
+	cannons = {},
+	slots = { 
+		{	x = 20,
+			y = 0,
+			ocupied = false,
+			position = "left",
+			rotation = math.pi/2},
+		{	x = 0,
+			y = 0,
+			ocupied = false,
+			position = "left",
+			rotation = math.pi/2},
+		{	x = -20,
+			y = 0,
+			ocupied = false,
+			position = "left",
+			rotation = math.pi/2},
+		{	x = 0,
+			y = 0,
+			ocupied = false,
+			position = "right",
+			rotation = -1*math.pi/2},
+		{	x = -20,
+			y = 0,
+			ocupied = false,
+			position = "right",
+			rotation = -1*math.pi/2},
+		{	x = 20,
+			y = 0,
+			ocupied = false,
+			position = "right",
+			rotation = -1*math.pi/2}
+	}
+}
+function baseShipClass(x,y,velocity,rotation)
+	--[[
+	self.move, 
+	self.ship_specific_update, 
+	self.fire_guns, and
+	self.move should be overwriten by calling 
+	self.set_ship and 
+	self.set_behavior
+	--]]
+
+	--------------------------------init--------------------------------
 	local self = baseClass()
-	function self.init()
-		--the folowing if's check if vars are passed into baseShipClass and if not set them to default
-		self.bounus = (2.5+math.random())/3
-		self.id = makeID()
-		self.rotation = rotation or 0
-		self.velocity = velocity or {0,0}
-		self.max_health = max_health or 100
-		self.name = "baseSHipClass"
-		self.hp = self.max_health
-		self.x = x
-		self.y = y
-		self.sprite = sprite
-		self.speed = speed*self.bounus
-		self.turn_speed = turn_speed*self.bounus
-		self.drag = drag*self.bounus
-		self.cannons = basic_guns(self)
-		self.width, self.height = self.sprite:getDimensions( )
-		self.money = 100
-		self.inventory = {}
-		self.holdsize = holdsize
-		self.dead = false
-		if shape then
-			self.shape = shape
-			if not self.shape.name then
-				error("ship shape given without name, Y U DO THIS!")
-			end
-		--[[else
-			boundingBox = {width = self.sprite:getWidth(),height = self.sprite:getHeight()}
-			self.shape = Collider:addRectangle(self.x+1,self.y+1,boundingBox.width-1,boundingBox.height-1)
-			self.shape.owner = self --shape containes referance to owner, all interactive shapes must do this
-			self.shape.name = "baseShipClass_SHAPE"
-			--]]
+	self.id = makeID()
+	self.rotation = rotation or 0
+	self.velocity = velocity or {0,0}
+	self.name = "baseSHipClass"
+	self.x = x
+	self.y = y
+	self.dead = false
+
+----------------------------function defs--------------------------
+	function self.set_ship(ship)
+		for key,val in pairs(ship) do
+			self[key] = val
 		end
-		
+		self.shape = Collider:addPolygon(self.x,self.y+(self.height)/2, --dimond shape
+			self.x+(self.width)/2,self.y, 
+			self.x+(self.width), self.y+(self.height)/2, 
+			self.x+(self.width)/2,self.y+(self.height))
+		self.shape.owner = self
+		Collider:addToGroup(tostring(self.id),self.shape)
 	end
-	self.init()
-
-
+	function self.set_behavior(behavior)
+		for key,val in pairs(behavior) do
+			self[key] = val
+		end
+	end
 	function self.get_position()
 		return self.x,self.y
 	end
@@ -69,9 +157,10 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 	end
 	function self.move(dt)
 		--code for movement overrites this function
-		--use turn and accelerate to move
+		--use "turn" and "accelerate" to move
 	end
 	function self.update(dt)
+		self.ship_specific_update(dt)
 		self.doMove(dt)
 		self.fire_guns(dt)
 		if self.hp<0 then
@@ -81,7 +170,9 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 			end
 		end
 	end
-
+	function ship_specific_update(dt)
+		--overwrite me in specific ships
+	end
 	function self.holdSpace()--get space remaining in hold
 		local total_mass = 0
 		for key,item in pairs(self.inventory) do
@@ -126,20 +217,31 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 		end
 	end
 	function self.addToHold(good,quantity)--add instances of the item class to hold
-		--[[
-		TODO: add items to equipment list/pasive bounus list based on there type
-		--]]
 		local quantity = quantity or 1
-		if good.mass*quantity <= self.holdSpace() then--if space
-			local name = good.name
+		local gd = good.make()
+		if gd.mass*quantity <= self.holdSpace() then--if space
+			local name = gd.name
 			local found = false
-			for i,val in pairs(self.inventory) do
-				if val[1].name == name and found ~= true then
-					val[2] = val[2]+quantity
-					return val[2]
+			if gd.type == "tradegood" then
+				for i,val in pairs(self.inventory) do
+					if val[1].name == name and found ~= true then
+						found = true
+						val[2] = val[2]+quantity
+						return val[2]
+					end
+				end
+				if not found then
+					table.insert(self.inventory,{gd,quantity})
+				end
+			else
+				for i = 1,quantity do
+					gd = good.make()
+					gd.set_owner(self)
+					gd.set_group(tostring(self.id))
+					table.insert(self.inventory, {gd,1})
+
 				end
 			end
-			table.insert(self.inventory, {good,quantity})
 			return quantity
 		else
 			return false--if not enough space return false to signify that adding to hold failed
@@ -163,21 +265,37 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 		end
 		return false --if the thing was not in the inventoy return false to signify that removal failed
 	end
-	function self.toggle_equipt(index)
-		print(self.inventory[index][1].equipped)
-		self.inventory[index][1].equipped = not self.inventory[index][1].equipped
-		print(self.inventory[index][1].equipped)
-		self.reCalculateStats()
-
+	function self.equip(slot,object)
+		if slot.ocupied == false then
+			object.equipped = true
+			object.set_slot(slot)
+			slot.ocupied = object
+			object.slot = slot
+			self.reCalculateStats()
+			return
+		else
+			return false
+		end
 	end
-	function self.reCalculateStats()
+
+	function self.unequip(slot)
+		if slot.occuped then
+			slot.ocupied.equipped = false --set equipment as unequiped
+			slot.ocupied.slot = nil
+			slot.ocupied.set_slot()--set equipments slot to nil
+			slot.ocupied = false
+			self.reCalculateStats()
+		end
+	end
+	function self.reCalculateStats()--redo to understand slots
 		self.cannons = {}
-		for i,obj in pairs(self.inventory) do
-			if obj[1].type == "equipment" and obj[1].active == true and obj[1].equipped == true then
-				table.insert(self.cannons,obj[1])
+		for i,slot in pairs(self.slots) do
+			if slot.ocupied then
+				table.insert(self.cannons,slot.ocupied)
 			end
 		end
 	end
+
 	function self.fire_guns(dt) --overwrite me
 		--code for when to fire wepons and which to fire goes here, overwrite this function in the
 		--obj that is fireing, ie player, or test_enemy
@@ -225,6 +343,9 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 			end
 			local vel_x = dx/dt
 			local vel_y = dy/dt
+
+
+
 			local vec = {distance(0,0,vel_x,vel_y)*.25,get_direction(0,0,vel_x,vel_y)}
 			self.velocity = add_vectors(self.velocity[1],self.velocity[2],vec[1],vec[2])
 
@@ -266,3 +387,168 @@ function baseShipClass(x,y,sprite,speed,turn_speed,drag,velocity,rotation,health
 	return self
 end
 
+
+function make_pirate_ship(x,y)
+	local shp = npc_ship(x,y,{0,0},0)
+	shp.set_ship(startingShip)
+	shp = pirate_behavior(shp,"pirate")
+	shp.name = "pirate"
+	local gun_gen
+	if math.random()>.99 then
+		gun_gen = small_cannon
+	else
+		gun_gen = scater_gun
+	end
+	shp.addToHold (gun_gen,10)
+	return shp
+end
+
+function make_cargo_ship(x,y)
+	local shp = npc_ship(x,y,{0,0},0)
+	shp.set_ship(mediumCargoShip)
+	shp = trade_behavior (shp,"trader")
+
+	shp.name = "cargo"
+	local gun_gen
+	if math.random()>.2 then
+		gun_gen = small_cannon
+	elseif math.random()>.2 then
+		gun_gen = scater_gun
+	else
+		return shp
+	end
+	shp.addToHold (gun_gen,5)
+	for key,val in pairs(shp) do
+		print (key)
+		print(val)
+	end
+	return shp
+end
+
+function npc_ship(x,y,velocity,rotation)--defines a bunch of functions neccicary for ai, still needs behavior and ship to be set using set_behavior() and set_ship()
+	local self = baseShipClass(x,y,velocity,rotation)
+	self.goal = {}
+	self.target = {}
+	function self.equip_guns()
+		local number_of_slots = #self.slots
+		local number_of_guns = 0
+		for i = 1,#self.inventory do
+			if self.inventory[i].equipment then
+				number_of_guns = number_of_guns + 1
+			end
+		end
+		--numb of slots, numb of guns
+		local full_slots = 0
+		for k,v in pairs(self.inventory) do--will equip to slots in order, kinda troll if ship 
+			if self.inventory[k].equipment then --has more slots than guns, will equip unevenly
+				self.equip(self.slots[full_slots],self.inventory[k])
+				full_slots = full_slots+1
+				if full_slots == number_of_slots then
+					return true
+				end
+			end
+		end
+		return false
+	end
+	function self.get_average_gun_speed()
+		total_speed = 0
+		for _, cannon in pairs(self.cannons) do
+			total_speed	 = total_speed+cannon.speed
+		end
+		return total_speed/(#self.cannons)
+	end
+	function self.get_average_gun_range()
+		total_range = 0
+		for _,cannon in pairs(self.cannons) do
+			total_range = total_range + (cannon.speed * cannon.lifetime * .5)
+		end
+		return total_range/#self.cannons
+	end
+
+	function self.hit(shape)
+		if shape.name == "terrain_collider" or shape.name == "playershape" or shape.owner.name == "wreck" or (shape.name == "npc_ship" and shape.owner.id ~= self.id) then
+			return true
+		else
+			return false
+		end
+	end
+	function self.checkfront(size,ang)
+		local directions = {(self.rotation-ang) , (self.rotation), (self.rotation+ang)}
+		local offset = 	{
+						{-1*math.cos(self.rotation+math.pi/2)*self.height,-1*math.sin(self.rotation+math.pi/2)*self.height},
+						{0,0},
+						{math.cos(self.rotation+math.pi/2)*self.height,math.sin(self.rotation+math.pi/2)*self.height}
+						}
+		local results = {}
+		for i=1, #directions do
+			local result = self.raycast(self.x+offset[i][1],self.y+offset[i][2],directions[i],size)
+			table.insert(results, result)
+		end
+		return results
+	end
+	function self.raycast(x,y,dir,size)--need to be redone
+		local step = 10
+		local dx = math.cos(dir)*step
+		local dy = math.sin(dir)*step
+		local x_pos = 0
+		local y_pos = 0
+		local shapes
+		for i = 0, round(size/step) do
+			shapes = Collider:shapesAt(round(x+x_pos),round(y_pos+y))
+			for _,shape in pairs(shapes) do
+				if self.hit(shape) then
+					--table.insert(self.line_directions, {dir, x, y, i*step})
+					return i*step
+				end
+			end
+			x_pos = x_pos+dx
+			y_pos = y_pos+dy
+		end
+		--table.insert(self.line_directions, {dir, x, y, false})
+		return false
+	end
+
+	function self.turnToBroadside(dt)
+		if math.abs(shortAng(self.rotation+math.pi*.5,self.dirToPlayer)) < (math.pi*.5) then
+			self.turn(dt,shortestAngleDir(self.rotation + math.pi*.5 , self.dirToPlayer))
+		else
+			self.turn(dt,shortestAngleDir(self.rotation - math.pi*.5 , self.dirToPlayer))
+		end
+	end
+	function self.avoid_colisions(dt,range)--returns true if it did something, false if no rays hit.
+		local ang = math.pi/32
+		local rays = self.checkfront(range,ang)
+		local left_ray = rays[1]
+		local middle_ray = rays[2]
+		local right_ray = rays[3]
+		if middle_ray or right_ray or left_ray then
+			while right_ray and left_ray and ang < math.pi do
+				ang = ang+math.pi/32
+				rays = self.checkfront(range,ang)
+				left_ray = rays[1]
+				middle_ray = rays[2]
+				right_ray = rays[3]
+			end
+			if left_ray == false then
+				self.turn(dt,"cc")
+			elseif right_ray == false then
+				self.turn(dt,"cl")
+			elseif ang>=math.pi then
+				if left_ray<right_ray then
+					self.turn(dt,"cl")
+				else
+					self.turn(dt,"cc")
+				end
+			end
+			if not middle_ray or middle_ray>300 then
+				self.accelerate(dt,"forward")
+			elseif middle_ray<100 then
+				self.accelerate(dt,"backward")
+			end
+			return true
+		else
+			return false
+		end
+	end
+	return self
+end

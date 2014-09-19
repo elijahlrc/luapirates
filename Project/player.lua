@@ -1,20 +1,14 @@
-function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
+function Player(x,y,sprite,speed,turn_speed,drag,velocity,max_velocity)
 	
-	local self = baseShipClass(x,y,SPRITES.ship,PLAYER_SPEED,PLAYER_TURN_SPEED,PLAYER_DRAG,PLAYER_VELOCITY,START_ROTATION,PLAYER_MAX_HP,nil,100,100)
-	self.shape = Collider:addPolygon(self.x+2,self.y+self.height/2, self.x+self.width/2,self.y+2, self.x+self.width-2,self.y+self.height/2, self.x+self.width/2,self.y+self.height-2)
-	Collider:addToGroup(tostring(self.id),self.shape)
+	local self = baseShipClass(x,y,{0,0},0)
+	self.set_ship(startingShip)
 	self.shape.name = "playershape"
 	self.hp = 10000
 	self.faction  = "independent"
-	local gun_set = basic_guns(self,tostring(self.id))
-	for i, obj in pairs(gun_set) do
-		obj.equipped = true
-		table.insert(self.inventory,{obj,1})
-	end
-
 	self.shape.owner = self --shape containes referance to owner, all interactive shapes must do this
 	self.name = "player"
 	self.reCalculateStats()
+	self.money = 1000
 	function self.fire_guns(dt)
 		self.fireing = KEYBOARD_STATE.get_fireing()
 		for _,gun in pairs(self.cannons) do
@@ -35,6 +29,8 @@ function Player(x,y,sprite,rotation,speed,turn_speed,drag,velocity,max_velocity)
 		elseif rot == "counterclockwise" then
 			self.turn(dt,"cc")
 		end
+	end
+	function self.ship_specific_update(dt)
 	end
 	return self
 end

@@ -24,9 +24,7 @@ function colliding_projectile(lifetime,sprite,group,x,y,rot,vel,size,drag)
 		self.y = self.y + self.velocity*dt*math.sin(self.rotation)
 		self.lifetime = self.lifetime - dt
 		self.shape:moveTo(self.x,self.y)
-		if self.drag then
-			self.velocity = self.velocity - self.drag*dt
-		end
+		self.velocity = self.velocity - self.drag*dt
 		if self.lifetime <= 0 then
 			Collider:remove(self.shape)
 			self.dead = true

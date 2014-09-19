@@ -18,9 +18,17 @@ function pauseMenu()
 		loveframes.SetState("none")
 	end
 
+	local reGen = loveframes.Create("button",frame)
+	reGen:CenterX()
+	reGen:SetY(70)
+	reGen:SetText("Regenerate Map")
+	reGen.OnClick = function(object)
+		love.load()
+	end
+
 	local exit = loveframes.Create("button",frame)
 	exit:CenterX()
-	exit:SetY(70)
+	exit:SetY(100)
 	exit:SetText("Exit")
 	exit.OnClick = function(object)
 		love.event.quit()
@@ -53,6 +61,38 @@ function inventory_menu(owner)
 		
 	end
 end
+function slot_choice_menu(owner,item)
+	local frame = loveframes.Create("frame")
+	frame:SetName("")
+	frame:ShowCloseButton(false)
+	frame:MakeTop()
+	local width = 800
+	local height = 650
+	frame:SetSize(width,height)
+	frame:SetPos(WINDOW_WIDTH/2-width/2,WINDOW_HEIGHT/2-height/2,false)
+	local list = loveframes.Create("list")
+	list.setName("Slots:")
+	list.setSize(790,640)
+	list.SetPos(5,5)
+	for _,slot in pairs(owner.slots) do 
+		local form = love.Create("form")
+		local pos_text = love.Create("text")
+		pos_text.SetText("Position:")
+		form.AddItem(pos_text)
+		local pos_text2= love.Create("text")
+		pos_text2.SetText("x = "..tostring(slot.x).."  y = "..tostring(slot.y))
+		form.AddItem(pos_text2)
+		local side_text = love.Create("text")
+		side_text.SetText(slot.position)
+		form.AddItem(pos_text2)
+		local select_button = love.Create("button")
+		select_button.SetText("Select")
+		select_button.OnClick = function()
+			owner.equip(slot,item[1])
+			frame:Remove()
+		end
+	end
+end	
 function inventory_list(owner,listWidth,listHeight,parent)
 	local form = loveframes.Create("form",parent)
 	form:SetY(50)
@@ -133,13 +173,14 @@ function inventory_list(owner,listWidth,listHeight,parent)
 
 
 			local equip_b = loveframes.Create("button")
-			equip_b:SetText("Toggle Equiped")
+			equip_b:SetText("Equip/UnEquip")
 			equip_b.OnClick = function()
-				owner.toggle_equipt(i)
-				if item[1].equipped then
-					used:SetText("Equipped")
-				else
+				if  item[1].equipped then
+					owner.unequip(item[1].slot)
 					used:SetText("Unequipped")
+				else
+					slot_chioce_menu(owner,item)
+					used:SetText("Equipped")
 				end
 			end
 			form:AddItem(equip_b)
@@ -149,7 +190,7 @@ function inventory_list(owner,listWidth,listHeight,parent)
 	end
 end
 
-function trade_goods_list(port,frame)
+function trade_goods_list(goods_list,frame,x_p,y_p,width,height)
 	function buyButton(good,price,quant)
 		local button = loveframes.Create("button")
 		button:SetText("Buy "..tostring(quant))
@@ -173,76 +214,82 @@ function trade_goods_list(port,frame)
 		return button
 	end
 	
-	local goods = loveframes.Create("grid",frame)
+	local goods = loveframes.Create("list",frame)
 	--FOLOWING BLOCK IS TRADE GOODS:
-	goods:SetPos(10,100)
-	goods:SetSize(780,450)
-	goods:SetColumns(7)
-	goods:SetRows(#port.goods+1)
-	goods:SetCellWidth(60)
-	goods:SetCellHeight(20)
+	goods:SetPos(x_p,y_p+60)
+	goods:SetSize(width,height)
+	goods:SetDisplayType("vertical")
 	local item = loveframes.Create("text")
 	item:SetText("Item:")
-	item:SetWidth(60)
+	item:SetWidth(50)
 	local sellprice =loveframes.Create("text")
 	sellprice:SetText("Sell Price:")
-	sellprice:SetWidth(60)
+	sellprice:SetWidth(40)
 	local buyprice = loveframes.Create("text")
 	buyprice:SetText("Buy Price:")
-	buyprice:SetWidth(60)
+	buyprice:SetWidth(40)
 	local buy = loveframes.Create("text")
 	buy:SetText("Buy:")
-	buy:SetWidth(60)
+	buy:SetWidth(45)
 	local sell = loveframes.Create("text")
 	sell:SetText("Sell:")
-	sell:SetWidth(60)
+	sell:SetWidth(45)
 	local buy_10 = loveframes.Create("text")
 	buy_10:SetText("Buy 10:")
-	buy_10:SetWidth(60)
+	buy_10:SetWidth(45)
 	local sell_10 = loveframes.Create("text")
 	sell_10:SetText("Sell 10:")
-	sell_10:SetWidth(60)
-	goods:AddItem(item      ,1,1)
-	goods:AddItem(sellprice ,1,2)
-	goods:AddItem(buyprice  ,1,3)
-	goods:AddItem(buy       ,1,4)
-	goods:AddItem(sell      ,1,5)
-	goods:AddItem(buy_10    ,1,6)
-	goods:AddItem(sell_10   ,1,7)
-	local column = 1
-	for key,good in pairs(port.goods) do
-		column = column+1
-		--row = loveframes.Create("form")
-		--row:SetLayoutType("horizontal")
+	sell_10:SetWidth(45)
+	local row = loveframes.Create("form",frame)
+	row:SetLayoutType("horizontal")
+	row:SetName("")
+	row:AddItem(item)
+	row:AddItem(sellprice)
+	row:AddItem(buyprice)
+	row:AddItem(buy)
+	row:AddItem(sell)
+	row:AddItem(buy_10)
+	row:AddItem(sell_10)
+	row:SetPos(x_p,y_p)
+	row:SetSize(width,60)
+	for key,good in pairs(goods_list)  do
+		row = loveframes.Create("form")
+		row:SetLayoutType("horizontal")
+		row:SetName("")
 		local name = loveframes.Create("text")
 		name:SetText(good.name)
-		name:SetWidth(60)
+		name:SetWidth(50)
 		local buyprice = loveframes.Create("text")
-		buyprice:SetText(tostring(good.current_price*1.05,1))
-		buyprice:SetWidth(60)
+		buyprice:SetText(tostring(round(good.current_price*1.05,1)))
+		buyprice:SetWidth(40)
 		local sellprice = loveframes.Create("text")
-		sellprice:SetText(tostring(good.current_price,1))
-		sellprice:SetWidth(60)
-		local bb = buyButton (good,good.current_price*1.05,1)
-		bb:SetWidth(60)
-		local sb = sellButton(good,good.current_price,1)
-		sb:SetWidth(60)
+		sellprice:SetText(tostring(round(good.current_price,1)))
+		sellprice:SetWidth(40)
 		local b10b = buyButton (good,good.current_price*1.05,10)
-		bb:SetWidth(60)
+		b10b:SetWidth(45)
 		local s10b = sellButton(good,good.current_price,10)
-		sb:SetWidth(60)
+		s10b:SetWidth(45)
+		local bb = buyButton (good,good.current_price*1.05,1)
+		bb:SetWidth(45)
+		local sb = sellButton(good,good.current_price,1)
+		sb:SetWidth(45)
+		
 
-		goods:AddItem(name,column,1)
-		goods:AddItem(sellprice,column,2)
-		goods:AddItem(buyprice, column,3)
-		goods:AddItem(bb,column,4)
-		goods:AddItem(sb,column,5)
-		goods:AddItem(b10b,column,6)
-		goods:AddItem(s10b,column,7)
+		row:AddItem(name)
+		row:AddItem(sellprice)
+		row:AddItem(buyprice)
+		row:AddItem(b10b)
+		row:AddItem(s10b)
+		row:AddItem(bb)
+		row:AddItem(sb)
+
+		goods:AddItem(row)
 	end
 	return goods
 end		
 function portMenu(port)
+	--could be changed to use tabs if the menu gets to cluttered
+	--window could also be made larger.
 	paused = true
 	local frame = loveframes.Create("frame")
 	frame:SetName("")
@@ -275,9 +322,8 @@ function portMenu(port)
 			PLAYER.hp = PLAYER.max_health
 		end
 	end
-	trade_goods_list(port,frame)
-	--FOLOWING BLOCK IS FOR EQUIPMENT:
-	--(tabs? maybe having a trade tab and a inventory tab and a equipment tab and a mission tab would be a good way of organising the port screen)
+	trade_goods_list(port.goods,frame,5    ,30,390,450)
+	trade_goods_list(port.shipyard_inventory,frame,405,30,390,450)
 
 end
 function loot_screen(obj)

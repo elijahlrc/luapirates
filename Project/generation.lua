@@ -141,9 +141,14 @@ function MakeTownStats(size,pos)--makes town prices/goods
 	self.elapsed = 0
 	self.name = "town"
 	self.goods = coppyTable(TRADEGOODS)
+	self.shipyard_inventory = coppyTable(EQUIPMENT)
 	for i,good in pairs(self.goods) do
 		self.goods[i].current_price = self.goods[i].value
 		self.goods[i].rate_of_change = 0
+	end
+	for i,equpm in pairs(self.shipyard_inventory) do
+		self.shipyard_inventory[i].current_price = self.shipyard_inventory[i].value
+		self.shipyard_inventory[i].rate_of_change = 0
 
 	end
 	function self.update(dt) --function for goods to change prices
@@ -152,7 +157,7 @@ function MakeTownStats(size,pos)--makes town prices/goods
 			for name, item in pairs(self.goods) do
 				item.current_price = math.abs(item.current_price+item.rate_of_change)
 				change = random_gauss((item.value-item.current_price)/20,item.sDev)/4
-				item.current_price = round(item.current_price+change,2)
+				item.current_price = round(item.current_price+change)
 			end
 			self.elapsed = 0
 		end
