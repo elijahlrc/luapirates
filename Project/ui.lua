@@ -315,11 +315,12 @@ function portMenu(port)
 	repair:SetY(height-70)
 	repair:SetText("Repair")
 	repair.OnClick = function(object)
-		local cost = (PLAYER.max_health-PLAYER.hp)*10
-		print (cost,PLAYER.money,PLAYER.max_health)
-		if PLAYER.money >= cost then
+		if PLAYER.hp < PLAYER.max_health then
+			local hp_restored = math.min((PLAYER.max_health-PLAYER.hp), math.floor(PLAYER.money/10))  -- repairs either to max or as much as you can afford
+			local cost = hp_restored*10
+			print (cost,PLAYER.money,PLAYER.max_health)
 			PLAYER.money = PLAYER.money-cost
-			PLAYER.hp = PLAYER.max_health
+			PLAYER.hp = PLAYER.hp + hp_restored
 		end
 	end
 	trade_goods_list(port.goods,frame,5    ,30,390,450)
