@@ -71,14 +71,14 @@ function cannonClass(speed,lifetime,reload_time,sprite,random_rot,random_vel,pro
 	end
 	return self
 end
-function make_cannons(speed,lifetime,reload_time,sprite,random_rot,random_vel,proj_size,cost,mass,name,drag,reload_randomness)
+function make_cannons(speed,lifetime,reload_time,sprite,random_rot,random_vel,proj_size,value,mass,name,drag,reload_randomness)
 	local self = {}
 	self.position = position
 	self.sprite = sprite
 	self.reload_randomness = reload_randomness or .15
 	self.name = name
 	self.mass = mass
-	self.cost = current_price
+	self.value = value--must be named current price even though it is static
 	
 	function self.make()
 		local cannon = cannonClass(speed,lifetime,reload_time,sprite,random_rot,random_vel,proj_size,cost,mass,name,drag,reload_randomness)

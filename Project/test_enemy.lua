@@ -35,7 +35,17 @@ function trade_behavior(self,faction)--this is a behavior, should used like ship
 	end
 	return self
 end
-
+function wreck_behavior(self,faction)
+	self.name = "wreck"
+	self.faction = faction
+	function self.move(dt)
+	end
+	function self.fire_guns(dt)
+	end
+	function self.ship_specific_update(dt)
+	end
+	return self
+end
 function pirate_behavior(self,faction)--this is a behavior, should used like ship.set_behavor(pirate_ship("pirate"))
 	self.name = "pirate_ship"	
 	--fix me!

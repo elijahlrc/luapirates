@@ -140,8 +140,8 @@ function MakeTownStats(size,pos)--makes town prices/goods
 	self.y = pos[2]
 	self.elapsed = 0
 	self.name = "town"
-	self.goods = coppyTable(TRADEGOODS)
-	self.shipyard_inventory = coppyTable(EQUIPMENT)
+	self.goods = coppyTable(TRADEGOODS)--could be some subset of tradegoods to provide mroe
+	self.shipyard_inventory = coppyTable(EQUIPMENT)--town variety
 	for i,good in pairs(self.goods) do
 		self.goods[i].current_price = self.goods[i].value
 		self.goods[i].rate_of_change = 0

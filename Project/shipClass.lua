@@ -1,12 +1,13 @@
 
 function makeWreck(ship)
-	local wreck = baseShipClass(ship.x,ship.y,ship.sprite,0,0,ship.drag,ship.velocity,ship.rotation,ship.max_health/5,ship.shape,ship.holdsize,ship.max_health)
+	local wreck = baseShipClass(ship.x,ship.y,ship.velocity,ship.rotation)
+	wreck.set_ship(ship.get_ship())
+	wreck = wreck_behavior(wreck,"wreck")
 	wreck.name = "wreck"
 	wreck.shape.owner = wreck
 	wreck.shape.name = "wreck"
 	wreck.faction = "wreck"
 	ship.shape = nil
-	wreck.inventory = ship.inventory
 	wreck.money = ship.money
 	return wreck
 end
@@ -131,7 +132,24 @@ function baseShipClass(x,y,velocity,rotation)
 			self.x+(self.width), self.y+(self.height)/2, 
 			self.x+(self.width)/2,self.y+(self.height))
 		self.shape.owner = self
-		Collider:addToGroup(tostring(self.id),self.shape)
+		Collider:addToGroup(tostring(self.id),self.shape)--id so that does not colide with own canons, etc
+	end
+	function self.get_ship()
+		new_ship = {
+          		holdsize = self.holdsize,
+		max_health = self.max_health,
+		hp = self.hp,
+		speed = self.speed,
+		turn_speed = self.turn_speed,
+		sprite = self.sprite,
+		width= self.width,
+		height = self.height,
+		drag = self.drag,
+		inventory = self.inventory,
+		cannons = self.cannons,
+		slots = self.slots
+		}
+		return new_ship
 	end
 	function self.set_behavior(behavior)
 		for key,val in pairs(behavior) do
@@ -392,6 +410,7 @@ function make_pirate_ship(x,y)
 	local shp = npc_ship(x,y,{0,0},0)
 	shp.set_ship(startingShip)
 	shp = pirate_behavior(shp,"pirate")
+	shp.shape.name = "npc_ship"
 	shp.name = "pirate"
 	local gun_gen
 	if math.random()>.99 then
@@ -407,7 +426,7 @@ function make_cargo_ship(x,y)
 	local shp = npc_ship(x,y,{0,0},0)
 	shp.set_ship(mediumCargoShip)
 	shp = trade_behavior (shp,"trader")
-
+	shp.shape.name = "npc_ship"
 	shp.name = "cargo"
 	local gun_gen
 	if math.random()>.2 then

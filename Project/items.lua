@@ -48,4 +48,4 @@ table.insert(TRADEGOODS, makeItem(40,1,	"sugar",	"tradegood",20))
 table.insert(TRADEGOODS, makeItem(80,1,	"cloth",		"tradegood",25))
 table.insert(TRADEGOODS, makeItem(125,1,	"tabaco",	"tradegood",35))
 
-EQUIPMENT = {}
+EQUIPMENT = {}--list of equipment shipyards cary
