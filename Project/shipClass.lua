@@ -283,6 +283,17 @@ function baseShipClass(x,y,velocity,rotation)
 		end
 		return false --if the thing was not in the inventoy return false to signify that removal failed
 	end
+
+	function self.amountInHold(good) --returns how many units of the item are in the hold
+		local name = good.name
+		for i,val in pairs(self.inventory) do
+			if val[1].name == name then
+				return val[2]
+			end
+		end
+		return 0
+	end
+
 	function self.equip(slot,object)
 		if slot.ocupied == false then
 			object.equipped = true

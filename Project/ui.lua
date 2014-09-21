@@ -179,7 +179,7 @@ function inventory_list(owner,listWidth,listHeight,parent)
 					owner.unequip(item[1].slot)
 					used:SetText("Unequipped")
 				else
-					slot_chioce_menu(owner,item)
+					slot_choice_menu(owner,item)
 					used:SetText("Equipped")
 				end
 			end
@@ -240,6 +240,12 @@ function trade_goods_list(goods_list,frame,x_p,y_p,width,height)
 	local sell_10 = loveframes.Create("text")
 	sell_10:SetText("Sell 10:")
 	sell_10:SetWidth(45)
+	local townstock = loveframes.Create("text")
+	townstock:SetText("Town Stock:")
+	townstock:SetWidth(45)
+	local shipstock = loveframes.Create("text")
+	shipstock:SetText("Ship Stock:")
+	shipstock:SetWidth(45)
 	local row = loveframes.Create("form",frame)
 	row:SetLayoutType("horizontal")
 	row:SetName("")
@@ -250,6 +256,8 @@ function trade_goods_list(goods_list,frame,x_p,y_p,width,height)
 	row:AddItem(sell)
 	row:AddItem(buy_10)
 	row:AddItem(sell_10)
+	row:AddItem(townstock)
+	row:AddItem(shipstock)
 	row:SetPos(x_p,y_p)
 	row:SetSize(width,60)
 	for key,good in pairs(goods_list)  do
@@ -273,7 +281,12 @@ function trade_goods_list(goods_list,frame,x_p,y_p,width,height)
 		bb:SetWidth(45)
 		local sb = sellButton(good,good.current_price,1)
 		sb:SetWidth(45)
-		
+		local tstk = loveframes.Create("text")
+		tstk:SetText("Lots")
+		tstk:SetWidth(45)
+		local sstk = loveframes.Create("text")
+		sstk:SetText(tostring(PLAYER.amountInHold(good)))
+		sstk:SetWidth(45)
 
 		row:AddItem(name)
 		row:AddItem(sellprice)
@@ -282,6 +295,8 @@ function trade_goods_list(goods_list,frame,x_p,y_p,width,height)
 		row:AddItem(s10b)
 		row:AddItem(bb)
 		row:AddItem(sb)
+		row:AddItem(tstk)
+		row:AddItem(sstk)
 
 		goods:AddItem(row)
 	end
@@ -296,7 +311,7 @@ function portMenu(port)
 	frame:ShowCloseButton(false)
 	frame:MakeTop()
 	frame:SetDraggable(false)
-	local width = 800
+	local width = 1000
 	local height = 650
 	frame:SetSize(width,height)
 	frame:SetPos(WINDOW_WIDTH/2-width/2,WINDOW_HEIGHT/2-height/2,false)--had to manualy center, dont know why
@@ -323,8 +338,15 @@ function portMenu(port)
 			PLAYER.hp = PLAYER.hp + hp_restored
 		end
 	end
-	trade_goods_list(port.goods,frame,5    ,30,390,450)
-	trade_goods_list(port.shipyard_inventory,frame,405,30,390,450)
+
+	local holdspace = loveframes.Create("text", frame)
+	holdspace:CenterX()
+	holdspace:SetY(height-100)
+	local space = PLAYER.holdSpace()
+	holdspace:SetText("Remaining Hold Capacity: "..tostring(space))
+
+	trade_goods_list(port.goods,frame,5    ,30,480,450)
+	trade_goods_list(port.shipyard_inventory,frame,490,30,480,450)
 
 end
 function loot_screen(obj)
