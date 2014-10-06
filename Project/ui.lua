@@ -70,27 +70,27 @@ function slot_choice_menu(owner,item)
 	local height = 650
 	frame:SetSize(width,height)
 	frame:SetPos(WINDOW_WIDTH/2-width/2,WINDOW_HEIGHT/2-height/2,false)
-	local list = loveframes.Create("list")
-	list.setName("Slots:")
-	list.setSize(790,640)
-	list.SetPos(5,5)
+	local list = loveframes.Create("list",frame)
+	--list.setSize(790,640)
+	list:SetPos(5,5)
 	for _,slot in pairs(owner.slots) do 
-		local form = love.Create("form")
-		local pos_text = love.Create("text")
-		pos_text.SetText("Position:")
-		form.AddItem(pos_text)
-		local pos_text2= love.Create("text")
-		pos_text2.SetText("x = "..tostring(slot.x).."  y = "..tostring(slot.y))
-		form.AddItem(pos_text2)
-		local side_text = love.Create("text")
-		side_text.SetText(slot.position)
-		form.AddItem(pos_text2)
-		local select_button = love.Create("button")
-		select_button.SetText("Select")
+		local form = loveframes.Create("form")
+		local pos_text =  loveframes.Create("text",form)
+		pos_text:SetText("Position:")
+		form:AddItem(pos_text)
+		local pos_text2= loveframes.Create("text",form)
+		pos_text2:SetText("x = "..tostring(slot.x).."  y = "..tostring(slot.y))
+		form:AddItem(pos_text2)
+		local side_text = loveframes.Create("text",form)
+		side_text:SetText(slot.position)
+		form:AddItem(pos_text2)
+		local select_button = loveframes.Create("button",form)
+		select_button:SetText("Select")
 		select_button.OnClick = function()
 			owner.equip(slot,item[1])
 			frame:Remove()
 		end
+		list:AddItem(form)
 	end
 end	
 function inventory_list(owner,listWidth,listHeight,parent)
@@ -161,7 +161,7 @@ function inventory_list(owner,listWidth,listHeight,parent)
 		mass:SetText(item[1].mass)
 		form:AddItem(mass)
 
-		if item[1].type == "equipment" then
+		if item[1].obj_type == "equipment" then
 			local used = loveframes.Create("text")
 			if item[1].equipped then
 				used:SetText("Equipped")
@@ -191,7 +191,7 @@ function inventory_list(owner,listWidth,listHeight,parent)
 end
 
 function trade_goods_list(goods_list,frame,x_p,y_p,width,height)
-	function buyButton(good,price,quant)
+	local function buyButton(good,price,quant)
 		local button = loveframes.Create("button")
 		button:SetText("Buy "..tostring(quant))
 		button.OnClick = function(object,x,y)
@@ -203,7 +203,7 @@ function trade_goods_list(goods_list,frame,x_p,y_p,width,height)
 		end
 		return button
 	end
-	function sellButton(good,price,quant)
+	local function sellButton(good,price,quant)
 		local button = loveframes.Create("button")
 		button:SetText("Sell "..tostring(quant))
 		button.OnClick = function(object,x,y)
@@ -445,11 +445,6 @@ function loot_list(items,width,height,parent)
 		form:SetSize(listWidth,30)
 		form:SetLayoutType("horizontal")
 		local image = loveframes.Create("image")
-		print(type(item))
-		print(type(item[1]))
-		for i,j in pairs(item[1]) do
-			print(i,j)
-		end
 		image:SetImage(item[1].icon)
 		image_x,image_y = image:GetImageSize()
 		image:SetScale(30/image_x,30/image_y)

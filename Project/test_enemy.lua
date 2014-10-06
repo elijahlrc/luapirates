@@ -117,11 +117,11 @@ function pirate_behavior(self,faction)--this is a behavior, should used like shi
 		math.cos(self.velocity[2])*(self.velocity[1]*time_to_impact)
 		self.target.y = self.enemy.y + math.sin(self.enemy.velocity[2])*(self.enemy.velocity[1]*time_to_impact)-
 		math.sin(self.velocity[2])*(self.velocity[1]*time_to_impact)
-		self.dirToPlayer = get_direction(self.x,self.y,self.target.x,self.target.y)
-		if math.abs(shortAng(self.dirToPlayer-math.pi*.5 , self.rotation)) < math.pi/8 then
-			self.fireing = "right"
-		elseif math.abs(shortAng(self.dirToPlayer+math.pi*.5 , self.rotation)) < math.pi/8 then
+		self.dirToTarget = get_direction(self.x,self.y,self.target.x,self.target.y)
+		if math.abs(shortAng(self.dirToTarget-math.pi*.5 , self.rotation)) < math.pi/8 then
 			self.fireing = "left"
+		elseif math.abs(shortAng(self.dirToTarget+math.pi*.5 , self.rotation)) < math.pi/8 then
+			self.fireing = "right"
 		else
 			self.fireing = nil
 		end

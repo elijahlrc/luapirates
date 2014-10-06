@@ -54,6 +54,36 @@ startingShip = {
 			y = 0,
 			ocupied = false,
 			position = "right",
+			rotation = -1*math.pi/2},-----------------
+		{	x = 5,
+			y = 0,
+			ocupied = false,
+			position = "left",
+			rotation = math.pi/2},
+		{	x = 15,
+			y = 0,
+			ocupied = false,
+			position = "left",
+			rotation = math.pi/2},
+		{	x = -5,
+			y = 0,
+			ocupied = false,
+			position = "left",
+			rotation = math.pi/2},
+		{	x = 15,
+			y = 0,
+			ocupied = false,
+			position = "right",
+			rotation = -1*math.pi/2},
+		{	x = -5,
+			y = 0,
+			ocupied = false,
+			position = "right",
+			rotation = -1*math.pi/2},
+		{	x = 5,
+			y = 0,
+			ocupied = false,
+			position = "right",
 			rotation = -1*math.pi/2}
 	}
 }
@@ -124,7 +154,11 @@ function baseShipClass(x,y,velocity,rotation)
 
 ----------------------------function defs--------------------------
 	function self.set_ship(ship)
-		for key,val in pairs(ship) do
+		for key,val in pairs(coppyTable(ship)) do 
+			--next 3 lines only necisary if ship table is not a coppy
+			--if type(val) == "table" then
+			--	self[key] = 
+			--else
 			self[key] = val
 		end
 		self.shape = Collider:addPolygon(self.x,self.y+(self.height)/2, --dimond shape
@@ -135,7 +169,7 @@ function baseShipClass(x,y,velocity,rotation)
 		Collider:addToGroup(tostring(self.id),self.shape)--id so that does not colide with own canons, etc
 	end
 	function self.get_ship()
-		new_ship = {
+		local new_ship = {
           		holdsize = self.holdsize,
 		max_health = self.max_health,
 		hp = self.hp,
@@ -145,9 +179,9 @@ function baseShipClass(x,y,velocity,rotation)
 		width= self.width,
 		height = self.height,
 		drag = self.drag,
-		inventory = self.inventory,
-		cannons = self.cannons,
-		slots = self.slots
+		inventory = coppyTable(self.inventory),
+		cannons = coppyTable(self.cannons),
+		slots = coppyTable(self.slots)
 		}
 		return new_ship
 	end
@@ -240,7 +274,8 @@ function baseShipClass(x,y,velocity,rotation)
 		if gd.mass*quantity <= self.holdSpace() then--if space
 			local name = gd.name
 			local found = false
-			if gd.type == "tradegood" then
+			if gd.obj_type == "tradegood" then
+				--local gd = good.make()
 				for i,val in pairs(self.inventory) do
 					if val[1].name == name and found ~= true then
 						found = true
@@ -253,7 +288,7 @@ function baseShipClass(x,y,velocity,rotation)
 				end
 			else
 				for i = 1,quantity do
-					gd = good.make()
+					local gd = good.make()
 					gd.set_owner(self)
 					gd.set_group(tostring(self.id))
 					table.insert(self.inventory, {gd,1})
@@ -269,7 +304,7 @@ function baseShipClass(x,y,velocity,rotation)
 		--[[
 		TODO: Remove items from equipment list/pasive bounus list based on there type
 		--]]
-		quantity = quantity or 1
+		local quantity = quantity or 1
 		local name = good.name
 		for i,val in pairs(self.inventory) do
 			if val[1].name == name and val[2]>= quantity then
@@ -294,7 +329,8 @@ function baseShipClass(x,y,velocity,rotation)
 		return 0
 	end
 
-	function self.equip(slot,object)
+	function self.equip(slot,object)--can only equip equipment type items
+		assert(object.obj_type == "equipment")
 		if slot.ocupied == false then
 			object.equipped = true
 			object.set_slot(slot)
@@ -306,6 +342,27 @@ function baseShipClass(x,y,velocity,rotation)
 			return false
 		end
 	end
+	function self.equipAll()
+		local invIndex = 1
+		if #self.inventory>=1 then
+			for i,slot in pairs(self.slots) do
+				print(i.."slot")
+				if not slot.occupied then
+					print("is not occupied")
+					while  (invIndex <= #self.inventory) and (not self.inventory[invIndex][1].obj_type == "equipment") do
+						invIndex = invIndex+1
+						print(invIndex.."invIndex")
+					end
+					if invIndex <= #self.inventory then
+						print("equiping stuff")
+						self.equip(slot,self.inventory[invIndex][1])
+						invIndex = invIndex + 1
+					end
+				end
+			end
+		end
+	end
+					
 
 	function self.unequip(slot)
 		if slot.occuped then
@@ -362,7 +419,7 @@ function baseShipClass(x,y,velocity,rotation)
 		picking up loot, etc might go here.
 		--]]
 		if self.name == "player" then
-			print(othershape.name)
+			--print(othershape.name)
 		end
 		if othershape.name == "terrain_collider" then
 			--self.x = self.x+dx
@@ -430,6 +487,7 @@ function make_pirate_ship(x,y)
 		gun_gen = scater_gun
 	end
 	shp.addToHold (gun_gen,10)
+	shp.equipAll()
 	return shp
 end
 
@@ -448,10 +506,12 @@ function make_cargo_ship(x,y)
 		return shp
 	end
 	shp.addToHold (gun_gen,5)
-	for key,val in pairs(shp) do
+	--[[for key,val in pairs(shp) do
 		print (key)
 		print(val)
 	end
+	--]]
+	shp.equipAll()
 	return shp
 end
 
@@ -459,36 +519,15 @@ function npc_ship(x,y,velocity,rotation)--defines a bunch of functions neccicary
 	local self = baseShipClass(x,y,velocity,rotation)
 	self.goal = {}
 	self.target = {}
-	function self.equip_guns()
-		local number_of_slots = #self.slots
-		local number_of_guns = 0
-		for i = 1,#self.inventory do
-			if self.inventory[i].equipment then
-				number_of_guns = number_of_guns + 1
-			end
-		end
-		--numb of slots, numb of guns
-		local full_slots = 0
-		for k,v in pairs(self.inventory) do--will equip to slots in order, kinda troll if ship 
-			if self.inventory[k].equipment then --has more slots than guns, will equip unevenly
-				self.equip(self.slots[full_slots],self.inventory[k])
-				full_slots = full_slots+1
-				if full_slots == number_of_slots then
-					return true
-				end
-			end
-		end
-		return false
-	end
 	function self.get_average_gun_speed()
-		total_speed = 0
+		local total_speed = 0
 		for _, cannon in pairs(self.cannons) do
 			total_speed	 = total_speed+cannon.speed
 		end
 		return total_speed/(#self.cannons)
 	end
 	function self.get_average_gun_range()
-		total_range = 0
+		local total_range = 0
 		for _,cannon in pairs(self.cannons) do
 			total_range = total_range + (cannon.speed * cannon.lifetime * .5)
 		end

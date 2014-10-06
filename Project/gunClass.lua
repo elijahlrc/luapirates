@@ -24,7 +24,7 @@ function cannonClass(speed,lifetime,reload_time,sprite,random_rot,random_vel,pro
 	function self.set_owner(new_owner)
 		self.owner = new_owner
 	end
-	function self.set_slot(new_slot)
+	function self.set_slot(new_slot) --equipment type obj must have set_slot()
 		if new_slot then
 			self.set_loc(new_slot.x,new_slot.y)
 			self.position = new_slot.position --slots must have position set to left or right
@@ -71,7 +71,7 @@ function cannonClass(speed,lifetime,reload_time,sprite,random_rot,random_vel,pro
 	end
 	return self
 end
-function make_cannons(speed,lifetime,reload_time,sprite,random_rot,random_vel,proj_size,value,mass,name,drag,reload_randomness)
+local function make_cannons(speed,lifetime,reload_time,sprite,random_rot,random_vel,proj_size,value,mass,name,drag,reload_randomness)
 	local self = {}
 	self.position = position
 	self.sprite = sprite
@@ -81,6 +81,7 @@ function make_cannons(speed,lifetime,reload_time,sprite,random_rot,random_vel,pr
 	self.value = value--must be named current price even though it is static
 	
 	function self.make()
+		print ("made a cannon")
 		local cannon = cannonClass(speed,lifetime,reload_time,sprite,random_rot,random_vel,proj_size,cost,mass,name,drag,reload_randomness)
 		return cannon
 	end

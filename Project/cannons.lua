@@ -4,8 +4,8 @@ as far as i can telll this whole file is never used, g
 i dont even think it gets loaded anywhere
 --]]
 
-function projectile_base_class(sprite,name,rotation,velocity,x_pos,y_pos,lifespan) --feel free to add more things
-	self = baseClass()
+local function projectile_base_class(sprite,name,rotation,velocity,x_pos,y_pos,lifespan) --feel free to add more things
+	local self = baseClass()
 	self.name = "projectile_base_class"
 	self.velocity = velocity
 	self.rotation = rotation
@@ -52,7 +52,7 @@ function cannonball_projectile(velocity,x_pos,y_pos,rotation,lifespan,player_fir
 end
 
 function player_cannonball(x,y,lifespan,player_fired,random_v,random_r)
-	function ball(speed,dir)
+	local function ball(speed,dir)
 		local rand_v = math.random()*random_v-(random_v/2)
 		local rand_r = math.random()*random_r-(random_r/2)
 		self = cannonball_projectile(speed+rand_v,x,y,dir+rand_r,lifespan,player_fired)

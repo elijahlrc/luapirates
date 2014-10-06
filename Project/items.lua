@@ -1,9 +1,9 @@
-function ItemBaseClass(value,mass,name,type,sDev,icon,active,pasive)--class for things that sit in inventories
-	self = baseClass()
+function ItemBaseClass(value,mass,name,obj_type,sDev,icon,active,pasive)--class for things that sit in inventories
+	local self = baseClass()
 	self.value = value --base price
 	self.mass = mass --how much space is taken up
 	self.name = name 
-	self.type = type --"tradegood", "equipment", etc
+	self.obj_type = obj_type --"tradegood", "equipment", etc
 	self.icon = icon or SPRITES.canonball--need some sprite so cannonball by defualt, shoud be overwriten for everything but cannonballs, le
 
 	if active then
@@ -16,9 +16,9 @@ function ItemBaseClass(value,mass,name,type,sDev,icon,active,pasive)--class for 
 	else
 		self.pasive = false
 	end
-	if self.type == "equipment" then
+	if self.obj_type == "equipment" then
 		self.equipped = false
-	elseif self.type == "tradegood" then
+	elseif self.obj_type == "tradegood" then
 		if sDev == nil then
 			sDev = selfvalue/10
 		end
@@ -27,18 +27,18 @@ function ItemBaseClass(value,mass,name,type,sDev,icon,active,pasive)--class for 
 	return self
 end
 
-function makeItem(value,mass,name,type,sDev,icon,active,pasive)
+function makeItem(value,mass,name,obj_type,sDev,icon,active,pasive)
 	local self = {}
 	self.value = value
 	self.mass = mass
 	self.name = name
-	self.type = type
+	self.obj_type = obj_type
 	self.sDev = sDev
 	self.icon = icon
 	self.active = active
 	self.pasive = pasive
 	function self.make()
-		return  ItemBaseClass(value,mass,name,type,sDev,icon,active,pasive)
+		return  ItemBaseClass(value,mass,name,obj_type,sDev,icon,active,pasive)
 	end
 	return self
 end

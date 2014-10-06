@@ -1,3 +1,8 @@
+
+--o=0
+--O=o
+
+
 --[[
 yolololololol im a docstring
 ]]
@@ -33,7 +38,7 @@ function love.load()
 	require "LoveFrames"
 	require "ui"
 	ID = 0
-	function makeID()
+	function makeID()--this is a troll-as-fuck place for this, what was i thinking
 		ID = ID+1
 		return ID
 	end
@@ -86,6 +91,8 @@ function love.load()
 	print(" ")
 	print("Game loaded successfully")
 	print(" ")
+	print(#PLAYER.cannons)
+
 end
 function love.keypressed(key)--,unicode)
 	KEYBOARD_STATE.add_key(key)

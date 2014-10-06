@@ -4,11 +4,13 @@ function Player(x,y,sprite,speed,turn_speed,drag,velocity,max_velocity)
 	self.set_ship(startingShip)
 	self.shape.name = "playershape"
 	self.hp = 10000
+	self.addToHold(small_cannon,10)
 	self.faction  = "independent"
 	self.shape.owner = self --shape containes referance to owner, all interactive shapes must do this
 	self.name = "player"
 	self.reCalculateStats()
 	self.money = 1000
+	self.equipAll()
 	function self.fire_guns(dt)
 		self.fireing = KEYBOARD_STATE.get_fireing()
 		for _,gun in pairs(self.cannons) do

@@ -35,7 +35,7 @@ end
 function shortAng(a2,a1)
               return math.atan2(math.sin(a1-a2),math.cos(a1-a2))--DEEEEEEP magic
 end
-function round(num, idp)
+function round(num, idp)--the bigest bug of the entire project so far occured in the 2 lines below this. 
               local mult = 10^(idp or 0)
               return math.floor((num*mult+.5))/mult
 end
@@ -44,7 +44,7 @@ function random_gauss(center,varyance)
    local standard_normal =  math.sqrt(-2 * math.log(math.random())) * math.cos(2 * math.pi * math.random()) / 2
    return standard_normal*varyance + center
 end
-function coppyTable(orig)
+function coppyTable(orig)--takes a table, returns a deep coppy
     local orig_type = type(orig)
     local copy
     if orig_type == 'table' then
