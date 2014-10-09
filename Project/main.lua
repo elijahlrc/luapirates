@@ -22,7 +22,6 @@ function love.load()
 	require "baseclass"--and some could be called from within others, not sure if thats good or bad form.
 	require "sprites"
 	require "utilities"
-	
 	require "player"
 	require "keyboard"
 	require "items"

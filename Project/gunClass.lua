@@ -17,12 +17,19 @@ function cannonClass(speed,lifetime,reload_time,sprite,random_rot,random_vel,pro
 	self.random_rot = random_rot
 	self.random_vel = random_vel
 	self.group = group
-	self.owner = ownr
+	--[[self.owner = ownr
+	oh noze, cannons, and all tables that contain them can no longer be copied.
+	solution is to make owner a private var
+	--]]
+	local owner
+	--[[need more of these everywhere
+	local vars are good
+	--]]
 	self.proj_size = proj_size
 	self.drag = drag or 0
 	self.reload_randomness = reload_randomness or .15
 	function self.set_owner(new_owner)
-		self.owner = new_owner
+		owner = new_owner
 	end
 	function self.set_slot(new_slot) --equipment type obj must have set_slot()
 		if new_slot then
@@ -49,19 +56,19 @@ function cannonClass(speed,lifetime,reload_time,sprite,random_rot,random_vel,pro
 		if self.reload <= 0 and go then
 			if self.reload_randomness*math.random()<dt then
 				self.reload = self.reload_time
-				print (self.owner.name)
+				print (owner.name)
 				local random_r = random_gauss(0,self.random_rot)--random firespeed and angle
 				local random_v = random_gauss(0,self.random_vel)
-				local rot = self.owner.get_rotation()
+				local rot = owner.get_rotation()
 				local x_off = math.cos(rot)*self.x +math.cos(rot)*self.y--these 2 lines calculate position of gun based on owner rotation
 				local y_off = math.sin(rot)*self.y+math.sin(rot)*self.x
-				local vec = add_vectors(self.speed,rot+self.rotation, self.owner.velocity[1],self.owner.velocity[2])--these vec lines add player velocity and gun velocity
+				local vec = add_vectors(self.speed,rot+self.rotation, owner.velocity[1], owner.velocity[2])--these vec lines add player velocity and gun velocity
 				table.insert(PROJECTILES,
 					colliding_projectile(self.lifetime,
 										self.sprite,
 										self.group,
-										self.owner.x+x_off,
-										self.owner.y+y_off,
+										owner.x+x_off,
+										owner.y+y_off,
 										vec[2]+random_r,
 										vec[1]+random_v,
 										self.proj_size,

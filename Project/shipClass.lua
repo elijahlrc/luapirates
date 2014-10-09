@@ -346,15 +346,11 @@ function baseShipClass(x,y,velocity,rotation)
 		local invIndex = 1
 		if #self.inventory>=1 then
 			for i,slot in pairs(self.slots) do
-				print(i.."slot")
 				if not slot.occupied then
-					print("is not occupied")
 					while  (invIndex <= #self.inventory) and (not self.inventory[invIndex][1].obj_type == "equipment") do
 						invIndex = invIndex+1
-						print(invIndex.."invIndex")
 					end
 					if invIndex <= #self.inventory then
-						print("equiping stuff")
 						self.equip(slot,self.inventory[invIndex][1])
 						invIndex = invIndex + 1
 					end

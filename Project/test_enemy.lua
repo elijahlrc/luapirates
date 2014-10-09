@@ -11,7 +11,6 @@ function trade_behavior(self,faction)--this is a behavior, should used like ship
 			local target = TOWNS[math.random(#TOWNS)]
 			self.town_counter = self.town_counter+1
 		end
-		print(self.town_counter)
 		return target
 	end
 	function self.move(dt)
