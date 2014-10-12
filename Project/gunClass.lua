@@ -56,7 +56,6 @@ function cannonClass(speed,lifetime,reload_time,sprite,random_rot,random_vel,pro
 		if self.reload <= 0 and go then
 			if self.reload_randomness*math.random()<dt then
 				self.reload = self.reload_time
-				print (owner.name)
 				local random_r = random_gauss(0,self.random_rot)--random firespeed and angle
 				local random_v = random_gauss(0,self.random_vel)
 				local rot = owner.get_rotation()
@@ -79,7 +78,7 @@ function cannonClass(speed,lifetime,reload_time,sprite,random_rot,random_vel,pro
 	return self
 end
 local function make_cannons(speed,lifetime,reload_time,sprite,random_rot,random_vel,proj_size,value,mass,name,drag,reload_randomness)
-	local self = {}
+	local self = baseClass()
 	self.position = position
 	self.sprite = sprite
 	self.reload_randomness = reload_randomness or .15
@@ -95,7 +94,7 @@ local function make_cannons(speed,lifetime,reload_time,sprite,random_rot,random_
 	return self
 end
 small_cannon = make_cannons(400,1.5,2,SPRITES.canonball, math.pi/32,25,7,1000,3,"small cannon",0,.3)
-scater_gun = make_cannons(600,.75,1.5,SPRITES.scaterball, math.pi/16,100,5,1000,2,"small cannon",300,.3)
+scater_gun = make_cannons(600,.75,1.5,SPRITES.scaterball, math.pi/16,100,5,1000,2,"scater gun",300,.3)
 
 table.insert(EQUIPMENT,small_cannon)
 table.insert(EQUIPMENT,scater_gun)

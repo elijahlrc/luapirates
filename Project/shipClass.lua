@@ -268,6 +268,14 @@ function baseShipClass(x,y,velocity,rotation)
 			error(dir, "not acceptable input to shipClass.accelerate(dt,dir)")
 		end
 	end
+	function self.getInventory()
+		local return_list = {}
+		for index,value in pairs(self.inventory) do
+			print(value[1].name)
+			return_list[index] = {coppyTable(value[1]),value[2]}
+		end
+		return return_list
+	end
 	function self.addToHold(good,quantity)--add instances of the item class to hold
 		local quantity = quantity or 1
 		local gd = good.make()
@@ -335,7 +343,6 @@ function baseShipClass(x,y,velocity,rotation)
 			object.equipped = true
 			object.set_slot(slot)
 			slot.ocupied = object
-			object.slot = slot
 			self.reCalculateStats()
 			return
 		else
