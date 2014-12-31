@@ -27,62 +27,62 @@ startingShip = {
 	slots = { 
 		{	x = 10,
 			y = 0,
-			ocupied = false,
+			ocupied = nil,
 			position = "left",
 			rotation = math.pi/2},
 		{	x = 0,
 			y = 0,
-			ocupied = false,
+			ocupied = nil,
 			position = "left",
 			rotation = math.pi/2},
 		{	x = -10,
 			y = 0,
-			ocupied = false,
+			ocupied = nil,
 			position = "left",
 			rotation = math.pi/2},
 		{	x = 0,
 			y = 0,
-			ocupied = false,
+			ocupied = nil,
 			position = "right",
 			rotation = -1*math.pi/2},
 		{	x = -10,
 			y = 0,
-			ocupied = false,
+			ocupied = nil,
 			position = "right",
 			rotation = -1*math.pi/2},
 		{	x = 10,
 			y = 0,
-			ocupied = false,
-			position = "right",
-			rotation = -1*math.pi/2},-----------------
-		{	x = 5,
-			y = 0,
-			ocupied = false,
-			position = "left",
-			rotation = math.pi/2},
-		{	x = 15,
-			y = 0,
-			ocupied = false,
-			position = "left",
-			rotation = math.pi/2},
-		{	x = -5,
-			y = 0,
-			ocupied = false,
-			position = "left",
-			rotation = math.pi/2},
-		{	x = 15,
-			y = 0,
-			ocupied = false,
-			position = "right",
-			rotation = -1*math.pi/2},
-		{	x = -5,
-			y = 0,
-			ocupied = false,
+			ocupied = nil,
 			position = "right",
 			rotation = -1*math.pi/2},
 		{	x = 5,
 			y = 0,
-			ocupied = false,
+			ocupied = nil,
+			position = "left",
+			rotation = math.pi/2},
+		{	x = 15,
+			y = 0,
+			ocupied = nil,
+			position = "left",
+			rotation = math.pi/2},
+		{	x = -5,
+			y = 0,
+			ocupied = nil,
+			position = "left",
+			rotation = math.pi/2},
+		{	x = 15,
+			y = 0,
+			ocupied = nil,
+			position = "right",
+			rotation = -1*math.pi/2},
+		{	x = -5,
+			y = 0,
+			ocupied = nil,
+			position = "right",
+			rotation = -1*math.pi/2},
+		{	x = 5,
+			y = 0,
+			ocupied = nil,
 			position = "right",
 			rotation = -1*math.pi/2}
 	}
@@ -102,32 +102,32 @@ mediumCargoShip = {
 	slots = { 
 		{	x = 20,
 			y = 0,
-			ocupied = false,
+			ocupied = nil,
 			position = "left",
 			rotation = math.pi/2},
 		{	x = 0,
 			y = 0,
-			ocupied = false,
+			ocupied = nil,
 			position = "left",
 			rotation = math.pi/2},
 		{	x = -20,
 			y = 0,
-			ocupied = false,
+			ocupied = nil,
 			position = "left",
 			rotation = math.pi/2},
 		{	x = 0,
 			y = 0,
-			ocupied = false,
+			ocupied = nil,
 			position = "right",
 			rotation = -1*math.pi/2},
 		{	x = -20,
 			y = 0,
-			ocupied = false,
+			ocupied = nil,
 			position = "right",
 			rotation = -1*math.pi/2},
 		{	x = 20,
 			y = 0,
-			ocupied = false,
+			ocupied = nil,
 			position = "right",
 			rotation = -1*math.pi/2}
 	}
@@ -327,8 +327,10 @@ function baseShipClass(x,y,velocity,rotation)
 		return false --if the thing was not in the inventoy return false to signify that removal failed
 	end
 
-	function self.amountInHold(good) --returns how many units of the item are in the hold
-		local name = good.name
+	function self.amountInHold(good) 
+		--returns how many units of the item are in the hold
+		--fails if there are multiple stacks, so dont let there be!
+		local name = good.name 
 		for i,val in pairs(self.inventory) do
 			if val[1].name == name then
 				return val[2]
@@ -337,42 +339,35 @@ function baseShipClass(x,y,velocity,rotation)
 		return 0
 	end
 
-	function self.equip(slot,object)--can only equip equipment type items
+	function self.equip(slot, object)
+		--can only equip equipment type items
 		assert(object.obj_type == "equipment")
-		if slot.ocupied == false then
+		--assert(slot ~= false)
+		print(slot.ocupied)
+		if slot.ocupied == nil then
 			object.equipped = true
 			object.set_slot(slot)
+			object.slot = slot
 			slot.ocupied = object
 			self.reCalculateStats()
-			return
+			return true
 		else
 			return false
 		end
 	end
 	function self.equipAll()
-		local invIndex = 1
-		if #self.inventory>=1 then
-			for i,slot in pairs(self.slots) do
-				if not slot.occupied then
-					while  (invIndex <= #self.inventory) and (not self.inventory[invIndex][1].obj_type == "equipment") do
-						invIndex = invIndex+1
-					end
-					if invIndex <= #self.inventory then
-						self.equip(slot,self.inventory[invIndex][1])
-						invIndex = invIndex + 1
-					end
-				end
-			end
-		end
-	end
+		--re-write this function, its broke, 
+		--it shouSld equip everything posible from inventory
+	end 
 					
 
 	function self.unequip(slot)
-		if slot.occuped then
+		--might be broken
+		if slot.ocupied then
 			slot.ocupied.equipped = false --set equipment as unequiped
 			slot.ocupied.slot = nil
 			slot.ocupied.set_slot()--set equipments slot to nil
-			slot.ocupied = false
+			slot.ocupied = nil
 			self.reCalculateStats()
 		end
 	end

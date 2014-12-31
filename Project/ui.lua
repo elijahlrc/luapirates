@@ -49,7 +49,7 @@ function inventory_menu(owner)
 	frame:SetSize(width,height)
 	frame:SetPos(WINDOW_WIDTH/2-width/2,WINDOW_HEIGHT/2-height/2,false)
 
-	form = inventory_list(owner,width-100,height-200,frame)
+	form = inventory_list(owner,width-100,height-200,frame)--lists bunches of parts
 
 	local exit = loveframes.Create("button",frame)
 	exit:CenterX()
@@ -66,13 +66,13 @@ function slot_choice_menu(owner,item)
 	frame:SetName("")
 	frame:ShowCloseButton(false)
 	frame:MakeTop()
-	local width = 800
+	local width = 500
 	local height = 650
 	frame:SetSize(width,height)
 	frame:SetPos(WINDOW_WIDTH/2-width/2,WINDOW_HEIGHT/2-height/2,false)
 	local list = loveframes.Create("list",frame)
-	--list.setSize(790,640)
-	list:SetPos(5,5)
+	list:SetPos(20,40)
+	list:SetSize(width-40,height-40)
 	for _,slot in pairs(owner.slots) do 
 		local form = loveframes.Create("form")
 		local pos_text =  loveframes.Create("text",form)
@@ -84,16 +84,21 @@ function slot_choice_menu(owner,item)
 		local side_text = loveframes.Create("text",form)
 		side_text:SetText(slot.position)
 		form:AddItem(pos_text2)
-		local select_button = loveframes.Create("button",form)
+		local select_button = loveframes.Create("button")
+		form:AddItem(select_button)
 		select_button:SetText("Select")
+		--select_button:Center()
 		select_button.OnClick = function()
-			owner.equip(slot,item[1])
+			owner.unequip(slot)
+			owner.equip(slot, item[1])
 			frame:Remove()
 		end
+
 		list:AddItem(form)
 	end
-end	
-function inventory_list(owner,listWidth,listHeight,parent)
+end
+--equiping things in same slot something else is in does not handle it
+function inventory_list(owner, listWidth, listHeight, parent)
 	local form = loveframes.Create("form",parent)
 	form:SetY(50)
 	form:SetSize(listWidth,30)
@@ -163,7 +168,7 @@ function inventory_list(owner,listWidth,listHeight,parent)
 
 		if item[1].obj_type == "equipment" then
 			local used = loveframes.Create("text")
-			if item[1].equipped then
+			if item[1].equipped == true then
 				used:SetText("Equipped")
 			else
 				used:SetText("Unequipped")
@@ -175,7 +180,7 @@ function inventory_list(owner,listWidth,listHeight,parent)
 			local equip_b = loveframes.Create("button")
 			equip_b:SetText("Equip/UnEquip")
 			equip_b.OnClick = function()
-				if  item[1].equipped then
+				if  item[1].equipped == true then
 					owner.unequip(item[1].slot)
 					used:SetText("Unequipped")
 				else
@@ -190,7 +195,7 @@ function inventory_list(owner,listWidth,listHeight,parent)
 	end
 end
 
-function trade_goods_list(goods_list,frame,x_p,y_p,width,height)
+function trade_goods_list(goods_list,frame, x_p, y_p, width, height)
 	local function buyButton(good,price,quant)
 		local button = loveframes.Create("button")
 		button:SetText("Buy "..tostring(quant))

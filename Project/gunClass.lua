@@ -23,7 +23,7 @@ function cannonClass(speed,lifetime,reload_time,sprite,random_rot,random_vel,pro
 	--]]
 	local owner
 	--[[need more of these everywhere
-	local vars are good
+	local vars are good, some of above vars could be local?
 	--]]
 	self.proj_size = proj_size
 	self.drag = drag or 0

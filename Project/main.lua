@@ -1,10 +1,7 @@
 
---o=0
---O=o
-
-
 --[[
 yolololololol im a docstring
+Me and my friends are a wonderfull adition to any classes you want to add to this code!
 ]]
 function love.load()
 	--[[
@@ -75,7 +72,7 @@ function love.load()
 	STATIC_OBJECTS = {} 
 	PROJECTILES = {}
 	display = ""
-	DEBUG_TEXT = ""
+	DEBUG_TEXT = ""--these unused globals breh
 	DEBUG_TEXT2 = ""
 	table.insert(SHIPS,PLAYER)
 	pauseMenu()
@@ -103,7 +100,7 @@ function love.keypressed(key)--,unicode)
 			loveframes.SetState("none")
 		end
 	end
-	if key == "i" and loveframes.GetState() ~= "pausemenu" then
+	if key == "i" and loveframes.GetState() ~= "pausemenu" then--should this be here?
 		inventory_menu(PLAYER)
 	end
 	loveframes.keypressed(key, unicode)
@@ -136,7 +133,7 @@ function love.update(dt)
 
 		
 		if #SHIPS <= 10 and math.random()<dt then 
-			if math.random(100)<50 then
+			if math.random(100)<50 then --bad randomness, lel.
 				table.insert(SHIPS,make_cargo_ship(PLAYER.x+math.random(WINDOW_WIDTH*2)-WINDOW_WIDTH,PLAYER.y+math.random(WINDOW_HEIGHT*2)-WINDOW_HEIGHT))
 			elseif math.random(100)<50 then
 				table.insert(SHIPS,make_pirate_ship(PLAYER.x+math.random(WINDOW_WIDTH*2)-WINDOW_WIDTH,PLAYER.y+math.random(WINDOW_HEIGHT*2)-WINDOW_HEIGHT,"pirate"))

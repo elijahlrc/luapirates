@@ -18,9 +18,11 @@ function ItemBaseClass(value,mass,name,obj_type,sDev,icon,active,pasive)--class 
 	end
 	if self.obj_type == "equipment" then
 		self.equipped = false
+		self.slot = nil--nill implies not equiped, or slotless
+		--otherwise it should have a slot obj here
 	elseif self.obj_type == "tradegood" then
 		if sDev == nil then
-			sDev = selfvalue/10
+			sDev = selfvalue / 10
 		end
 		self.sDev = sDev
 	end
